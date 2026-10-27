@@ -65,116 +65,26 @@ canvas{display:block;width:100%;height:100%;image-rendering:pixelated;image-rend
 .console[data-skin="steel"]{--shell-a:#48515e;--shell-b:#1c222b;--trim:#9aa7b8;--button-top:#647181;--button-bottom:#242b35;--button-edge:#a7b5c7;--accent:#b9f4ff;background:linear-gradient(145deg,#505b69,#1b2029 55%,#3c4552)}
 @media(prefers-reduced-motion:reduce){.console[data-skin="rainbow"],.console[data-skin="animated"],.skin-swatch.animated,.power-led{animation:none!important}.hw-btn,.skin-option,.skin-open{transition:none!important}}
 
-/* Orientation-aware console layout: portrait stacks; landscape places controls beside the display */
-@media (orientation:landscape) and (min-width:600px){
-  .console{width:100vw;max-width:none;grid-template-columns:minmax(0,auto) minmax(220px,360px);grid-template-rows:minmax(0,1fr);column-gap:clamp(24px,5vw,72px);row-gap:0;padding:calc(env(safe-area-inset-top) + 42px) clamp(24px,5vw,76px) calc(env(safe-area-inset-bottom) + 14px);align-items:center;justify-content:center}
-  .screen-bezel{grid-column:1;grid-row:1;height:min(80dvh,calc(100vw * .78));width:auto;max-width:none;aspect-ratio:9/16;justify-self:end;align-self:center}
-  .controls{grid-column:2;grid-row:1;width:100%;height:min(72dvh,460px);max-width:360px;flex-direction:column;justify-content:center;align-items:center;gap:clamp(22px,5vh,42px);padding:12px 0}
-  .dpad{width:clamp(150px,18vw,210px);height:clamp(150px,34vh,220px);flex:0 0 auto;gap:clamp(5px,.8vw,10px)}
-  .dpad .hw-btn{width:clamp(48px,5.2vw,68px);height:clamp(48px,5.2vw,68px);font-size:clamp(18px,2vw,26px)}
-  .action-cluster{gap:clamp(12px,2vh,20px);flex-direction:row;flex-wrap:wrap;max-width:100%}
-  .hw-btn.action-main{width:clamp(82px,10vh,112px);height:clamp(82px,10vh,112px);font-size:clamp(12px,1.5vw,16px)}
-  .utility-row{gap:clamp(10px,1.6vw,18px)}
-  .hw-btn.utility{width:clamp(48px,6vh,62px);height:clamp(48px,6vh,62px)}
-  .skin-picker{top:calc(env(safe-area-inset-top) + 38px);right:clamp(12px,2vw,28px)}
-}
-@media (orientation:landscape) and (min-width:600px) and (max-height:500px){
-  .console{column-gap:clamp(18px,3vw,40px);padding-top:calc(env(safe-area-inset-top) + 34px);padding-bottom:calc(env(safe-area-inset-bottom) + 8px)}
-  .screen-bezel{height:min(76dvh,calc((100vw - 100px)*1.7778))}
-  .controls{height:90dvh;gap:12px}
-  .dpad{width:clamp(120px,20vh,160px);height:clamp(120px,30vh,155px)}
-  .dpad .hw-btn{width:clamp(38px,9vh,48px);height:clamp(38px,9vh,48px)}
-  .hw-btn.action-main{width:clamp(62px,14vh,78px);height:clamp(62px,14vh,78px)}
-  .hw-btn.utility{width:clamp(38px,9vh,48px);height:clamp(38px,9vh,48px)}
-}
-@media (orientation:portrait){
-  .console{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto;justify-content:initial}
-  .screen-bezel{grid-column:1;grid-row:1;height:min(72dvh,calc((100vw - 34px)*1.7778));width:auto;max-width:calc(100vw - 34px)}
-  .controls{grid-column:1;grid-row:2;flex-direction:row;height:clamp(106px,18dvh,142px);width:min(100%,430px);max-width:430px}
-}
 
-/* Final responsive guard: never put the controller beside the screen on narrow viewports */
-@media (max-width:760px){
-  .console{width:100vw;max-width:680px;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;column-gap:0;row-gap:clamp(8px,1.5dvh,14px);padding:calc(env(safe-area-inset-top) + 32px) 12px calc(env(safe-area-inset-bottom) + 8px);justify-content:center;align-items:center}
-  .screen-bezel{grid-column:1;grid-row:1;justify-self:center;align-self:center;height:min(64dvh,calc((100vw - 34px)*1.7778));width:auto;max-width:calc(100vw - 34px);aspect-ratio:9/16}
-  .controls{grid-column:1;grid-row:2;justify-self:center;align-self:center;flex-direction:row;width:min(100%,430px);height:clamp(100px,17dvh,138px);max-width:430px;justify-content:space-between;gap:clamp(8px,2vw,18px)}
-  .dpad{width:clamp(132px,40vw,176px);height:clamp(96px,16dvh,132px)}
-  .dpad .hw-btn{width:clamp(40px,11vw,56px);height:clamp(40px,11vw,56px)}
-  .action-cluster{flex-direction:column;gap:clamp(6px,1.2dvh,10px)}
-  .hw-btn.action-main{width:clamp(66px,19vw,88px);height:clamp(66px,19vw,88px)}
-  .hw-btn.utility{width:clamp(38px,10vw,50px);height:clamp(38px,10vw,50px)}
-  .utility-row{gap:clamp(6px,1.5vw,12px)}
-}
-@media (min-width:761px) and (orientation:landscape) and (min-aspect-ratio:4/3){
-  .console{width:100vw;max-width:none;grid-template-columns:minmax(0,1fr) minmax(220px,320px);grid-template-rows:minmax(0,1fr);column-gap:clamp(20px,4vw,64px);padding:calc(env(safe-area-inset-top) + 42px) clamp(24px,4vw,64px) calc(env(safe-area-inset-bottom) + 14px)}
-  .screen-bezel{grid-column:1;grid-row:1;height:min(78dvh,calc((100dvh - 70px)*1.7778));max-height:78dvh;justify-self:end;align-self:center}
-  .controls{grid-column:2;grid-row:1;width:100%;max-width:320px;height:min(74dvh,460px);flex-direction:column;justify-content:center;gap:clamp(18px,4vh,36px)}
-  .dpad{width:clamp(150px,18vw,205px);height:clamp(150px,34vh,215px)}
-  .dpad .hw-btn{width:clamp(46px,5vw,64px);height:clamp(46px,5vw,64px)}
-  .action-cluster{flex-direction:row;flex-wrap:wrap;gap:14px}
-  .hw-btn.action-main{width:clamp(78px,10vh,108px);height:clamp(78px,10vh,108px)}
-  .hw-btn.utility{width:clamp(44px,6vh,58px);height:clamp(44px,6vh,58px)}
-}
-
-/* Hard override for portrait-shaped viewports, including mobile browsers with unreliable orientation media queries */
-@media (max-aspect-ratio:1/1){
-  html body main.console{width:100vw!important;max-width:680px!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr) auto!important;column-gap:0!important;row-gap:clamp(8px,1.5dvh,14px)!important;padding:calc(env(safe-area-inset-top) + 32px) 12px calc(env(safe-area-inset-bottom) + 8px)!important;justify-content:center!important;align-items:center!important}
-  html body main.console>.screen-bezel{grid-column:1!important;grid-row:1!important;justify-self:center!important;align-self:center!important;height:min(64dvh,calc((100vw - 34px)*1.7778))!important;width:auto!important;max-width:calc(100vw - 34px)!important;aspect-ratio:9/16!important}
-  html body main.console>.controls{grid-column:1!important;grid-row:2!important;position:relative!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;justify-self:center!important;align-self:center!important;flex-direction:row!important;width:min(100%,430px)!important;max-width:430px!important;height:clamp(100px,17dvh,138px)!important;transform:none!important;justify-content:space-between!important;gap:clamp(8px,2vw,18px)!important;padding:0 2px!important}
-  html body main.console>.controls .dpad{width:clamp(132px,40vw,176px)!important;height:clamp(96px,16dvh,132px)!important;flex:0 1 auto!important}
-  html body main.console>.controls .dpad .hw-btn{width:clamp(40px,11vw,56px)!important;height:clamp(40px,11vw,56px)!important}
-  html body main.console>.controls .action-cluster{flex-direction:column!important;gap:clamp(6px,1.2dvh,10px)!important}
-  html body main.console>.controls .hw-btn.action-main{width:clamp(66px,19vw,88px)!important;height:clamp(66px,19vw,88px)!important}
-  html body main.console>.controls .hw-btn.utility{width:clamp(38px,10vw,50px)!important;height:clamp(38px,10vw,50px)!important}
-}
-
-/* Stable phone layout: controls are ALWAYS below the game screen. No side-by-side layout. */
-html body main.console{
-  width:100vw!important;
-  max-width:680px!important;
-  grid-template-columns:minmax(0,1fr)!important;
-  grid-template-rows:minmax(0,1fr) auto!important;
-  column-gap:0!important;
-  row-gap:clamp(8px,1.5dvh,14px)!important;
-  padding:calc(env(safe-area-inset-top) + 32px) 12px calc(env(safe-area-inset-bottom) + 8px)!important;
-  justify-content:center!important;
-  align-items:center!important;
-}
-html body main.console>.screen-bezel{
-  grid-column:1!important;grid-row:1!important;
-  justify-self:center!important;align-self:center!important;
-  height:min(64dvh,calc((100vw - 34px)*1.7778))!important;
-  width:auto!important;max-width:calc(100vw - 34px)!important;
-  aspect-ratio:9/16!important;
-}
-html body main.console>.controls{
-  grid-column:1!important;grid-row:2!important;
-  position:relative!important;inset:auto!important;
-  justify-self:center!important;align-self:center!important;
-  display:flex!important;flex-direction:row!important;
-  width:min(100%,430px)!important;max-width:430px!important;
-  height:clamp(100px,17dvh,138px)!important;
-  transform:none!important;float:none!important;
-  justify-content:space-between!important;align-items:center!important;
-  gap:clamp(8px,2vw,18px)!important;padding:0 2px!important;
-}
-html body main.console>.controls .dpad{
-  width:clamp(132px,40vw,176px)!important;height:clamp(96px,16dvh,132px)!important;flex:0 1 auto!important;
-}
-html body main.console>.controls .dpad .hw-btn{
-  width:clamp(40px,11vw,56px)!important;height:clamp(40px,11vw,56px)!important;
-}
-html body main.console>.controls .action-cluster{
-  display:flex!important;flex-direction:column!important;align-items:center!important;gap:clamp(6px,1.2dvh,10px)!important;
-}
-html body main.console>.controls .hw-btn.action-main{
-  width:clamp(66px,19vw,88px)!important;height:clamp(66px,19vw,88px)!important;
-}
-html body main.console>.controls .hw-btn.utility{
-  width:clamp(38px,10vw,50px)!important;height:clamp(38px,10vw,50px)!important;
-}
+/* Single responsive layout: game screen first, controls directly below. */
+html,body{min-height:100%;min-height:100dvh}
+body{align-items:stretch;justify-content:center}
+.console{width:100vw;max-width:680px;height:100dvh;min-height:0;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;gap:clamp(8px,1.5dvh,14px);padding:calc(env(safe-area-inset-top) + 32px) 12px calc(env(safe-area-inset-bottom) + 8px);align-items:center;justify-items:center;overflow:hidden}
+.screen-bezel{grid-column:1;grid-row:1;justify-self:center;align-self:center;height:min(64dvh,calc((100vw - 34px)*1.7778));width:auto;max-width:calc(100vw - 34px);aspect-ratio:9/16;min-height:0;min-width:0}
+.controls{grid-column:1;grid-row:2;position:relative;inset:auto;width:min(100%,430px);max-width:430px;height:clamp(100px,17dvh,138px);display:flex;flex-direction:row;justify-content:space-between;align-items:center;gap:clamp(8px,2vw,18px);padding:0 2px;transform:none;min-width:0}
+.dpad{width:clamp(132px,40vw,176px);height:clamp(96px,16dvh,132px);flex:0 1 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:minmax(0,1fr);gap:clamp(4px,1vw,8px);align-items:center;justify-items:center}
+.dpad .left{grid-area:1/1}.dpad .dpad-core{grid-area:1/2;display:grid;place-items:center;width:100%;height:100%;font-size:13px;color:#707784}.dpad .right{grid-area:1/3}
+.dpad .hw-btn{width:clamp(40px,11vw,56px);height:clamp(40px,11vw,56px)}
+.action-cluster{flex-direction:column;gap:clamp(6px,1.2dvh,10px)}
+.hw-btn.action-main{width:clamp(66px,19vw,88px);height:clamp(66px,19vw,88px)}
+.hw-btn.utility{width:clamp(38px,10vw,50px);height:clamp(38px,10vw,50px)}
+.utility-row{gap:clamp(6px,1.5vw,12px)}
+.skin-picker{max-height:calc(100dvh - env(safe-area-inset-top) - 54px);overflow:auto}
+@media (min-width:600px){.console{padding-inline:24px}.screen-bezel{height:min(64dvh,calc((min(100vw,680px) - 58px)*1.7778));max-width:calc(min(100vw,680px) - 58px)}.controls{width:min(100%,440px)}}
+@media (max-height:650px){.console{gap:5px;padding-top:calc(env(safe-area-inset-top) + 28px);padding-bottom:calc(env(safe-area-inset-bottom) + 4px)}.screen-bezel{height:min(58dvh,calc((100vw - 34px)*1.7778))}.controls{height:clamp(82px,18dvh,106px)}.dpad{height:100%;width:clamp(124px,37vw,152px)}.dpad .hw-btn{width:clamp(36px,10vw,46px);height:clamp(36px,10vw,46px)}.hw-btn.action-main{width:clamp(58px,17vw,72px);height:clamp(58px,17vw,72px)}.hw-btn.utility{width:clamp(36px,10vw,44px);height:clamp(36px,10vw,44px)}.utility-row,.action-cluster{gap:6px}}
+@media (prefers-reduced-motion:reduce){.console[data-skin="rainbow"],.console[data-skin="animated"],.skin-swatch.animated,.power-led{animation:none!important}.hw-btn,.skin-option,.skin-open{transition:none!important}}
 </style></head>
-<body><main class="console" data-skin="dark"><div class="skin-tools"><div class="power-status"><span class="power-led" aria-hidden="true"></span><span>POWER ON</span></div><button class="skin-open" id="skinOpen" type="button" aria-expanded="false" aria-controls="skinPicker">SKINS ▾</button></div><div class="skin-picker" id="skinPicker" role="group" aria-label="Console skins"><div class="skin-picker-title"><span>CONSOLE SKIN</span><span>8 MODES</span></div><button class="skin-option" type="button" data-skin-choice="checker" aria-pressed="false"><span class="skin-swatch checker"></span>CHECKERBOARD</button><button class="skin-option" type="button" data-skin-choice="hazard" aria-pressed="false"><span class="skin-swatch hazard"></span>BLACK / YELLOW</button><button class="skin-option" type="button" data-skin-choice="rainbow" aria-pressed="false"><span class="skin-swatch rainbow"></span>RAINBOW</button><button class="skin-option" type="button" data-skin-choice="animated" aria-pressed="false"><span class="skin-swatch animated"></span>NEON FLOW</button><button class="skin-option" type="button" data-skin-choice="light" aria-pressed="false"><span class="skin-swatch light"></span>LIGHT</button><button class="skin-option" type="button" data-skin-choice="dark" aria-pressed="true"><span class="skin-swatch dark"></span>DARK</button><button class="skin-option" type="button" data-skin-choice="green" aria-pressed="false"><span class="skin-swatch green"></span>FOREST</button><button class="skin-option" type="button" data-skin-choice="steel" aria-pressed="false"><span class="skin-swatch steel"></span>STEEL</button></div><div class="screen-bezel"><div class="screen-bezel"><canvas id="c"></canvas></div><section class="controls" aria-label="Console controls"><div class="dpad" aria-label="Movement"><button class="hw-btn up" data-control="up" aria-label="Move up">▲</button><button class="hw-btn left" data-control="left" aria-label="Move left">◀</button><span class="dpad-core" aria-hidden="true">✦</span><button class="hw-btn right" data-control="right" aria-label="Move right">▶</button><button class="hw-btn down" data-control="down" aria-label="Move down">▼</button></div><div class="action-cluster"><button class="hw-btn action-main" data-control="jump" aria-label="Jump or interact">ACTION</button><div class="utility-row"><button class="hw-btn utility" data-control="lantern" aria-label="Toggle lamp">☼<small>LAMP</small></button><button class="hw-btn utility" data-control="pause" aria-label="Pause">Ⅱ<small>PAUSE</small></button></div></div></section></main><script>
+<body><main class="console" data-skin="dark"><div class="skin-tools"><div class="power-status"><span class="power-led" aria-hidden="true"></span><span>POWER ON</span></div><button class="skin-open" id="skinOpen" type="button" aria-expanded="false" aria-controls="skinPicker">SKINS ▾</button></div><div class="skin-picker" id="skinPicker" role="group" aria-label="Console skins"><div class="skin-picker-title"><span>CONSOLE SKIN</span><span>8 MODES</span></div><button class="skin-option" type="button" data-skin-choice="checker" aria-pressed="false"><span class="skin-swatch checker"></span>CHECKERBOARD</button><button class="skin-option" type="button" data-skin-choice="hazard" aria-pressed="false"><span class="skin-swatch hazard"></span>BLACK / YELLOW</button><button class="skin-option" type="button" data-skin-choice="rainbow" aria-pressed="false"><span class="skin-swatch rainbow"></span>RAINBOW</button><button class="skin-option" type="button" data-skin-choice="animated" aria-pressed="false"><span class="skin-swatch animated"></span>NEON FLOW</button><button class="skin-option" type="button" data-skin-choice="light" aria-pressed="false"><span class="skin-swatch light"></span>LIGHT</button><button class="skin-option" type="button" data-skin-choice="dark" aria-pressed="true"><span class="skin-swatch dark"></span>DARK</button><button class="skin-option" type="button" data-skin-choice="green" aria-pressed="false"><span class="skin-swatch green"></span>FOREST</button><button class="skin-option" type="button" data-skin-choice="steel" aria-pressed="false"><span class="skin-swatch steel"></span>STEEL</button></div><div class="screen-bezel"><canvas id="c"></canvas></div><section class="controls" aria-label="Console controls"><div class="dpad" aria-label="Movement"><button class="hw-btn left" data-control="left" aria-label="Move left">◀</button><span class="dpad-core" aria-hidden="true">✦</span><button class="hw-btn right" data-control="right" aria-label="Move right">▶</button></div><div class="action-cluster"><button class="hw-btn action-main" data-control="jump" aria-label="Jump or interact">ACTION</button><div class="utility-row"><button class="hw-btn utility" data-control="lantern" aria-label="Toggle lamp">☼<small>LAMP</small></button><button class="hw-btn utility" data-control="pause" aria-label="Pause">Ⅱ<small>PAUSE</small></button></div></div></section></main><script>
 (function(){
 'use strict';
 const CL='#FFF8E8',CD='#000000',T=16;
@@ -251,7 +161,6 @@ function dDrk(){const d=level.def;if(!d.d)return;const fO=(P.facing>0)?7:-7;cons
 function dWrld(){const cx0=Math.max(0,Math.floor(cam.x/T)),cx1=Math.min(level.w-1,Math.floor((cam.x+VW)/T)),cy0=Math.max(0,Math.floor(cam.y/T)),cy1=Math.min(level.h-1,Math.floor((cam.y+VH)/T)),dk=level.def.d;let lX=0,lY=0,lR=0;if(dk>0){const fO=(P.facing>0)?7:-7;lX=P.x+P.w/2+fO;lY=P.y+P.h/2;lR=P.lanternOn?(92-dk*30)+22:50}
 for(let y=cy0;y<=cy1;y++)for(let x=cx0;x<=cx1;x++){const t=level.tiles[y*level.w+x];if(t===0)continue;if(dk>.5){const tcx=x*T+8,tcy=y*T+8,ddx=tcx-lX,ddy=tcy-lY;if(ddx*ddx+ddy*ddy>lR*lR)continue}const px=Math.round(x*T-cam.x),py=Math.round(y*T-cam.y);if(t===1)dSol(px,py,x,y);else if(t===2)dHid(px,py);else if(t===3)dSpk(px,py);else if(t===4)dCrm(px,py,y*level.w+x);else if(t===5)dDor(px,py)}
 for(const k of level.keys)if(!k.got)dKey(k);for(const c of level.crystals)if(!c.got)dCry(c);dObj();if(level.goal)dGol();dPl();dDrk()}
-function gBtn(){return[]}
 function dBtn(b,a){const x=b.x,y=b.y,w=b.w,h=b.h;if(b.id==='pause'){cx.fillStyle=a?CL:PT.W50;cx.fillRect(x,y,w,h);cx.fillStyle=a?CD:CL;cx.fillRect(x+5,y+4,3,h-8);cx.fillRect(x+12,y+4,3,h-8);return}cx.fillStyle=a?CL:PT.W50;cx.fillRect(x,y,w,h);cx.fillStyle=a?CD:CL;if(b.id==='left'){for(let i=0;i<7;i++){cx.fillRect(x+12+i,y+10+i,2,2);cx.fillRect(x+12+i,y+h-12-i,2,2)}cx.fillRect(x+12,y+16,2,h-32)}else if(b.id==='right'){for(let j=0;j<7;j++){cx.fillRect(x+w-14-j,y+10+j,2,2);cx.fillRect(x+w-14-j,y+h-12-j,2,2)}cx.fillRect(x+w-14,y+16,2,h-32)}else if(b.id==='jump'){dtc('JUMP',x+w/2,y+h/2-5,1,a?CD:CL);dtc('^',x+w/2-4,y+6,1,a?CD:CL)}else if(b.id==='lantern'){const lx=x+w/2,ly=y+h/2;cx.beginPath();cx.moveTo(lx,ly-9);cx.lineTo(lx+6,ly);cx.lineTo(lx,ly+9);cx.lineTo(lx-6,ly);cx.closePath();cx.fill();if(a){cx.fillStyle=CL;cx.fillRect(lx-2,ly-2,4,4)}}}
 function dHUD(){const B=gBtn();for(const b of B){let a=false;if(b.id==='left')a=I.left;else if(b.id==='right')a=I.right;else if(b.id==='jump')a=I.jump;else if(b.id==='lantern')a=P.lanternOn;dBtn(b,a)}dt(LVS[levelIndex].n,6,6,1,CL);if(level.keys.length>0){const kx=6,ky=16;cx.fillStyle=P.hasKey?CL:PT.W50;cx.fillRect(kx,ky,3,3);cx.fillRect(kx+1,ky+3,1,4);cx.fillRect(kx+1,ky+5,3,1)}if(levelIndex===LVS.length-1){const tt=level.crystals.length,gt=P.crystals,bx=6,by=26;for(let c=0;c<tt;c++){cx.fillStyle=(c<gt)?CL:PT.W50;cx.beginPath();cx.moveTo(bx+c*8+3,by);cx.lineTo(bx+c*8+6,by+4);cx.lineTo(bx+c*8+3,by+8);cx.lineTo(bx+c*8,by+4);cx.closePath();cx.fill()}}}
 function dMenu(){cx.fillStyle=CD;cx.fillRect(0,0,VW,VH);cx.fillStyle=PT.W25;for(let i=0;i<9;i++){const bx=(i*41+11)%VW,bh=30+((i*29)%60);cx.fillRect(bx,VH-bh,9,bh)}cx.fillStyle=PT.W50;const sx=VW/2;cx.beginPath();cx.moveTo(sx-26,VH);cx.lineTo(sx,VH-130);cx.lineTo(sx+26,VH);cx.closePath();cx.fill();cx.fillStyle=CL;cx.beginPath();cx.moveTo(sx,VH-142);cx.lineTo(sx+5,VH-130);cx.lineTo(sx,VH-118);cx.lineTo(sx-5,VH-130);cx.closePath();cx.fill();const bob=Math.sin(stateT*2)*2;dtc('SHADOW',VW/2,26+bob,3,CL);dtc('SPIRE',VW/2,46+bob,3,CL);dtc('A 1-BIT JOURNEY TO THE STARS',VW/2,70,1,CL);if(Math.floor(stateT*1.6)%2===0)dtc('TAP TO START',VW/2,VH-62,2,CL);if(save.unlocked>1)dtc('PROGRESS: '+save.unlocked+'/10',VW/2,VH-34,1,CL)}
@@ -265,12 +174,12 @@ function loop(ts){if(!lastT)lastT=ts;let dt=(ts-lastT)/1000;lastT=ts;if(dt>.05)d
 const pts=new Map();
 function tV(clientX,clientY){const r=cv.getBoundingClientRect();return{x:(clientX-r.left)/r.width*VW,y:(clientY-r.top)/r.height*VH}}
 function hB(vx,vy){for(const b of gBtn())if(vx>=b.x&&vx<=b.x+b.w&&vy>=b.y&&vy<=b.y+b.h)return b.id;return null}
-function prB(id){switch(id){case 'left':I.left=true;break;case 'right':I.right=true;break;case 'up':case 'down':break;case 'jump':if(!I.jump)I.jumpPressed=true;I.jump=true;break;case 'lantern':I.lanternPressed=true;break;case 'pause':SFX.ui();state=ST.PAUSE;stateT=0;I.left=I.right=I.jump=false;I.jumpPressed=I.lanternPressed=false;pts.clear();break}}
-function rlB(id){switch(id){case 'left':I.left=false;break;case 'right':I.right=false;break;case 'up':case 'down':break;case 'jump':I.jump=false;break}}
+function prB(id){switch(id){case 'left':I.left=true;break;case 'right':I.right=true;break;case 'jump':if(!I.jump)I.jumpPressed=true;I.jump=true;break;case 'lantern':I.lanternPressed=true;break;case 'pause':SFX.ui();state=ST.PAUSE;stateT=0;I.left=I.right=I.jump=false;I.jumpPressed=I.lanternPressed=false;pts.clear();break}}
+function rlB(id){switch(id){case 'left':I.left=false;break;case 'right':I.right=false;break;case 'jump':I.jump=false;break}}
 function hMenu(vx,vy){if(state===ST.PAUSE){SFX.ui();state=ST.PLAY;stateT=0;return}if(state===ST.MENU){SFX.ui();if(save.unlocked>1&&vx>VW/2-60&&vx<VW/2+60&&vy>VH-46&&vy<VH-26){state=ST.LEVELS;stateT=0}else if(save.unlocked>1){state=ST.LEVELS;stateT=0}else stl(0);return}if(state===ST.LEVELS){if(vx<34&&vy<24){SFX.ui();state=ST.MENU;stateT=0;return}const cols=2,tw2=34,th=18,gap=4,tW=cols*tw2+(cols-1)*gap,sX=Math.round((VW-tW)/2),sY=34;for(let i=0;i<LVS.length;i++){const col=i%cols,row=Math.floor(i/cols),x=sX+col*(tw2+gap),y=sY+row*(th+gap);if(vx>=x&&vx<=x+tw2&&vy>=y&&vy<=y+th){if(i<save.unlocked){SFX.ui();stl(i)}return}}return}if(state===ST.DEAD){SFX.ui();stl(levelIndex);return}if(state===ST.WIN){SFX.ui();if(levelIndex+1<LVS.length)stl(levelIndex+1);else{state=ST.ENDING;stateT=0}return}if(state===ST.ENDING){SFX.ui();state=ST.MENU;stateT=0}}
 function onDown(e){e.preventDefault();ia();const v=tV(e.clientX,e.clientY);if(state===ST.MENU||state===ST.LEVELS||state===ST.DEAD||state===ST.WIN||state===ST.ENDING||state===ST.PAUSE){hMenu(v.x,v.y);return}if(state===ST.PLAY){const id=hB(v.x,v.y);if(id){pts.set(e.pointerId,id);if(cv.setPointerCapture){try{cv.setPointerCapture(e.pointerId)}catch(_){}}prB(id)}}}
 function onUp(e){e.preventDefault();const id=pts.get(e.pointerId);if(id){rlB(id);pts.delete(e.pointerId)}}
-function onMove(e){e.preventDefault();if(state!==ST.PLAY)return;const id=pts.get(e.pointerId);if(!id||id==='jump'||id==='lantern'||id==='pause')return;const v=tV(e.clientX,e.clientY),nid=hB(v.x,v.y);if(nid!==id&&(nid==='left'||nid==='right'||nid==='jump'||nid==='lantern')){rlB(id);pts.set(e.pointerId,nid);prB(nid)}}
+function onMove(e){e.preventDefault();if(state!==ST.PLAY)return;const id=pts.get(e.pointerId);if(!id||id==='jump'||id==='lantern'||id==='pause')return;const v=tV(e.clientX,e.clientY),nid=hB(v.x,v.y);if(nid!==id&&(nid==='left'||nid==='right')){rlB(id);pts.set(e.pointerId,nid);prB(nid)}}
 function onCancel(e){const id=pts.get(e.pointerId);if(id){rlB(id);pts.delete(e.pointerId)}}
 function onKD(e){ia();const k=e.key.toLowerCase();if(state===ST.PAUSE){if(k==='escape'||k===' '||k==='enter'){e.preventDefault();state=ST.PLAY;stateT=0}return}if(state===ST.MENU||state===ST.LEVELS||state===ST.DEAD||state===ST.WIN||state===ST.ENDING){if(k===' '||k==='enter'){e.preventDefault();if(state===ST.LEVELS)stl(0);else hMenu(VW/2,VH/2)}return}if(k==='arrowleft'||k==='a'){I.left=true;e.preventDefault()}else if(k==='arrowright'||k==='d'){I.right=true;e.preventDefault()}else if(k==='arrowup'||k==='w'||k===' '){if(!I.jump)I.jumpPressed=true;I.jump=true;e.preventDefault()}else if(k==='f'){I.lanternPressed=true;e.preventDefault()}else if(k==='escape'){state=ST.PAUSE;stateT=0;I.left=I.right=I.jump=false;I.jumpPressed=I.lanternPressed=false;pts.clear()}}
 function onKU(e){const k=e.key.toLowerCase();if(k==='arrowleft'||k==='a')I.left=false;else if(k==='arrowright'||k==='d')I.right=false;else if(k==='arrowup'||k==='w'||k===' ')I.jump=false}
@@ -291,6 +200,8 @@ cv.addEventListener('contextmenu',e=>e.preventDefault());
 window.addEventListener('keydown',onKD,{passive:false});
 window.addEventListener('keyup',onKU,{passive:false});
 window.addEventListener('resize',()=>{rs();iStars()});
+window.addEventListener('blur',()=>{I.left=I.right=I.jump=false;I.jumpPressed=I.lanternPressed=false;pts.clear();document.querySelectorAll('.hw-btn.pressed').forEach(el=>el.classList.remove('pressed'))});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){I.left=I.right=I.jump=false;I.jumpPressed=I.lanternPressed=false;pts.clear();document.querySelectorAll('.hw-btn.pressed').forEach(el=>el.classList.remove('pressed'))}});
 window.addEventListener('orientationchange',()=>setTimeout(()=>{rs();iStars()},200));
 document.addEventListener('touchstart',e=>{if(e.target===cv)e.preventDefault()},{passive:false});
 requestAnimationFrame(loop);
