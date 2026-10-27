@@ -1,25 +1,27 @@
 <!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#000000"><title>SHADOW SPIRE</title>
 <style>
-:root{--shell:#17191f;--edge:#4a4f59;--cream:#fff8e8;--black:#050608;--accent:#a7f3e8}
-*{box-sizing:border-box}html,body{margin:0;padding:0;width:100%;height:100%;height:100dvh;background:#08090c;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+:root{--shell:#17191f;--edge:#4a4f59;--cream:#fff8e8;--black:#050608}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:#08090c;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
 body{display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#242831 0%,#0a0b0e 72%);font-family:monospace;color:var(--cream)}
-.console{height:100dvh;width:100vw;max-width:980px;display:grid;grid-template-columns:minmax(66px,.72fr) auto minmax(66px,.72fr);align-items:center;justify-content:center;gap:clamp(5px,1.6vw,16px);padding:env(safe-area-inset-top) clamp(7px,2vw,16px) env(safe-area-inset-bottom);background:linear-gradient(135deg,#20232b,#111319 55%,#1b1e25);border-inline:1px solid #333741;position:relative}
-.console:before{content:"SHADOW SPIRE • 1-BIT SYSTEM";position:absolute;top:calc(env(safe-area-inset-top) + 12px);left:0;right:0;text-align:center;font-size:clamp(8px,2.2vw,11px);letter-spacing:.18em;color:#8c929e}
-.screen-bezel{height:70dvh;aspect-ratio:9/16;max-height:760px;position:relative;padding:clamp(3px,.8vw,6px);border-radius:clamp(8px,2vw,15px);background:linear-gradient(145deg,#4a4e58,#16181e 28%,#343842 70%,#0b0c10);box-shadow:0 0 0 1px #050609,0 0 0 3px #555b65,0 10px 28px #000b;display:flex;align-items:center;justify-content:center}
+.console{height:100dvh;width:100vw;max-width:680px;display:grid;grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto;align-items:center;justify-items:center;gap:clamp(8px,1.5dvh,14px);padding:calc(env(safe-area-inset-top) + 32px) 12px calc(env(safe-area-inset-bottom) + 8px);background:linear-gradient(135deg,#20232b,#111319 55%,#1b1e25);border-inline:1px solid #333741;position:relative}
+.console:before{content:"SHADOW SPIRE • 1-BIT SYSTEM";position:absolute;top:calc(env(safe-area-inset-top) + 10px);left:0;right:0;text-align:center;font-size:clamp(8px,2.2vw,11px);letter-spacing:.18em;color:#8c929e}
+.screen-bezel{height:min(64dvh,calc((100vw - 34px)*1.7778));aspect-ratio:9/16;width:auto;max-width:calc(100vw - 34px);position:relative;padding:clamp(3px,.8vw,6px);border-radius:clamp(8px,2vw,15px);background:linear-gradient(145deg,#4a4e58,#16181e 28%,#343842 70%,#0b0c10);box-shadow:0 0 0 1px #050609,0 0 0 3px #555b65,0 10px 28px #000b;display:flex;align-items:center;justify-content:center;min-height:0;justify-self:center}
 .screen-bezel:after{content:"";position:absolute;inset:2px;border:1px solid #73798666;border-radius:inherit;pointer-events:none}
 canvas{display:block;width:100%;height:100%;image-rendering:pixelated;image-rendering:-moz-crisp-edges;image-rendering:crisp-edges;-ms-interpolation-mode:nearest-neighbor;touch-action:none;background:#000;border-radius:3px}
-.controls{height:70dvh;width:clamp(66px,15vw,124px);max-width:124px;justify-self:center;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:clamp(10px,2.4vh,22px);min-width:0}
-.control-label{font-size:clamp(7px,1.8vw,10px);letter-spacing:.12em;color:#8e95a2;text-align:center;margin-bottom:2px}
-.dpad{display:grid;grid-template-columns:1fr 1fr;gap:clamp(4px,1vw,8px);width:100%}
-.hw-btn{appearance:none;border:1px solid #555b66;color:#f7f0df;background:linear-gradient(145deg,#343842,#17191f);box-shadow:0 4px 0 #08090c,0 5px 12px #0008,inset 0 1px #ffffff19;border-radius:12px;min-width:0;width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;font:700 clamp(17px,5vw,26px)/1 monospace;touch-action:none;user-select:none;padding:0}
+.controls{width:min(100%,430px);height:clamp(78px,15dvh,126px);display:flex;flex-direction:row;justify-content:space-between;align-items:center;gap:clamp(8px,3vw,18px);min-width:0}
+.control-label{display:none}
+.dpad{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:clamp(8px,2vw,14px);width:auto}
+.hw-btn{appearance:none;border:1px solid #555b66;color:#f7f0df;background:linear-gradient(145deg,#343842,#17191f);box-shadow:0 4px 0 #08090c,0 5px 12px #0008,inset 0 1px #ffffff19;border-radius:12px;min-width:0;width:clamp(48px,13vw,68px);height:clamp(48px,13vw,68px);aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;font:700 clamp(17px,5vw,26px)/1 monospace;touch-action:none;user-select:none;padding:0;flex:0 0 auto}
 .hw-btn:active,.hw-btn.pressed{transform:translateY(3px);background:linear-gradient(145deg,#fdf4df,#c6c0b4);color:#11141a;box-shadow:0 1px 0 #08090c,inset 0 1px #fff}
-.hw-btn.action{aspect-ratio:1.35/1;font-size:clamp(9px,2.3vw,12px);letter-spacing:.05em;border-radius:10px;width:100%}
-.hw-btn.round{border-radius:50%;aspect-ratio:1/1}
-.side-mark{width:42%;height:4px;border-radius:5px;background:#515762;margin:2px auto 0;box-shadow:0 1px #000}
-@media(max-height:520px){.console{grid-template-columns:minmax(54px,.72fr) auto minmax(54px,.72fr);gap:5px;padding-inline:5px}.screen-bezel,.controls{height:66dvh}.controls{width:clamp(54px,14vw,94px);gap:8px}.hw-btn{border-radius:8px}.control-label{display:none}}
-@media(min-width:600px){.console{padding-inline:24px}.screen-bezel{height:70dvh}.controls{max-width:110px;width:100%}}
+.hw-btn.action{width:clamp(54px,15vw,78px);height:clamp(48px,12vw,64px);aspect-ratio:auto;font-size:clamp(9px,2.3vw,12px);letter-spacing:.03em;border-radius:10px}
+.hw-btn.round{border-radius:50%;width:clamp(48px,13vw,68px);height:clamp(48px,13vw,68px)}
+.side-mark{display:none}
+.controls[aria-label="Movement controls"]{justify-content:flex-start}
+.controls[aria-label="Action controls"]{justify-content:flex-end;gap:clamp(6px,1.7vw,12px)}
+@media(max-height:650px){.console{gap:5px;padding-top:calc(env(safe-area-inset-top) + 28px);padding-bottom:calc(env(safe-area-inset-bottom) + 4px)}.screen-bezel{height:min(59dvh,calc((100vw - 34px)*1.7778))}.controls{height:clamp(62px,14dvh,88px)}.hw-btn{width:clamp(42px,11vw,58px);height:clamp(42px,11vw,58px);border-radius:9px}.hw-btn.round{width:clamp(42px,11vw,58px);height:clamp(42px,11vw,58px)}.hw-btn.action{width:clamp(48px,13vw,66px);height:clamp(42px,10vw,54px)}}
+@media(min-width:600px){.console{padding-inline:24px}.screen-bezel{height:min(64dvh,calc((100vw - 80px)*1.7778))}.controls{width:min(100%,440px)}}
 </style></head>
-<body><main class="console"><section class="controls" aria-label="Movement controls"><div class="control-label">MOVE</div><div class="dpad"><button class="hw-btn" data-control="left" aria-label="Move left">◀</button><button class="hw-btn" data-control="right" aria-label="Move right">▶</button></div><div class="side-mark"></div></section><div class="screen-bezel"><canvas id="c"></canvas></div><section class="controls" aria-label="Action controls"><div class="control-label">ACTION</div><button class="hw-btn round" data-control="jump" aria-label="Jump">↑</button><button class="hw-btn action" data-control="lantern">LAMP</button><button class="hw-btn action" data-control="pause">Ⅱ PAUSE</button><div class="side-mark"></div></section></main><script>
+<body><main class="console"><div class="screen-bezel"><canvas id="c"></canvas></div><section class="controls" aria-label="Console controls"><div class="dpad"><button class="hw-btn" data-control="left" aria-label="Move left">◀</button><button class="hw-btn" data-control="right" aria-label="Move right">▶</button></div><button class="hw-btn round" data-control="jump" aria-label="Jump">↑</button><button class="hw-btn action" data-control="lantern">LAMP</button><button class="hw-btn action" data-control="pause">Ⅱ</button></section></main><script>
 (function(){
 'use strict';
 const CL='#FFF8E8',CD='#000000',T=16;
