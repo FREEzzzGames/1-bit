@@ -92,6 +92,29 @@ canvas{display:block;width:100%;height:100%;image-rendering:pixelated;image-rend
   .screen-bezel{grid-column:1;grid-row:1;height:min(72dvh,calc((100vw - 34px)*1.7778));width:auto;max-width:calc(100vw - 34px)}
   .controls{grid-column:1;grid-row:2;flex-direction:row;height:clamp(106px,18dvh,142px);width:min(100%,430px);max-width:430px}
 }
+
+/* Final responsive guard: never put the controller beside the screen on narrow viewports */
+@media (max-width:760px){
+  .console{width:100vw;max-width:680px;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;column-gap:0;row-gap:clamp(8px,1.5dvh,14px);padding:calc(env(safe-area-inset-top) + 32px) 12px calc(env(safe-area-inset-bottom) + 8px);justify-content:center;align-items:center}
+  .screen-bezel{grid-column:1;grid-row:1;justify-self:center;align-self:center;height:min(64dvh,calc((100vw - 34px)*1.7778));width:auto;max-width:calc(100vw - 34px);aspect-ratio:9/16}
+  .controls{grid-column:1;grid-row:2;justify-self:center;align-self:center;flex-direction:row;width:min(100%,430px);height:clamp(100px,17dvh,138px);max-width:430px;justify-content:space-between;gap:clamp(8px,2vw,18px)}
+  .dpad{width:clamp(132px,40vw,176px);height:clamp(96px,16dvh,132px)}
+  .dpad .hw-btn{width:clamp(40px,11vw,56px);height:clamp(40px,11vw,56px)}
+  .action-cluster{flex-direction:column;gap:clamp(6px,1.2dvh,10px)}
+  .hw-btn.action-main{width:clamp(66px,19vw,88px);height:clamp(66px,19vw,88px)}
+  .hw-btn.utility{width:clamp(38px,10vw,50px);height:clamp(38px,10vw,50px)}
+  .utility-row{gap:clamp(6px,1.5vw,12px)}
+}
+@media (min-width:761px) and (orientation:landscape) and (min-aspect-ratio:4/3){
+  .console{width:100vw;max-width:none;grid-template-columns:minmax(0,1fr) minmax(220px,320px);grid-template-rows:minmax(0,1fr);column-gap:clamp(20px,4vw,64px);padding:calc(env(safe-area-inset-top) + 42px) clamp(24px,4vw,64px) calc(env(safe-area-inset-bottom) + 14px)}
+  .screen-bezel{grid-column:1;grid-row:1;height:min(78dvh,calc((100dvh - 70px)*1.7778));max-height:78dvh;justify-self:end;align-self:center}
+  .controls{grid-column:2;grid-row:1;width:100%;max-width:320px;height:min(74dvh,460px);flex-direction:column;justify-content:center;gap:clamp(18px,4vh,36px)}
+  .dpad{width:clamp(150px,18vw,205px);height:clamp(150px,34vh,215px)}
+  .dpad .hw-btn{width:clamp(46px,5vw,64px);height:clamp(46px,5vw,64px)}
+  .action-cluster{flex-direction:row;flex-wrap:wrap;gap:14px}
+  .hw-btn.action-main{width:clamp(78px,10vh,108px);height:clamp(78px,10vh,108px)}
+  .hw-btn.utility{width:clamp(44px,6vh,58px);height:clamp(44px,6vh,58px)}
+}
 </style></head>
 <body><main class="console" data-skin="dark"><div class="skin-tools"><div class="power-status"><span class="power-led" aria-hidden="true"></span><span>POWER ON</span></div><button class="skin-open" id="skinOpen" type="button" aria-expanded="false" aria-controls="skinPicker">SKINS ▾</button></div><div class="skin-picker" id="skinPicker" role="group" aria-label="Console skins"><div class="skin-picker-title"><span>CONSOLE SKIN</span><span>8 MODES</span></div><button class="skin-option" type="button" data-skin-choice="checker" aria-pressed="false"><span class="skin-swatch checker"></span>CHECKERBOARD</button><button class="skin-option" type="button" data-skin-choice="hazard" aria-pressed="false"><span class="skin-swatch hazard"></span>BLACK / YELLOW</button><button class="skin-option" type="button" data-skin-choice="rainbow" aria-pressed="false"><span class="skin-swatch rainbow"></span>RAINBOW</button><button class="skin-option" type="button" data-skin-choice="animated" aria-pressed="false"><span class="skin-swatch animated"></span>NEON FLOW</button><button class="skin-option" type="button" data-skin-choice="light" aria-pressed="false"><span class="skin-swatch light"></span>LIGHT</button><button class="skin-option" type="button" data-skin-choice="dark" aria-pressed="true"><span class="skin-swatch dark"></span>DARK</button><button class="skin-option" type="button" data-skin-choice="green" aria-pressed="false"><span class="skin-swatch green"></span>FOREST</button><button class="skin-option" type="button" data-skin-choice="steel" aria-pressed="false"><span class="skin-swatch steel"></span>STEEL</button></div><div class="screen-bezel"><div class="screen-bezel"><canvas id="c"></canvas></div><section class="controls" aria-label="Console controls"><div class="dpad" aria-label="Movement"><button class="hw-btn up" data-control="up" aria-label="Move up">▲</button><button class="hw-btn left" data-control="left" aria-label="Move left">◀</button><span class="dpad-core" aria-hidden="true">✦</span><button class="hw-btn right" data-control="right" aria-label="Move right">▶</button><button class="hw-btn down" data-control="down" aria-label="Move down">▼</button></div><div class="action-cluster"><button class="hw-btn action-main" data-control="jump" aria-label="Jump or interact">ACTION</button><div class="utility-row"><button class="hw-btn utility" data-control="lantern" aria-label="Toggle lamp">☼<small>LAMP</small></button><button class="hw-btn utility" data-control="pause" aria-label="Pause">Ⅱ<small>PAUSE</small></button></div></div></section></main><script>
 (function(){
