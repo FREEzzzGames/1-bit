@@ -2,8 +2,9 @@
 (()=>{'use strict';
 const SCREEN=window.CONSOLE_GAME_SCREEN;
 const W=SCREEN.width,H=SCREEN.height;
-const canvas=document.getElementById('c'),ctx=canvas.getContext('2d',{alpha:false});
-ctx.imageSmoothingEnabled=false;
+const canvas=document.getElementById('c');
+canvas.width=W;canvas.height=H;canvas.style.width='100%';canvas.style.height='100%';
+const ctx=canvas.getContext('2d',{alpha:false});ctx.imageSmoothingEnabled=false;
 const C='#FFF8E8',B='#000000',MID='#77736b';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const input={left:false,right:false,action:false};
