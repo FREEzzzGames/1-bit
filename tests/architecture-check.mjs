@@ -7,6 +7,7 @@ const css = read('../assets/console.css');
 const game = read('../assets/game.js');
 const skins = read('../assets/skins.js');
 const svg = read('../assets/console-shell.svg');
+const screenContract = read('../assets/game-screen.js');
 
 assert.equal((html.match(/<canvas\b/g) || []).length, 1, 'Expected one game canvas');
 assert.equal((html.match(/<main\b/g) || []).length, 1, 'Expected one console root');
@@ -42,7 +43,9 @@ assert.ok(skins.includes('.style-option[data-shell-skin]') && skins.includes('.s
 for (const fn of ['rs','pl','stl','up','rd','loop','onDown','onUp','onMove','onCancel','onKD','onKU','dMenu','dHUD']) {
   assert.ok(new RegExp(`function\\s+${fn}\\s*\\(`).test(game), `Missing runtime function: ${fn}`);
 }
-assert.ok(game.includes('const SCREEN_WIDTH=208,SCREEN_HEIGHT=320;'), 'Canonical game screen must stay 208x320');
+assert.ok(screenContract.includes('width: 208, height: 320'), 'Shared game screen must stay 208x320');
+assert.ok(html.includes('./assets/game-screen.js?v=1'), 'Shared game screen contract must load before games');
+assert.ok(game.includes('window.CONSOLE_GAME_SCREEN'), 'Game must use the shared screen contract');
 assert.ok(game.includes('function makeTowerRows'), 'Levels must be generated for the fixed portrait game screen');
 assert.ok(game.includes('requestAnimationFrame(loop)'), 'Game loop must be active');
 assert.ok(game.includes('localStorage'), 'Game progress persistence must remain present');
