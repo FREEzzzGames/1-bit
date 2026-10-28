@@ -13,8 +13,9 @@ assert.equal((html.match(/<canvas\b/g) || []).length, 1, 'Expected one game canv
 assert.equal((html.match(/<main\b/g) || []).length, 1, 'Expected one console root');
 assert.equal((html.match(/<style\b/gi) || []).length, 0, 'Styles must live in console.css');
 assert.equal((html.match(/<script(?![^>]*\bsrc=)[^>]*>/gi) || []).length, 0, 'Scripts must be external modules');
-assert.ok(html.includes('./assets/console.css?v=22'), 'Console stylesheet must be linked');
-assert.match(html, /\.\/assets\/game\.js\?v=\d+/, 'Game runtime must be linked');
+assert.ok(html.includes('./assets/console.css?v=23'), 'Console stylesheet must be linked');
+assert.ok(html.includes('./assets/console-menu.js?v=1'), 'Console launcher runtime must be linked');
+assert.ok(html.includes('<title>FREEzzz ARCADE — Game Select</title>'), 'Startup page must be the game selector');
 assert.ok(html.includes('./assets/skins.js?v=20'), 'Skin module must be linked');
 
 const layers = ['class="shell-art"', 'class="shell-skin-art"', 'class="deck-tint"', 'class="screen-bezel"', 'class="controls"'];
@@ -40,13 +41,20 @@ for (const id of ['graphite','cyan','amber','violet','ivory']) {
 }
 assert.ok(skins.includes('shadowSpireShellSkin') && skins.includes('shadowSpirePadSkin'), 'Skin preferences must persist independently');
 const layoutEditor = read('../assets/control-layout.js');
-assert.ok(html.includes('./assets/control-layout.js?v=3'), 'Control layout editor must load');
-assert.ok(html.includes('href="./night-runner.html"'), 'Console must link to NIGHT RUNNER');
+const shadowPage = read('../shadow-spire.html');
+assert.ok(shadowPage.includes('./assets/control-layout.js?v=3'), 'SHADOW SPIRE control layout editor must load');
+assert.ok(html.includes('./assets/console-menu.js?v=1'), 'Home page must load its launcher');
+assert.ok(html.includes('class="menu-home"'), 'Startup page must use launcher layout');
+const menu = read('../assets/console-menu.js');
+assert.ok(menu.includes("href:'./shadow-spire.html'"), 'Launcher must offer SHADOW SPIRE');
+assert.ok(menu.includes("href:'./night-runner.html'"), 'Launcher must offer NIGHT RUNNER');
+assert.ok(css.includes('.menu-home .controls{display:none}'), 'Launcher should not show gameplay controls');
 const racerPage = read('../night-runner.html');
 const racer = read('../assets/night-runner.js');
 assert.ok(racerPage.includes('<title>NIGHT RUNNER</title>'), 'Racing game page must be identifiable');
 assert.ok(racerPage.includes('./assets/night-runner.js?v=1'), 'Racing game runtime must load');
-assert.ok(racerPage.includes('href="./index.html"'), 'Racing game must link back to SHADOW SPIRE');
+assert.ok(racerPage.includes('href="./index.html"'), 'Racing game must link back to the main menu');
+assert.ok(shadowPage.includes('href="./index.html"'), 'SHADOW SPIRE must link back to the main menu');
 assert.ok(racer.includes('nightRunnerBest_v1'), 'Racing game must persist high score');
 assert.ok(racer.includes("bind('left');bind('right');bind('jump')"), 'Racing game must use console controls');
 assert.ok(racer.includes('function spawnCar()'), 'Racing game must spawn traffic');
@@ -62,7 +70,8 @@ for (const fn of ['rs','pl','stl','up','rd','loop','onDown','onUp','onMove','onC
   assert.ok(new RegExp(`function\\s+${fn}\\s*\\(`).test(game), `Missing runtime function: ${fn}`);
 }
 assert.ok(screenContract.includes('width: 208, height: 320'), 'Shared game screen must stay 208x320');
-assert.ok(html.includes('./assets/game-screen.js?v=1'), 'Shared game screen contract must load before games');
+assert.ok(shadowPage.includes('./assets/game-screen.js?v=1'), 'Shared game screen contract must load before SHADOW SPIRE');
+assert.ok(racerPage.includes('./assets/game-screen.js?v=1'), 'Shared game screen contract must load before NIGHT RUNNER');
 assert.ok(game.includes('window.CONSOLE_GAME_SCREEN'), 'Game must use the shared screen contract');
 assert.ok(game.includes('function makeTowerRows'), 'Levels must be generated for the fixed portrait game screen');
 const generatorMatch = game.match(/function makeTowerRows\(seed,style\)\{[\s\S]*?\n\}/);
