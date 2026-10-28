@@ -13,7 +13,7 @@ assert.equal((html.match(/<canvas\b/g) || []).length, 1, 'Expected one game canv
 assert.equal((html.match(/<main\b/g) || []).length, 1, 'Expected one console root');
 assert.equal((html.match(/<style\b/gi) || []).length, 0, 'Styles must live in console.css');
 assert.equal((html.match(/<script(?![^>]*\bsrc=)[^>]*>/gi) || []).length, 0, 'Scripts must be external modules');
-assert.ok(html.includes('./assets/console.css?v=21'), 'Console stylesheet must be linked');
+assert.ok(html.includes('./assets/console.css?v=22'), 'Console stylesheet must be linked');
 assert.match(html, /\.\/assets\/game\.js\?v=\d+/, 'Game runtime must be linked');
 assert.ok(html.includes('./assets/skins.js?v=20'), 'Skin module must be linked');
 
@@ -41,6 +41,16 @@ for (const id of ['graphite','cyan','amber','violet','ivory']) {
 assert.ok(skins.includes('shadowSpireShellSkin') && skins.includes('shadowSpirePadSkin'), 'Skin preferences must persist independently');
 const layoutEditor = read('../assets/control-layout.js');
 assert.ok(html.includes('./assets/control-layout.js?v=3'), 'Control layout editor must load');
+assert.ok(html.includes('href="./night-runner.html"'), 'Console must link to NIGHT RUNNER');
+const racerPage = read('../night-runner.html');
+const racer = read('../assets/night-runner.js');
+assert.ok(racerPage.includes('<title>NIGHT RUNNER</title>'), 'Racing game page must be identifiable');
+assert.ok(racerPage.includes('./assets/night-runner.js?v=1'), 'Racing game runtime must load');
+assert.ok(racerPage.includes('href="./index.html"'), 'Racing game must link back to SHADOW SPIRE');
+assert.ok(racer.includes('nightRunnerBest_v1'), 'Racing game must persist high score');
+assert.ok(racer.includes("bind('left');bind('right');bind('jump')"), 'Racing game must use console controls');
+assert.ok(racer.includes('function spawnCar()'), 'Racing game must spawn traffic');
+assert.ok(racer.includes("mode='crash'"), 'Racing game must detect collisions');
 assert.ok(layoutEditor.includes("const buttons=[...controls.querySelectorAll('[data-control]')]"), 'Editor must support each control independently');
 assert.ok(layoutEditor.includes("trigger.addEventListener('click'"), 'Visible settings button must activate layout editing');
 assert.ok(!layoutEditor.includes("document.addEventListener('dblclick'"), 'Legacy double-tap activation must be removed');
