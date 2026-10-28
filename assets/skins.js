@@ -4,7 +4,7 @@ const root=document.querySelector('.console');
 if(!root)return;
 const shellOpen=document.getElementById('shellSkinOpen'),padOpen=document.getElementById('padSkinOpen');
 const shellPicker=document.getElementById('shellSkinPicker'),padPicker=document.getElementById('padSkinPicker');
-const shellOptions=[...document.querySelectorAll('[data-shell-skin]')],padOptions=[...document.querySelectorAll('[data-pad-skin]')];
+const shellOptions=[...document.querySelectorAll('.style-option[data-shell-skin]')],padOptions=[...document.querySelectorAll('.style-option[data-pad-skin]')];
 function setShellSkin(name){if(!shellOptions.some(b=>b.dataset.shellSkin===name))name='dark';root.dataset.shellSkin=name;shellOptions.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.shellSkin===name)));try{localStorage.setItem('shadowSpireShellSkin',name)}catch(_){}}
 function setPadSkin(name){if(!padOptions.some(b=>b.dataset.padSkin===name))name='graphite';root.dataset.padSkin=name;padOptions.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.padSkin===name)));try{localStorage.setItem('shadowSpirePadSkin',name)}catch(_){}}
 function closePickers(){shellPicker.classList.remove('open');padPicker.classList.remove('open');shellOpen.setAttribute('aria-expanded','false');padOpen.setAttribute('aria-expanded','false')}
