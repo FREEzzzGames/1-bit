@@ -208,6 +208,22 @@ function dMenu(){
   cx.fillStyle=CD;cx.fillRect(0,0,VW,VH);
   dtc('SELECT LEVEL',VW/2,14,2,CL);
   const cols=2,cardW=38,cardH=18,gapX=4,gapY=4;
+  const digits={
+    '0':'111101101101111','1':'010110010010010','2':'111001111100111',
+    '3':'111001111001111','4':'101101111001001','5':'111100111001111',
+    '6':'111100111101111','7':'111001001001001','8':'111101111101111',
+    '9':'111101111001111'
+  };
+  const drawNumber=(value,cx0,cy0)=>{
+    const str=String(value),scale=2,charW=7*scale,totalW=str.length*charW-scale;
+    let x=Math.round(cx0-totalW/2),y=Math.round(cy0-5*scale/2);
+    for(const ch of str){
+      const bits=digits[ch]||digits['0'];
+      for(let row=0;row<5;row++)for(let col=0;col<3;col++)
+        if(bits.charCodeAt(row*3+col)===49)cx.fillRect(x+col*scale,y+row*scale,scale,scale);
+      x+=charW;
+    }
+  };
   const gridW=cols*cardW+gapX,sX=Math.round((VW-gridW)/2),sY=34;
   for(let i=0;i<LVS.length;i++){
     const col=i%cols,row=Math.floor(i/cols),x=sX+col*(cardW+gapX),y=sY+row*(cardH+gapY);
@@ -223,9 +239,9 @@ function dMenu(){
       // Compact pixel lock at the right; keep the level number readable.
       cx.fillRect(x+cardW-9,y+9,5,4);cx.fillRect(x+cardW-8,y+7,3,2);
       cx.fillStyle=CD;cx.fillRect(x+cardW-7,y+10,1,2);
-      cx.fillStyle=CL;dtc(String(i+1),x+(cardW-7)/2,y+4,2,CL);
+      cx.fillStyle=CL;drawNumber(i+1,x+Math.round((cardW-7)/2),y+cardH/2);
     }else{
-      cx.fillStyle=CD;dtc(String(i+1),x+cardW/2,y+4,2,CD);
+      cx.fillStyle=CD;drawNumber(i+1,x+cardW/2,y+cardH/2);
       if(cleared){
         // Clear, compact completion tick.
         cx.fillStyle=CD;cx.fillRect(x+cardW-9,y+5,2,5);cx.fillRect(x+cardW-7,y+8,2,2);cx.fillRect(x+cardW-5,y+4,2,6);
