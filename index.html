@@ -596,6 +596,137 @@ canvas{position:relative;z-index:1}
   animation:none;
 }
 
+
+/* Photographic shell composition: only the live game display and control faces remain HTML. */
+html,body{
+  width:100%;height:100%;min-height:100%;
+  margin:0;overflow:hidden;background:#05070a;
+}
+body{display:block;padding:0}
+.console,.console[data-skin]{
+  position:relative;
+  display:block;
+  width:100vw;max-width:680px;
+  height:100dvh;min-height:0;
+  margin:0 auto;padding:0;
+  overflow:hidden;
+  border:0;border-radius:0;
+  isolation:isolate;
+  background:#101318 url("./assets/console-shell.svg") center center / 100% 100% no-repeat !important;
+  box-shadow:none !important;
+}
+.console:before,.console:after{display:none!important;content:none!important}
+.skin-tools,.skin-picker{display:none!important}
+.screen-bezel{
+  position:absolute;
+  left:17.85%;top:11.36%;
+  width:64.3%;height:60.6%;
+  max-width:none;max-height:none;
+  min-width:0;min-height:0;
+  aspect-ratio:auto;
+  margin:0;padding:0;
+  border:0;border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  display:block;
+  overflow:hidden;
+  z-index:2;
+}
+.screen-bezel:before,.screen-bezel:after{display:none!important;content:none!important}
+.screen-bezel canvas,canvas#c{
+  position:relative;display:block;
+  width:100%;height:100%;
+  margin:0;padding:0;
+  border:0;border-radius:0;
+  background:#000;
+  image-rendering:pixelated;
+}
+.controls{
+  position:absolute;inset:0;
+  display:block;
+  width:100%;height:100%;
+  max-width:none;min-width:0;
+  margin:0;padding:0;
+  border:0;border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  z-index:4;
+}
+.controls:before{display:none!important;content:none!important}
+.dpad,.action-cluster{display:contents}
+.hw-btn{
+  position:absolute;
+  display:flex;
+  align-items:center;justify-content:center;
+  margin:0;padding:0;
+  box-sizing:border-box;
+  transform:none;
+  border:1px solid #8b96a4;
+  color:#f5f0e4;
+  background:linear-gradient(145deg,#525b67 0%,#343b45 27%,#171b22 76%,#080a0e 100%);
+  box-shadow:0 3px 0 #030407,0 5px 8px #000b,inset 0 1px 1px #ffffff55,inset 0 -3px 5px #000c;
+}
+.hw-btn:before{
+  content:"";position:absolute;inset:3px;
+  border:1px solid #ffffff20;border-radius:inherit;
+  pointer-events:none;
+  background:linear-gradient(135deg,#ffffff0c,transparent 38%,#0003);
+}
+.hw-btn.left,.hw-btn.right{
+  top:85.98%;width:11%;height:5.84%;
+  border-radius:14%;
+  font-size:clamp(16px,4.4vw,25px);
+}
+.hw-btn.left{left:7.43%}
+.hw-btn.right{left:34.57%}
+.dpad .dpad-core{
+  position:absolute;left:24.7%;top:87.25%;
+  width:3.7%;height:2.8%;
+  display:grid;place-items:center;
+  color:#8f99a7;font-size:clamp(11px,2.6vw,17px);
+  text-shadow:0 1px 2px #000;
+  pointer-events:none;
+}
+.hw-btn.action-main{
+  left:72.43%;top:80.38%;
+  width:19.14%;height:auto;aspect-ratio:1;
+  border:2px solid #929ba7;border-radius:50%;
+  background:radial-gradient(circle at 31% 20%,#697380 0%,#424a56 21%,#242a33 60%,#090b10 100%);
+  box-shadow:0 4px 0 #030407,0 7px 10px #000d,0 0 0 3px #0a0c10,inset 0 2px 3px #ffffff58,inset 0 -5px 8px #000e;
+  font-size:clamp(10px,2.7vw,16px);
+  letter-spacing:.08em;
+}
+.hw-btn.action-main:before{inset:5px;border:1px solid #ffffff22}
+.hw-btn.utility{
+  top:91.67%;width:9.15%;height:auto;aspect-ratio:1;
+  border:1px solid #8b96a4;border-radius:50%;
+  background:radial-gradient(circle at 30% 20%,#646d79 0%,#343b46 27%,#171b23 75%,#080a0e 100%);
+  box-shadow:0 3px 0 #030407,0 5px 8px #000b,inset 0 1px 2px #ffffff48,inset 0 -3px 5px #000c;
+  flex-direction:column;gap:0;
+  font-size:clamp(14px,3.4vw,21px);
+}
+.hw-btn.utility[data-control="lantern"]{left:71.28%}
+.hw-btn.utility[data-control="pause"]{left:83.0%}
+.hw-btn.utility small{
+  display:block;font-size:clamp(6px,1.55vw,9px);
+  line-height:1.1;color:#d3d8df;letter-spacing:.06em;
+}
+.hw-btn:active,.hw-btn.pressed{
+  transform:translateY(2px) scale(.98);
+  filter:brightness(1.15);
+  box-shadow:0 1px 0 #030407,0 2px 4px #000b,inset 0 2px 5px #0008;
+}
+.hw-btn.action-main:active,.hw-btn.action-main.pressed{
+  transform:translateY(2px) scale(.98);
+  box-shadow:0 1px 0 #030407,0 2px 5px #000b,0 0 0 3px #0a0c10,inset 0 3px 8px #0007;
+}
+@media(max-height:650px){
+  .screen-bezel{top:11.36%;height:60.6%}
+}
+@media(prefers-reduced-motion:reduce){
+  .hw-btn{transition:none!important}
+}
+
 </style></head>
 <body><main class="console" data-skin="dark"><div class="skin-tools"><div class="power-status"><span class="power-led" aria-hidden="true"></span><span>POWER ON</span></div><button class="skin-open" id="skinOpen" type="button" aria-expanded="false" aria-controls="skinPicker">SKINS ▾</button></div><div class="skin-picker" id="skinPicker" role="group" aria-label="Console skins"><div class="skin-picker-title"><span>CONSOLE SKIN</span><span>8 MODES</span></div><button class="skin-option" type="button" data-skin-choice="checker" aria-pressed="false"><span class="skin-swatch checker"></span>CHECKERBOARD</button><button class="skin-option" type="button" data-skin-choice="hazard" aria-pressed="false"><span class="skin-swatch hazard"></span>BLACK / YELLOW</button><button class="skin-option" type="button" data-skin-choice="rainbow" aria-pressed="false"><span class="skin-swatch rainbow"></span>RAINBOW</button><button class="skin-option" type="button" data-skin-choice="animated" aria-pressed="false"><span class="skin-swatch animated"></span>NEON FLOW</button><button class="skin-option" type="button" data-skin-choice="light" aria-pressed="false"><span class="skin-swatch light"></span>LIGHT</button><button class="skin-option" type="button" data-skin-choice="dark" aria-pressed="true"><span class="skin-swatch dark"></span>DARK</button><button class="skin-option" type="button" data-skin-choice="green" aria-pressed="false"><span class="skin-swatch green"></span>FOREST</button><button class="skin-option" type="button" data-skin-choice="steel" aria-pressed="false"><span class="skin-swatch steel"></span>STEEL</button></div><div class="screen-bezel"><canvas id="c"></canvas></div><section class="controls" aria-label="Console controls"><div class="dpad" aria-label="Movement"><button class="hw-btn left" data-control="left" aria-label="Move left">◀</button><span class="dpad-core" aria-hidden="true">✦</span><button class="hw-btn right" data-control="right" aria-label="Move right">▶</button></div><div class="action-cluster"><button class="hw-btn action-main" data-control="jump" aria-label="Jump or interact">ACTION</button><div class="utility-row"><button class="hw-btn utility" data-control="lantern" aria-label="Toggle lamp">☼<small>LAMP</small></button><button class="hw-btn utility" data-control="pause" aria-label="Pause">Ⅱ<small>PAUSE</small></button></div></div></section></main><script>
 (function(){
