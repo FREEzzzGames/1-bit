@@ -39,6 +39,13 @@ for (const id of ['graphite','cyan','amber','violet','ivory']) {
   assert.ok(html.includes(`data-pad-skin="${id}"`), `Missing control-panel skin: ${id}`);
 }
 assert.ok(skins.includes('shadowSpireShellSkin') && skins.includes('shadowSpirePadSkin'), 'Skin preferences must persist independently');
+const layoutEditor = read('../assets/control-layout.js');
+assert.ok(html.includes('./assets/control-layout.js?v=1'), 'Control layout editor must load');
+assert.ok(layoutEditor.includes("const buttons=[...controls.querySelectorAll('[data-control]')]"), 'Editor must support each control independently');
+assert.ok(layoutEditor.includes("document.addEventListener('dblclick'"), 'Double tap must activate layout editing');
+assert.ok(layoutEditor.includes("'resize':'move'"), 'Controls must support moving and resizing');
+assert.ok(layoutEditor.includes('shadowSpireControlLayout_v1'), 'Control layout must persist');
+
 assert.ok(skins.includes('.style-option[data-shell-skin]') && skins.includes('.style-option[data-pad-skin]'), 'Skin handlers must bind only to options');
 for (const fn of ['rs','pl','stl','up','rd','loop','onDown','onUp','onMove','onCancel','onKD','onKU','dMenu','dHUD']) {
   assert.ok(new RegExp(`function\\s+${fn}\\s*\\(`).test(game), `Missing runtime function: ${fn}`);
