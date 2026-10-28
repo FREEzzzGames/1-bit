@@ -18,5 +18,9 @@ jobs:
         run: node --check assets/game.js
       - name: Check skin module syntax
         run: node --check assets/skins.js
+      - name: Check launcher syntax
+        run: node --check assets/console-menu.js
+      - name: Check new game runtime syntax
+        run: node --check assets/arcade-extras.js
       - name: Check architecture invariants
         run: node tests/architecture-check.mjs
