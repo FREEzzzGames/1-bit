@@ -246,6 +246,117 @@ canvas{border-radius:2px;background:#000}
 }
 @media(prefers-reduced-motion:reduce){.console{transition:none}}
 
+
+/* Lighting, material response and scale depth pass — keep controls and geometry unchanged. */
+.console{
+  background:
+    radial-gradient(ellipse at 0% 18%,#197dbb22 0%,transparent 28%),
+    radial-gradient(ellipse at 100% 14%,#e0a35a1c 0%,transparent 30%),
+    radial-gradient(ellipse at 50% 0%,#ffffff0c 0%,transparent 42%),
+    linear-gradient(90deg,#07090d 0%,#ffffff0a 1.1%,transparent 3.5%,transparent 96.5%,#ffffff0a 98.8%,#050609 100%),
+    linear-gradient(155deg,#3a3e47 0%,#242830 24%,#171a20 64%,#292d35 100%);
+  box-shadow:
+    0 0 0 1px #a5acba22,
+    0 0 0 4px #101217,
+    0 0 0 5px #4c525d,
+    0 18px 36px #000c,
+    inset 0 2px 2px #ffffff2b,
+    inset 2px 0 12px #46b9ff0b,
+    inset -2px 0 12px #ffb45a0a,
+    inset 0 -8px 18px #0009;
+}
+.console:after{
+  background:
+    repeating-linear-gradient(0deg,#ffffff02 0 1px,transparent 1px 3px),
+    radial-gradient(ellipse at 8% 20%,#48baff09,transparent 35%),
+    radial-gradient(ellipse at 94% 25%,#ffc17b08,transparent 36%);
+  border-color:#ffffff10;
+  box-shadow:inset 0 0 0 1px #0007,inset 0 1px 8px #ffffff05;
+}
+.screen-bezel{
+  background:
+    linear-gradient(112deg,#aeb5c0 0%,#555c67 2%,#171a20 8%,#090a0e 24%,#242831 76%,#08090c 94%,#555b65 100%);
+  box-shadow:
+    0 0 0 2px #07080a,
+    0 0 0 3px #8b929e70,
+    0 0 0 5px #252a32,
+    0 9px 0 #08090c,
+    0 16px 24px #000b,
+    0 0 18px #59bfff0a,
+    inset 0 1px 1px #ffffff55,
+    inset 0 3px 7px #ffffff08,
+    inset 0 -3px 7px #000e;
+}
+.screen-bezel:before{
+  z-index:2;
+  background:
+    linear-gradient(116deg,#ffffff1a 0%,#ffffff0a 8%,transparent 20%,transparent 72%,#ffffff05 90%,#0002 100%);
+  box-shadow:inset 0 2px 3px #ffffff0c,inset 0 -3px 5px #0005;
+}
+.screen-bezel:after{
+  background:
+    linear-gradient(116deg,#ffffff13 0%,#ffffff08 7%,transparent 18%,transparent 76%,#ffffff04 100%);
+  box-shadow:0 0 0 1px #ffffff0a,inset 0 1px 2px #ffffff08;
+}
+canvas{position:relative;z-index:1}
+.controls{
+  background:
+    radial-gradient(ellipse at 0% 0%,#ffffff0c,transparent 45%),
+    linear-gradient(90deg,#080a0e 0%,#ffffff07 1%,transparent 5%,transparent 95%,#0005 100%),
+    linear-gradient(180deg,#0c0e13 0%,#292e37 9%,#1d2129 45%,#15181e 88%,#07080b 100%);
+  box-shadow:
+    0 4px 0 #08090c,
+    0 8px 13px #0008,
+    inset 0 1px 1px #ffffff2b,
+    inset 0 3px 7px #ffffff05,
+    inset 0 -3px 7px #000c;
+}
+.controls:before{
+  background:linear-gradient(110deg,#ffffff06,transparent 24%,transparent 78%,#0003);
+  border-color:#ffffff10;
+  box-shadow:inset 0 1px 2px #ffffff08,inset 0 -2px 4px #0005;
+}
+.hw-btn{
+  box-shadow:
+    0 4px 0 #08090c,
+    0 5px 7px #0009,
+    inset 0 1px 1px #ffffff35,
+    inset 1px 0 2px #ffffff08,
+    inset 0 -3px 4px #000a;
+}
+.hw-btn:before{
+  background:linear-gradient(135deg,#ffffff0b,transparent 35%,transparent 75%,#0003);
+  box-shadow:inset 0 1px 1px #ffffff0a;
+}
+.hw-btn.action-main{
+  background:
+    radial-gradient(circle at 30% 20%,#737985 0%,#444a55 20%,#272c35 58%,#111319 100%);
+  box-shadow:
+    0 5px 0 #08090c,
+    0 8px 12px #000b,
+    0 0 0 2px #101217,
+    inset 0 2px 3px #ffffff45,
+    inset 0 -4px 7px #000d;
+}
+.hw-btn.utility{
+  background:
+    radial-gradient(circle at 30% 20%,#606773 0%,#363c46 24%,#20242c 70%,#0c0e12 100%);
+  box-shadow:
+    0 3px 0 #08090c,
+    0 5px 8px #000a,
+    inset 0 1px 2px #ffffff3b,
+    inset 0 -3px 5px #000c;
+}
+.console[data-skin="dark"]{
+  background:
+    radial-gradient(ellipse at 0% 18%,#197dbb22 0%,transparent 28%),
+    radial-gradient(ellipse at 100% 14%,#e0a35a1c 0%,transparent 30%),
+    radial-gradient(ellipse at 50% 0%,#ffffff0c 0%,transparent 42%),
+    linear-gradient(90deg,#07090d 0%,#ffffff0a 1.1%,transparent 3.5%,transparent 96.5%,#ffffff0a 98.8%,#050609 100%),
+    linear-gradient(155deg,#3a3e47 0%,#242830 24%,#171a20 64%,#292d35 100%);
+}
+@media(prefers-reduced-motion:reduce){.console{transition:none}}
+
 </style></head>
 <body><main class="console" data-skin="dark"><div class="skin-tools"><div class="power-status"><span class="power-led" aria-hidden="true"></span><span>POWER ON</span></div><button class="skin-open" id="skinOpen" type="button" aria-expanded="false" aria-controls="skinPicker">SKINS ▾</button></div><div class="skin-picker" id="skinPicker" role="group" aria-label="Console skins"><div class="skin-picker-title"><span>CONSOLE SKIN</span><span>8 MODES</span></div><button class="skin-option" type="button" data-skin-choice="checker" aria-pressed="false"><span class="skin-swatch checker"></span>CHECKERBOARD</button><button class="skin-option" type="button" data-skin-choice="hazard" aria-pressed="false"><span class="skin-swatch hazard"></span>BLACK / YELLOW</button><button class="skin-option" type="button" data-skin-choice="rainbow" aria-pressed="false"><span class="skin-swatch rainbow"></span>RAINBOW</button><button class="skin-option" type="button" data-skin-choice="animated" aria-pressed="false"><span class="skin-swatch animated"></span>NEON FLOW</button><button class="skin-option" type="button" data-skin-choice="light" aria-pressed="false"><span class="skin-swatch light"></span>LIGHT</button><button class="skin-option" type="button" data-skin-choice="dark" aria-pressed="true"><span class="skin-swatch dark"></span>DARK</button><button class="skin-option" type="button" data-skin-choice="green" aria-pressed="false"><span class="skin-swatch green"></span>FOREST</button><button class="skin-option" type="button" data-skin-choice="steel" aria-pressed="false"><span class="skin-swatch steel"></span>STEEL</button></div><div class="screen-bezel"><canvas id="c"></canvas></div><section class="controls" aria-label="Console controls"><div class="dpad" aria-label="Movement"><button class="hw-btn left" data-control="left" aria-label="Move left">◀</button><span class="dpad-core" aria-hidden="true">✦</span><button class="hw-btn right" data-control="right" aria-label="Move right">▶</button></div><div class="action-cluster"><button class="hw-btn action-main" data-control="jump" aria-label="Jump or interact">ACTION</button><div class="utility-row"><button class="hw-btn utility" data-control="lantern" aria-label="Toggle lamp">☼<small>LAMP</small></button><button class="hw-btn utility" data-control="pause" aria-label="Pause">Ⅱ<small>PAUSE</small></button></div></div></section></main><script>
 (function(){
