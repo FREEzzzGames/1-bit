@@ -59,3 +59,6 @@ body{font-family:monospace;color:var(--cream)}
 .control-layout-trigger{position:absolute;z-index:12;left:5.8%;top:77.05%;width:27%;min-height:2.35%;padding:3px 5px;border:1px solid #9ceeff;border-radius:6px;background:linear-gradient(145deg,#263440f5,#080d13f8);color:#eafcff;box-shadow:0 2px 0 #030407,0 0 7px #66fcf144,inset 0 1px #ffffff22;font:700 clamp(7px,1.7vw,10px)/1.1 monospace;letter-spacing:.04em;pointer-events:auto;touch-action:manipulation}
 .control-layout-trigger:active{filter:brightness(1.25);transform:translateY(1px)}
 .control-layout-trigger[hidden]{display:none!important}
+
+/* Centered game switch sits between the two existing skin selectors. */
+.style-tools .game-switch-trigger{position:absolute;left:41%;width:18%;min-width:0;display:flex;align-items:center;justify-content:center;padding:5px 2px;text-decoration:none;white-space:nowrap;font-size:clamp(6px,1.55vw,9px)}
