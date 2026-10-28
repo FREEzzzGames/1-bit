@@ -56,7 +56,7 @@ assert.ok(menu.includes("bindControl('jump'"), 'Action console control must laun
 const racerPage = read('../night-runner.html');
 const racer = read('../assets/night-runner.js');
 assert.ok(racerPage.includes('<title>NIGHT RUNNER</title>'), 'Racing game page must be identifiable');
-assert.ok(racerPage.includes('./assets/night-runner.js?v=6'), 'Racing game runtime must load');
+assert.ok(racerPage.includes('./assets/night-runner.js?v=7'), 'Racing game runtime must load');
 assert.ok(racerPage.includes('href="./index.html"'), 'Racing game must link back to the main menu');
 assert.ok(shadowPage.includes('href="./index.html"'), 'SHADOW SPIRE must link back to the main menu');
 assert.ok(racer.includes('canvas.width=W;canvas.height=H'), 'Racing canvas must use the shared logical resolution');
@@ -67,6 +67,8 @@ assert.ok(racer.includes('Wheel silhouettes, chassis, windshield, roof and headl
 assert.ok(racer.includes('nightRunnerBest_v1'), 'Racing game must persist high score');
 assert.ok(racer.includes("bind('left');bind('right');bind('jump')"), 'Racing game must use console controls');
 assert.ok(racer.includes('function spawnCar()'), 'Racing game must spawn traffic');
+assert.ok(!racer.includes("canvas.addEventListener('pointerdown'"), 'Racing gameplay canvas must not accept touch input');
+assert.ok(!game.includes("cv.addEventListener('pointerdown'"), 'SHADOW SPIRE gameplay canvas must not accept touch input');
 assert.ok(racer.includes('function spawnPickup()'), 'Racing game must spawn collectible pickups');
 assert.ok(racer.includes('function spawnHazard()'), 'Racing game must spawn road hazards');
 assert.ok(racer.includes('function nearMiss(o)'), 'Racing game must reward near misses');
