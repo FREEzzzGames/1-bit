@@ -64,5 +64,5 @@ body{font-family:monospace;color:var(--cream)}
 .style-tools .game-switch-trigger{position:absolute;left:41%;width:18%;min-width:0;display:flex;align-items:center;justify-content:center;padding:5px 2px;text-decoration:none;white-space:nowrap;font-size:clamp(6px,1.55vw,9px)}
 
 /* Main launcher: retain the console shell, use the whole display for the 1-bit game selector. */
-.menu-home .controls{display:none}
+.menu-home .controls{display:block}
 .style-tools .menu-mode-label{position:absolute;left:41%;width:18%;min-width:0;display:flex;align-items:center;justify-content:center;padding:5px 2px;white-space:nowrap;font-size:clamp(6px,1.55vw,9px);pointer-events:none}
