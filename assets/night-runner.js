@@ -3,7 +3,7 @@
 const SCREEN=window.CONSOLE_GAME_SCREEN;
 const W=SCREEN.width,H=SCREEN.height;
 const canvas=document.getElementById('c');
-canvas.width=W;canvas.height=H;canvas.style.width='100%';canvas.style.height='100%';
+canvas.width=W;canvas.height=H;canvas.style.width='100%';canvas.style.height='100%';canvas.style.objectFit='contain';canvas.style.objectPosition='center';
 const ctx=canvas.getContext('2d',{alpha:false});ctx.imageSmoothingEnabled=false;
 const C='#FFF8E8',B='#000000',MID='#77736b';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -18,28 +18,28 @@ function reset(){mode='play';elapsed=0;score=0;speed=90;boost=0;spawn=.5;shake=0
 function rect(x,y,w,h,col){ctx.fillStyle=col;ctx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h))}
 function text(s,x,y,size=8,align='center',col=C){ctx.fillStyle=col;ctx.font='bold '+size+'px monospace';ctx.textAlign=align;ctx.textBaseline='top';ctx.fillText(s,Math.round(x),Math.round(y))}
 function car(x,y,w,h,enemy=false){x=Math.round(x);y=Math.round(y);const body=enemy?B:C,trim=enemy?C:B;
- rect(x-2,y+4,w+4,h-8,trim);rect(x,y,w,h,body);
- rect(x+3,y+4,w-6,5,trim);rect(x+3,y+h-8,w-6,4,trim);
- rect(x+2,y+8,2,5,trim);rect(x+w-4,y+8,2,5,trim);
- rect(x+2,y+2,3,2,enemy?C:B);rect(x+w-5,y+2,3,2,enemy?C:B);
- if(!enemy){rect(x+5,y+11,w-10,5,trim);rect(x+4,y+h-4,3,2,trim);rect(x+w-7,y+h-4,3,2,trim)}
- else{rect(x+4,y+12,w-8,4,trim);rect(x+3,y+h-3,3,2,trim);rect(x+w-6,y+h-3,3,2,trim)}
+ // Wheel silhouettes, chassis, windshield, roof and headlights remain pixel-crisp.
+ rect(x-2,y+5,3,6,trim);rect(x+w-1,y+5,3,6,trim);rect(x-2,y+h-10,3,6,trim);rect(x+w-1,y+h-10,3,6,trim);
+ rect(x,y+2,w,h-4,trim);rect(x+2,y,w-4,h,body);
+ rect(x+3,y+4,w-6,5,trim);rect(x+4,y+5,w-8,3,body);
+ rect(x+3,y+11,w-6,6,trim);rect(x+5,y+12,w-10,4,body);
+ rect(x+3,y+h-7,w-6,4,trim);rect(x+5,y+h-6,w-10,2,body);
+ rect(x+2,y+1,3,2,enemy?C:B);rect(x+w-5,y+1,3,2,enemy?C:B);
+ if(!enemy){rect(x+4,y+9,w-8,2,trim);rect(x+4,y+h-3,3,2,trim);rect(x+w-7,y+h-3,3,2,trim)}
 }
 function drawRoad(dt){
  rect(0,0,W,H,B);
- // Road shoulders and a broken 1-bit edge line.
- rect(25,0,3,H,C);rect(W-28,0,3,H,C);
- rect(30,0,W-60,H,MID);rect(33,0,W-66,H,B);
- for(let y=-24+(roadOffset%24);y<H;y+=24){
-   rect(43,y,2,11,C);rect(W-45,y,2,11,C);
-   rect(83,y+3,2,9,C);rect(123,y+3,2,9,C);
+ // Crisp three-lane road with shoulders, rumble strips and perspective markers.
+ rect(25,0,3,H,MID);rect(28,0,2,H,C);rect(W-30,0,2,H,C);rect(W-28,0,3,H,MID);
+ rect(32,0,W-64,H,B);
+ for(let y=-22+(roadOffset%22);y<H;y+=22){
+   rect(62,y,2,9,C);rect(102,y,2,9,C);rect(142,y,2,9,C);
  }
- // Roadside reflectors scroll at the current speed.
  for(let y=-16+(roadOffset%32),n=0;y<H;y+=32,n++){
    rect(17,y,5,3,(n%2)?MID:C);rect(W-22,y,5,3,(n%2)?MID:C);
+   rect(35,y+10,2,5,MID);rect(W-37,y+10,2,5,MID);
  }
- // Distant horizon dashes.
- rect(29,30,W-58,1,MID);
+ rect(31,31,W-62,1,MID);
 }
 function spawnCar(){
  const lane=lanes[Math.floor(Math.random()*lanes.length)];
