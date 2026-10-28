@@ -54,3 +54,8 @@ body{font-family:monospace;color:var(--cream)}
 .control-resize-handle:before,.control-resize-handle:after{content:"";position:absolute;background:#071018}
 .control-resize-handle:before{width:8px;height:2px;right:2px;bottom:4px}
 .control-resize-handle:after{width:2px;height:8px;right:4px;bottom:2px}
+
+/* Always-visible entry point for touch control layout editing. */
+.control-layout-trigger{position:absolute;z-index:12;left:5.8%;top:77.05%;width:27%;min-height:2.35%;padding:3px 5px;border:1px solid #9ceeff;border-radius:6px;background:linear-gradient(145deg,#263440f5,#080d13f8);color:#eafcff;box-shadow:0 2px 0 #030407,0 0 7px #66fcf144,inset 0 1px #ffffff22;font:700 clamp(7px,1.7vw,10px)/1.1 monospace;letter-spacing:.04em;pointer-events:auto;touch-action:manipulation}
+.control-layout-trigger:active{filter:brightness(1.25);transform:translateY(1px)}
+.control-layout-trigger[hidden]{display:none!important}
