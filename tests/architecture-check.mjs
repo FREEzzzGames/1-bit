@@ -14,7 +14,7 @@ assert.equal((html.match(/<main\b/g) || []).length, 1, 'Expected one console roo
 assert.equal((html.match(/<style\b/gi) || []).length, 0, 'Styles must live in console.css');
 assert.equal((html.match(/<script(?![^>]*\bsrc=)[^>]*>/gi) || []).length, 0, 'Scripts must be external modules');
 assert.ok(html.includes('./assets/console.css?v=25'), 'Console stylesheet must be linked');
-assert.ok(html.includes('./assets/console-menu.js?v=2'), 'Console launcher runtime must be linked');
+assert.ok(html.includes('./assets/console-menu.js?v=3'), 'Console launcher runtime must be linked');
 assert.ok(html.includes('<title>FREEzzz ARCADE — Game Select</title>'), 'Startup page must be the game selector');
 assert.ok(html.includes('./assets/skins.js?v=21'), 'Skin module must be linked');
 
@@ -50,6 +50,7 @@ const menu = read('../assets/console-menu.js');
 assert.ok(menu.includes("href:'./shadow-spire.html'"), 'Launcher must offer SHADOW SPIRE');
 assert.ok(menu.includes("href:'./night-runner.html'"), 'Launcher must offer NIGHT RUNNER');
 assert.ok(css.includes('.menu-home .controls{display:block}'), 'Launcher must show physical console controls');
+assert.ok(!menu.includes("canvas.addEventListener('pointerdown'"), 'Launcher canvas must not launch games on touch');
 assert.ok(menu.includes("bindControl('left'"), 'Left console control must select a game');
 assert.ok(menu.includes("bindControl('right'"), 'Right console control must select a game');
 assert.ok(menu.includes("bindControl('jump'"), 'Action console control must launch selected game');
