@@ -26,20 +26,20 @@ function draw(){
  // NIGHT RUNNER thumbnail: dashed road, player car and road-side markers.
  px(25,198,2,44,G);px(43,198,2,44,G);for(let y=199;y<240;y+=9)px(34,y,2,4,C);car(29,211,.8);
  text('02',54,198,1,G,'left');text('NIGHT',54,209,2,C,'left');text('RUNNER',54,223,2,C,'left');text('ARCADE RACING',54,238,1,G,'left');
- text('TAP A GAME TO START',W/2,273,1,C);
+ text('LEFT / RIGHT TO SELECT',W/2,273,1,C);
  text('SELECT  /  PLAY',W/2,286,1,G);
  px(6,306,W-12,1,G);text('FREEzzz GAMES  //  1-BIT',W/2,310,1,C);
 }
 let selected=0;
 function hit(x,y){const r=cards.find(v=>x>=v.x&&x<=v.x+v.w&&y>=v.y&&y<=v.y+v.h);if(r)location.href=r.href}
 function coords(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}}
-canvas.addEventListener('pointerdown',e=>{e.preventDefault();const p=coords(e);const i=cards.findIndex(r=>p.x>=r.x&&p.x<=r.x+r.w&&p.y>=r.y&&p.y<=r.y+r.h);if(i>=0){selected=i;draw();setTimeout(()=>location.href=cards[i].href,70)}},{passive:false});
+// Game selection is button-only. The canvas never accepts gameplay input.
 function bindControl(id,fn){const el=document.querySelector('[data-control="'+id+'"]');if(!el)return;el.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();fn()},{passive:false});}
-bindControl('left',()=>{selected=0;draw()});
-bindControl('right',()=>{selected=1;draw()});
+bindControl('left',()=>{selected=(selected+cards.length-1)%cards.length;draw()});
+bindControl('right',()=>{selected=(selected+1)%cards.length;draw()});
 bindControl('jump',()=>{location.href=cards[selected].href});
-bindControl('lantern',()=>{selected=selected===0?1:0;draw()});
-bindControl('pause',()=>{selected=selected===0?1:0;draw()});
+bindControl('lantern',()=>{selected=(selected+cards.length-1)%cards.length;draw()});
+bindControl('pause',()=>{selected=(selected+1)%cards.length;draw()});
 window.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();selected=selected===0?1:0;draw()}else if(e.key==='Enter'||e.key===' '){e.preventDefault();location.href=cards[selected].href}});
 draw();
 })();
