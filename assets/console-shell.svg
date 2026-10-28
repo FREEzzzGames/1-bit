@@ -10,7 +10,7 @@
   <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".72" numOctaves="2" seed="9"/><feColorMatrix values="0 0 0 0 .55 0 0 0 0 .57 0 0 0 0 .6 0 0 0 .12 0"/></filter>
   <mask id="cutouts" maskUnits="userSpaceOnUse" x="0" y="0" width="700" height="1320">
     <rect width="700" height="1320" fill="white"/>
-    <rect x="125" y="150" width="450" height="800" rx="9" fill="black"/>
+    <rect x="119" y="144" width="462" height="812" rx="9" fill="black"/>
     <rect x="52" y="1135" width="77" height="77" rx="12" fill="black"/>
     <rect x="242" y="1135" width="77" height="77" rx="12" fill="black"/>
     <circle cx="574" cy="1128" r="67" fill="black"/>
