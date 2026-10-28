@@ -13,7 +13,7 @@ assert.equal((html.match(/<canvas\b/g) || []).length, 1, 'Expected one game canv
 assert.equal((html.match(/<main\b/g) || []).length, 1, 'Expected one console root');
 assert.equal((html.match(/<style\b/gi) || []).length, 0, 'Styles must live in console.css');
 assert.equal((html.match(/<script(?![^>]*\bsrc=)[^>]*>/gi) || []).length, 0, 'Scripts must be external modules');
-assert.ok(html.includes('./assets/console.css?v=25'), 'Console stylesheet must be linked');
+assert.ok(html.includes('./assets/console.css?v=26'), 'Console stylesheet must be linked');
 assert.ok(html.includes('./assets/console-menu.js?v=3'), 'Console launcher runtime must be linked');
 assert.ok(html.includes('<title>FREEzzz ARCADE — Game Select</title>'), 'Startup page must be the game selector');
 assert.ok(html.includes('./assets/skins.js?v=21'), 'Skin module must be linked');
@@ -44,7 +44,7 @@ assert.ok(skins.includes("!e.target.closest('.controls .style-trigger')"), 'Move
 const layoutEditor = read('../assets/control-layout.js');
 const shadowPage = read('../shadow-spire.html');
 assert.ok(shadowPage.includes('./assets/control-layout.js?v=4'), 'SHADOW SPIRE control layout editor must load');
-assert.ok(html.includes('./assets/console-menu.js?v=2'), 'Home page must load its launcher');
+assert.ok(html.includes('./assets/console-menu.js?v=4'), 'Home page must load its launcher');
 assert.ok(html.includes('class="menu-home"'), 'Startup page must use launcher layout');
 const menu = read('../assets/console-menu.js');
 assert.ok(menu.includes("href:'./shadow-spire.html'"), 'Launcher must offer SHADOW SPIRE');
@@ -86,7 +86,7 @@ assert.ok(layoutEditor.includes("const KEY='shadowSpireControlLayout_v2'"), 'Exp
 assert.ok(layoutEditor.includes("trigger.addEventListener('click'"), 'Visible settings button must activate layout editing');
 assert.ok(!layoutEditor.includes("document.addEventListener('dblclick'"), 'Legacy double-tap activation must be removed');
 assert.ok(layoutEditor.includes("'resize':'move'"), 'Controls must support moving and resizing');
-assert.ok(layoutEditor.includes('shadowSpireControlLayout_v1'), 'Control layout must persist');
+assert.ok(layoutEditor.includes("const KEY='shadowSpireControlLayout_v2'"), 'Control layout must persist');
 
 assert.ok(skins.includes('.style-option[data-shell-skin]') && skins.includes('.style-option[data-pad-skin]'), 'Skin handlers must bind only to options');
 for (const fn of ['rs','pl','stl','up','rd','loop','onDown','onUp','onMove','onCancel','onKD','onKU','dMenu','dHUD']) {
@@ -140,4 +140,25 @@ assert.ok(game.includes('localStorage'), 'Game progress persistence must remain 
 
 assert.ok(game.includes("n:'HEART OF THE SPIRE'"), 'Final level must be present');
 assert.ok(game.includes("if(seed===19)"), 'Final level must require collecting its three memory crystals');
-console.log('SHADOW SPIRE architecture checks passed.');
+
+const extras = read('../assets/arcade-extras.js');
+for (const [page, title, slug] of [
+  ['../void-hunter.html','VOID HUNTER','void'],
+  ['../iron-depths.html','IRON DEPTHS','iron'],
+  ['../neon-drift.html','NEON DRIFT','neon']
+]) {
+  const extraPage = read(page);
+  assert.ok(extraPage.includes('<title>'+title+'</title>'), title+' page must exist');
+  assert.ok(extraPage.includes('data-game="'+slug+'"'), title+' must select its own game mode');
+  assert.ok(extraPage.includes('./assets/game-screen.js?v=1'), title+' must load fixed screen contract');
+  assert.ok(extraPage.includes('./assets/arcade-extras.js?v=1'), title+' runtime must load');
+  assert.ok(extraPage.includes('href="./index.html"'), title+' must link back to launcher');
+}
+for (const href of ['./void-hunter.html','./iron-depths.html','./neon-drift.html']) {
+  assert.ok(menu.includes(href), 'Launcher must offer '+href);
+}
+assert.ok(!extras.includes("canvas.addEventListener('pointerdown'"), 'New game canvas must not accept touch gameplay input');
+assert.ok(extras.includes("bind('left'") && extras.includes("bind('right'") && extras.includes("bind('jump'"), 'New games must use physical console buttons');
+assert.ok(extras.includes("mode==='void'") && extras.includes("mode==='iron'") && extras.includes("mode==='neon'"), 'All three new game modes must be implemented');
+
+console.log('Console architecture checks passed.');
