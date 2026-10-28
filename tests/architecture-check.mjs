@@ -51,7 +51,8 @@ const generatorMatch = game.match(/function makeTowerRows\(seed,style\)\{[\s\S]*
 assert.ok(generatorMatch, 'Portrait level generator must be inspectable for reachability checks');
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const makeTowerRows = new Function('cl', `${generatorMatch[0]}; return makeTowerRows;`)(clamp);
-for (let seed = 0; seed < 10; seed++) {
+assert.ok((game.match(/\{n:'/g) || []).length >= 20, 'Expected 20 designed levels');
+for (let seed = 0; seed < 20; seed++) {
   const rows = makeTowerRows(seed, seed % 3);
   assert.equal(rows.length, 28, `Level ${seed + 1} must have 28 rows`);
   assert.ok(rows.every(row => row.length === 13), `Level ${seed + 1} rows must align to the 13-tile grid`);
@@ -87,4 +88,6 @@ for (const [feature,pattern] of [
 assert.ok(game.includes('requestAnimationFrame(loop)'), 'Game loop must be active');
 assert.ok(game.includes('localStorage'), 'Game progress persistence must remain present');
 
+assert.ok(game.includes("n:'HEART OF THE SPIRE'"), 'Final level must be present');
+assert.ok(game.includes("if(seed===19)"), 'Final level must require collecting its three memory crystals');
 console.log('SHADOW SPIRE architecture checks passed.');
