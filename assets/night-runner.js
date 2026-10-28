@@ -3,7 +3,7 @@
 const SCREEN=window.CONSOLE_GAME_SCREEN;
 const W=SCREEN.width,H=SCREEN.height;
 const canvas=document.getElementById('c');
-canvas.width=W;canvas.height=H;canvas.style.width='100%';canvas.style.height='100%';canvas.style.objectFit='contain';canvas.style.objectPosition='center';
+canvas.width=W;canvas.height=H;canvas.style.width='100%';canvas.style.height='100%';canvas.style.objectFit='contain';canvas.style.objectPosition='center';canvas.style.imageRendering='pixelated';
 const ctx=canvas.getContext('2d',{alpha:false});ctx.imageSmoothingEnabled=false;
 const C='#FFF8E8',B='#000000',MID='#77736b';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -134,7 +134,7 @@ function render(dt){
  if((mode==='play'||mode==='crash')&&(invuln<=0||Math.floor(performance.now()/70)%2===0))car(player.x-player.w/2,player.y,player.w,player.h,false);
  for(const p of particles){rect(p.x,p.y,2,2,C)}
  drawHUD();ctx.restore();
- if(mode==='crash'){if(flash>0)rect(0,0,W,H,C);drawCrash()}
+ if(mode==='crash'){if(flash>0){ctx.save();ctx.globalAlpha=Math.min(.2,flash);rect(0,0,W,H,C);ctx.restore()}drawCrash()}
 }
 function frame(now){const dt=Math.min(.034,(now-last)/1000||0);last=now;
  if(mode==='title'){drawTitle()}else{update(dt);render(dt)}
