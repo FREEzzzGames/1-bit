@@ -55,7 +55,7 @@ assert.ok(menu.includes("bindControl('jump'"), 'Action console control must laun
 const racerPage = read('../night-runner.html');
 const racer = read('../assets/night-runner.js');
 assert.ok(racerPage.includes('<title>NIGHT RUNNER</title>'), 'Racing game page must be identifiable');
-assert.ok(racerPage.includes('./assets/night-runner.js?v=4'), 'Racing game runtime must load');
+assert.ok(racerPage.includes('./assets/night-runner.js?v=5'), 'Racing game runtime must load');
 assert.ok(racerPage.includes('href="./index.html"'), 'Racing game must link back to the main menu');
 assert.ok(shadowPage.includes('href="./index.html"'), 'SHADOW SPIRE must link back to the main menu');
 assert.ok(racer.includes('canvas.width=W;canvas.height=H'), 'Racing canvas must use the shared logical resolution');
@@ -71,6 +71,8 @@ assert.ok(racer.includes("type==='nitro'"), 'Nitro pickups must refill boost');
 assert.ok(racer.includes("skid=1.15"), 'Oil slicks must cause temporary steering loss');
 assert.ok(racer.includes('level=1+Math.floor(elapsed/18)'), 'Traffic difficulty must scale over time');
 assert.ok(racer.includes("mode='crash'"), 'Racing game must detect collisions');
+assert.ok(racer.includes("text('RUN OVER'"), 'Crash screen must use the revised run-over layout');
+assert.ok(racer.includes("ctx.lineTo(87,190)"), 'Title road must not overlap the instruction block');
 assert.ok(layoutEditor.includes("const buttons=[...controls.querySelectorAll('[data-control]')]"), 'Editor must support each control independently');
 assert.ok(layoutEditor.includes("trigger.addEventListener('click'"), 'Visible settings button must activate layout editing');
 assert.ok(!layoutEditor.includes("document.addEventListener('dblclick'"), 'Legacy double-tap activation must be removed');
