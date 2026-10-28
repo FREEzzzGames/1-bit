@@ -35,8 +35,8 @@
   <g opacity=".88" fill="#05070a" stroke="#59616c" stroke-width="1.3">
     <path d="M247 38 l24 0 -18 24 -24 0 Z"/><path d="M293 38 l24 0 -18 24 -24 0 Z"/><path d="M339 38 l24 0 -18 24 -24 0 Z"/><path d="M385 38 l24 0 -18 24 -24 0 Z"/><path d="M431 38 l24 0 -18 24 -24 0 Z"/>
   </g>
-  <path d="M20 148 Q20 128 45 128 H655 Q680 128 680 153 V973 Q680 1000 655 1000 H45 Q20 1000 20 973 Z" fill="#05070a" opacity=".62"/>
-  <rect x="98" y="124" width="504" height="862" rx="31" fill="#000" opacity=".5" filter="url(#shadow)"/>
+  <path d="M20 148 Q20 128 45 128 H655 Q680 128 680 153 V954 Q680 978 655 978 H45 Q20 978 20 954 Z" fill="#05070a" opacity=".48"/>
+  <rect x="98" y="124" width="504" height="842" rx="31" fill="#000" opacity=".42" filter="url(#shadow)"/>
   <!-- Screen recess and precision bezel. The active display itself is a transparent cutout. -->
   <rect x="101" y="126" width="498" height="848" rx="29" fill="#06080c" stroke="#050609" stroke-width="7"/>
   <rect x="105" y="130" width="490" height="840" rx="26" fill="url(#bezel)" stroke="#77818e" stroke-opacity=".62" stroke-width="2"/>
