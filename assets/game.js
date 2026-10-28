@@ -42,6 +42,7 @@ function makeTowerRows(seed,style){
   if(seed%2===0){put(cl(centers[4],1,11),15,'C');}
   if(seed%4===1){put(cl(centers[6],1,11),9,'C');}
   if(seed===9){put(cl(centers[2]-2,1,11),21,'C');put(cl(centers[4]+1,1,11),15,'C');put(cl(centers[7]-1,1,11),9,'C');}
+  if(seed===19){put(cl(centers[2]-1,1,11),21,'C');put(cl(centers[4]+1,1,11),15,'C');put(cl(centers[7]-1,1,11),9,'C');}
   return grid.map(row=>row.join(''));
 }
 const LVS=[
@@ -54,7 +55,17 @@ const LVS=[
 {n:'OUTER SPIRE WALL',d:.15,bg:'castle',w:0,o:[{type:'gear',gx:104,gy:220,r:11,spin:2.2}],r:makeTowerRows(6,0)},
 {n:'HALL OF MIRRORS',d:.25,bg:'mirror',w:0,inv:1,o:[{type:'saw',ax:55,ay:170,bx:150,by:170,r:7,speed:.8}],r:makeTowerRows(7,1)},
 {n:'CLOCK TOWER',d:.2,bg:'castle',w:0,o:[{type:'gear',gx:104,gy:280,r:10,spin:2.6},{type:'saw',ax:55,ay:120,bx:150,by:120,r:7,speed:.35}],r:makeTowerRows(8,2)},
-{n:'STAR SPIRE',d:.55,bg:'spire',w:8,o:[{type:'saw',ax:55,ay:280,bx:150,by:280,r:7,speed:.85},{type:'gear',gx:104,gy:190,r:11,spin:3}],r:makeTowerRows(9,0)}
+{n:'STAR SPIRE',d:.55,bg:'spire',w:8,o:[{type:'saw',ax:55,ay:280,bx:150,by:280,r:7,speed:.85},{type:'gear',gx:104,gy:190,r:11,spin:3}],r:makeTowerRows(9,0)},
+{n:'SUNKEN ARCHIVE',d:.35,bg:'cave',w:0,o:[{type:'saw',ax:150,ay:300,bx:55,by:300,r:7,speed:.7}],r:makeTowerRows(10,1)},
+{n:'GLASS CATACOMBS',d:.4,bg:'mirror',w:0,inv:1,o:[{type:'saw',ax:55,ay:240,bx:150,by:240,r:7,speed:.75},{type:'saw',ax:150,ay:120,bx:55,by:120,r:7,speed:.55}],r:makeTowerRows(11,2)},
+{n:'BROKEN AQUEDUCT',d:.25,bg:'ruins',w:14,o:[{type:'saw',ax:55,ay:200,bx:150,by:200,r:7,speed:.7}],r:makeTowerRows(12,0)},
+{n:'HOLLOW ENGINE',d:.45,bg:'castle',w:0,o:[{type:'gear',gx:104,gy:250,r:11,spin:2.4},{type:'saw',ax:150,ay:150,bx:55,by:150,r:7,speed:.7}],r:makeTowerRows(13,1)},
+{n:'VEIL GARDEN',d:.65,bg:'forest',w:0,o:[{type:'saw',ax:55,ay:280,bx:150,by:280,r:7,speed:.8},{type:'saw',ax:150,ay:180,bx:55,by:180,r:7,speed:.7}],r:makeTowerRows(14,2)},
+{n:'BLACK FURNACE',d:.7,bg:'cliff',w:12,o:[{type:'gear',gx:104,gy:220,r:12,spin:2.8}],r:makeTowerRows(15,0)},
+{n:'SHATTERED ORRERY',d:.45,bg:'mirror',w:0,inv:1,o:[{type:'gear',gx:104,gy:260,r:10,spin:3},{type:'gear',gx:104,gy:150,r:10,spin:-2.6}],r:makeTowerRows(16,1)},
+{n:'LAST WATCH',d:.55,bg:'castle',w:8,o:[{type:'saw',ax:55,ay:280,bx:150,by:280,r:7,speed:.9},{type:'gear',gx:104,gy:190,r:12,spin:3.2},{type:'saw',ax:150,ay:100,bx:55,by:100,r:7,speed:.7}],r:makeTowerRows(17,2)},
+{n:'ECHO VAULT',d:.9,bg:'cave',w:0,inv:1,o:[{type:'saw',ax:150,ay:240,bx:55,by:240,r:7,speed:.8},{type:'gear',gx:104,gy:130,r:11,spin:3}],r:makeTowerRows(18,0)},
+{n:'HEART OF THE SPIRE',d:.85,bg:'spire',w:10,inv:1,o:[{type:'saw',ax:55,ay:280,bx:150,by:280,r:7,speed:.95},{type:'gear',gx:104,gy:190,r:12,spin:3.4},{type:'saw',ax:150,ay:100,bx:55,by:100,r:7,speed:.8}],r:makeTowerRows(19,1)}
 ];
 const SK='shadowspire_save_v1';let save={unlocked:1,cleared:{}};
 const ls=()=>{try{const r=localStorage.getItem(SK);if(r){const s=JSON.parse(r);if(s&&typeof s.unlocked==='number'){save.unlocked=cl(s.unlocked|0,1,LVS.length);save.cleared=s.cleared||{}}}}catch(e){}};
