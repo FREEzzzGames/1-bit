@@ -13,7 +13,7 @@ assert.equal((html.match(/<canvas\b/g) || []).length, 1, 'Expected one game canv
 assert.equal((html.match(/<main\b/g) || []).length, 1, 'Expected one console root');
 assert.equal((html.match(/<style\b/gi) || []).length, 0, 'Styles must live in console.css');
 assert.equal((html.match(/<script(?![^>]*\bsrc=)[^>]*>/gi) || []).length, 0, 'Scripts must be external modules');
-assert.ok(html.includes('./assets/console.css?v=24'), 'Console stylesheet must be linked');
+assert.ok(html.includes('./assets/console.css?v=25'), 'Console stylesheet must be linked');
 assert.ok(html.includes('./assets/console-menu.js?v=2'), 'Console launcher runtime must be linked');
 assert.ok(html.includes('<title>FREEzzz ARCADE — Game Select</title>'), 'Startup page must be the game selector');
 assert.ok(html.includes('./assets/skins.js?v=20'), 'Skin module must be linked');
