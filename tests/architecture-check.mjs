@@ -52,9 +52,10 @@ assert.ok(css.includes('.menu-home .controls{display:none}'), 'Launcher should n
 const racerPage = read('../night-runner.html');
 const racer = read('../assets/night-runner.js');
 assert.ok(racerPage.includes('<title>NIGHT RUNNER</title>'), 'Racing game page must be identifiable');
-assert.ok(racerPage.includes('./assets/night-runner.js?v=1'), 'Racing game runtime must load');
+assert.ok(racerPage.includes('./assets/night-runner.js?v=2'), 'Racing game runtime must load');
 assert.ok(racerPage.includes('href="./index.html"'), 'Racing game must link back to the main menu');
 assert.ok(shadowPage.includes('href="./index.html"'), 'SHADOW SPIRE must link back to the main menu');
+assert.ok(racer.includes('canvas.width=W;canvas.height=H'), 'Racing canvas must use the shared logical resolution');
 assert.ok(racer.includes('nightRunnerBest_v1'), 'Racing game must persist high score');
 assert.ok(racer.includes("bind('left');bind('right');bind('jump')"), 'Racing game must use console controls');
 assert.ok(racer.includes('function spawnCar()'), 'Racing game must spawn traffic');
