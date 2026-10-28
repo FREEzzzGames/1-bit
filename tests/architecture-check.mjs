@@ -43,7 +43,7 @@ assert.ok(skins.includes('shadowSpireShellSkin') && skins.includes('shadowSpireP
 const layoutEditor = read('../assets/control-layout.js');
 const shadowPage = read('../shadow-spire.html');
 assert.ok(shadowPage.includes('./assets/control-layout.js?v=3'), 'SHADOW SPIRE control layout editor must load');
-assert.ok(html.includes('./assets/console-menu.js?v=1'), 'Home page must load its launcher');
+assert.ok(html.includes('./assets/console-menu.js?v=2'), 'Home page must load its launcher');
 assert.ok(html.includes('class="menu-home"'), 'Startup page must use launcher layout');
 const menu = read('../assets/console-menu.js');
 assert.ok(menu.includes("href:'./shadow-spire.html'"), 'Launcher must offer SHADOW SPIRE');
