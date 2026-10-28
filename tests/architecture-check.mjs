@@ -13,7 +13,7 @@ assert.equal((html.match(/<canvas\b/g) || []).length, 1, 'Expected one game canv
 assert.equal((html.match(/<main\b/g) || []).length, 1, 'Expected one console root');
 assert.equal((html.match(/<style\b/gi) || []).length, 0, 'Styles must live in console.css');
 assert.equal((html.match(/<script(?![^>]*\bsrc=)[^>]*>/gi) || []).length, 0, 'Scripts must be external modules');
-assert.ok(html.includes('./assets/console.css?v=20'), 'Console stylesheet must be linked');
+assert.ok(html.includes('./assets/console.css?v=21'), 'Console stylesheet must be linked');
 assert.match(html, /\.\/assets\/game\.js\?v=\d+/, 'Game runtime must be linked');
 assert.ok(html.includes('./assets/skins.js?v=20'), 'Skin module must be linked');
 
