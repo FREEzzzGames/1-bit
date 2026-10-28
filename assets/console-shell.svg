@@ -60,6 +60,56 @@
   <circle cx="529" cy="1242" r="36" fill="none" stroke="#7f8997" stroke-opacity=".75" stroke-width="2"/>
   <circle cx="611" cy="1242" r="39" fill="#05070a" stroke="#030508" stroke-width="4"/>
   <circle cx="611" cy="1242" r="36" fill="none" stroke="#7f8997" stroke-opacity=".75" stroke-width="2"/>
+
+  <!-- Additional molded-material layers: broad specular sweep and soft contact occlusion. -->
+  <defs>
+    <linearGradient id="rimSweep" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#16baff" stop-opacity=".52"/>
+      <stop offset=".12" stop-color="#6ed4ff" stop-opacity=".12"/>
+      <stop offset=".34" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset=".72" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset=".91" stop-color="#ffbc70" stop-opacity=".1"/>
+      <stop offset="1" stop-color="#ffb35f" stop-opacity=".62"/>
+    </linearGradient>
+    <linearGradient id="topSheen" x1="0" y1="0" x2=".05" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".17"/>
+      <stop offset=".18" stop-color="#ffffff" stop-opacity=".055"/>
+      <stop offset=".55" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000000" stop-opacity=".25"/>
+    </linearGradient>
+    <linearGradient id="screenAO" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#000000" stop-opacity=".7"/>
+      <stop offset=".06" stop-color="#000000" stop-opacity=".12"/>
+      <stop offset=".9" stop-color="#000000" stop-opacity=".08"/>
+      <stop offset="1" stop-color="#000000" stop-opacity=".8"/>
+    </linearGradient>
+    <pattern id="micrograin" width="19" height="17" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="4" r=".55" fill="#ffffff" opacity=".17"/>
+      <circle cx="11" cy="12" r=".45" fill="#000000" opacity=".38"/>
+      <path d="M15 2h1 M5 15h1" stroke="#ffffff" stroke-opacity=".08" stroke-width=".5"/>
+    </pattern>
+  </defs>
+  <!-- A continuous edge reflection makes the shell read as one curved object. -->
+  <rect x="4" y="4" width="692" height="1312" rx="34" fill="none" stroke="url(#rimSweep)" stroke-width="8" opacity=".48"/>
+  <rect x="9" y="9" width="682" height="1302" rx="30" fill="none" stroke="url(#topSheen)" stroke-width="10" opacity=".75"/>
+  <!-- Top panel catches light at its crown and falls into shadow toward the screen. -->
+  <path d="M31 28 Q31 18 48 18 H652 Q669 18 669 35 V119 Q669 126 658 126 H42 Q31 126 31 115 Z"
+        fill="url(#topSheen)" opacity=".78"/>
+  <path d="M36 29 H664" stroke="#ffffff" stroke-opacity=".12" stroke-width="1.2"/>
+  <path d="M36 126 H664" stroke="#000000" stroke-opacity=".8" stroke-width="5"/>
+  <path d="M38 129 H662" stroke="#ffffff" stroke-opacity=".08" stroke-width="1"/>
+  <!-- Ambient occlusion outside the screen opening, not over the active pixels. -->
+  <rect x="93" y="119" width="514" height="864" rx="34" fill="none" stroke="#000000" stroke-opacity=".66" stroke-width="12"/>
+  <rect x="100" y="126" width="500" height="850" rx="30" fill="none" stroke="#ffffff" stroke-opacity=".045" stroke-width="2"/>
+  <rect x="18" y="18" width="664" height="1284" rx="30" fill="url(#micrograin)" opacity=".34"/>
+  <!-- Light rolls over the lower deck; the buttons remain transparent cutouts. -->
+  <path d="M34 1054 Q34 1038 51 1038 H649 Q666 1038 666 1055" fill="none" stroke="#ffffff" stroke-opacity=".17" stroke-width="2"/>
+  <path d="M34 1278 Q34 1290 50 1290 H650 Q666 1290 666 1278" fill="none" stroke="#000000" stroke-opacity=".75" stroke-width="4"/>
+  <path d="M37 1280 Q37 1288 51 1288 H649 Q663 1288 663 1280" fill="none" stroke="#ffffff" stroke-opacity=".06" stroke-width="1"/>
+  <!-- Restrained diagonal reflection adds material depth without adding UI elements. -->
+  <path d="M22 170 L170 22 H236 L22 236 Z" fill="#b8e7ff" opacity=".035"/>
+  <path d="M680 170 L530 20 H488 L680 212 Z" fill="#ffc98d" opacity=".03"/>
+
   <!-- Subtle diagonal reflection creates scale, not a graphic overlay on the game. -->
   <path d="M0 180 L170 0 H260 L0 280 Z" fill="#ffffff" opacity=".025"/>
   <rect width="700" height="1320" filter="url(#grain)" opacity=".13"/>
