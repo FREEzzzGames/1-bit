@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 1320" preserveAspectRatio="none">
+<defs>
+  <linearGradient id="shell" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#555b65"/><stop offset=".12" stop-color="#30353d"/><stop offset=".36" stop-color="#1b1f26"/><stop offset=".72" stop-color="#11151b"/><stop offset=".9" stop-color="#292e36"/><stop offset="1" stop-color="#080a0e"/></linearGradient>
+  <linearGradient id="edge" x1="0" y1="0" x2="1" y2=".3"><stop stop-color="#16a9ef"/><stop offset=".06" stop-color="#4a5965"/><stop offset=".18" stop-color="#11151a"/><stop offset=".78" stop-color="#111318"/><stop offset=".94" stop-color="#b77b43"/><stop offset="1" stop-color="#ffbd73"/></linearGradient>
+  <linearGradient id="deck" x1="0" y1="0" x2=".1" y2="1"><stop stop-color="#4b515c"/><stop offset=".08" stop-color="#272c34"/><stop offset=".42" stop-color="#1a1e25"/><stop offset=".85" stop-color="#11151a"/><stop offset="1" stop-color="#050609"/></linearGradient>
+  <linearGradient id="bezel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9ba5b2"/><stop offset=".025" stop-color="#3a414c"/><stop offset=".07" stop-color="#080a0e"/><stop offset=".18" stop-color="#272c35"/><stop offset=".5" stop-color="#080a0e"/><stop offset=".83" stop-color="#171b22"/><stop offset=".96" stop-color="#64707d"/><stop offset="1" stop-color="#0a0c10"/></linearGradient>
+  <linearGradient id="blueRim" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#11b5ff" stop-opacity=".9"/><stop offset=".16" stop-color="#0a8bca" stop-opacity=".18"/><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset=".82" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#ffb15e" stop-opacity=".72"/></linearGradient>
+  <radialGradient id="softLight" cx="0" cy=".18" r="1"><stop stop-color="#168ac7" stop-opacity=".23"/><stop offset=".55" stop-color="#1477a7" stop-opacity=".04"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+  <filter id="shadow" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur stdDeviation="9"/></filter>
+  <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".72" numOctaves="2" seed="9"/><feColorMatrix values="0 0 0 0 .55 0 0 0 0 .57 0 0 0 0 .6 0 0 0 .12 0"/></filter>
+  <mask id="cutouts" maskUnits="userSpaceOnUse" x="0" y="0" width="700" height="1320">
+    <rect width="700" height="1320" fill="white"/>
+    <rect x="125" y="150" width="450" height="800" rx="9" fill="black"/>
+    <rect x="52" y="1135" width="77" height="77" rx="12" fill="black"/>
+    <rect x="242" y="1135" width="77" height="77" rx="12" fill="black"/>
+    <circle cx="574" cy="1128" r="67" fill="black"/>
+    <circle cx="529" cy="1242" r="32" fill="black"/>
+    <circle cx="611" cy="1242" r="32" fill="black"/>
+  </mask>
+  <clipPath id="bodyClip"><rect x="2" y="2" width="696" height="1316" rx="34"/></clipPath>
+</defs>
+<g mask="url(#cutouts)" clip-path="url(#bodyClip)">
+  <rect width="700" height="1320" fill="url(#shell)"/>
+  <rect width="700" height="1320" fill="url(#softLight)"/>
+  <rect width="700" height="1320" fill="url(#blueRim)" opacity=".55"/>
+  <path d="M14 22 Q14 7 37 7 H663 Q688 7 688 31 V1289 Q688 1310 664 1310 H36 Q12 1310 12 1288 Z" fill="none" stroke="#05070a" stroke-width="12"/>
+  <path d="M13 40 Q13 12 42 12 H658 Q687 12 687 40 V1280 Q687 1308 658 1308 H42 Q13 1308 13 1280 Z" fill="none" stroke="url(#edge)" stroke-width="4" opacity=".8"/>
+  <path d="M24 38 Q24 24 43 24 H657 Q676 24 676 43 V1277 Q676 1296 657 1296 H43 Q24 1296 24 1277 Z" fill="none" stroke="#ffffff" stroke-opacity=".13" stroke-width="1.5"/>
+  <rect x="19" y="20" width="662" height="1280" fill="none" stroke="#000" stroke-opacity=".4" stroke-width="18"/>
+  <path d="M30 30 H670 V1300 H30 Z" fill="none" stroke="#ffffff" stroke-opacity=".035" stroke-width="2"/>
+  <!-- Top shoulder: directional lighting and broad molded contours, not extra UI. -->
+  <path d="M28 28 Q28 20 46 20 H654 Q672 20 672 38 V112 Q672 130 654 130 H46 Q28 130 28 112 Z" fill="#07090d" opacity=".36"/>
+  <path d="M33 33 H667" stroke="#ffffff" stroke-opacity=".14" stroke-width="2"/>
+  <path d="M35 124 H665" stroke="#000" stroke-opacity=".7" stroke-width="5"/>
+  <g opacity=".88" fill="#05070a" stroke="#59616c" stroke-width="1.3">
+    <path d="M247 38 l24 0 -18 24 -24 0 Z"/><path d="M293 38 l24 0 -18 24 -24 0 Z"/><path d="M339 38 l24 0 -18 24 -24 0 Z"/><path d="M385 38 l24 0 -18 24 -24 0 Z"/><path d="M431 38 l24 0 -18 24 -24 0 Z"/>
+  </g>
+  <path d="M20 148 Q20 128 45 128 H655 Q680 128 680 153 V973 Q680 1000 655 1000 H45 Q20 1000 20 973 Z" fill="#05070a" opacity=".62"/>
+  <rect x="98" y="124" width="504" height="862" rx="31" fill="#000" opacity=".5" filter="url(#shadow)"/>
+  <!-- Screen recess and precision bezel. The active display itself is a transparent cutout. -->
+  <rect x="101" y="126" width="498" height="848" rx="29" fill="#06080c" stroke="#050609" stroke-width="7"/>
+  <rect x="105" y="130" width="490" height="840" rx="26" fill="url(#bezel)" stroke="#77818e" stroke-opacity=".62" stroke-width="2"/>
+  <rect x="112" y="137" width="476" height="826" rx="20" fill="none" stroke="#020306" stroke-width="7"/>
+  <rect x="117" y="142" width="466" height="816" rx="15" fill="none" stroke="#ffffff" stroke-opacity=".12" stroke-width="1.4"/>
+  <path d="M120 150 H575 V950 H125 Q120 950 120 945 Z" fill="none" stroke="#000" stroke-opacity=".5" stroke-width="2"/>
+  <!-- Control deck is molded into the same shell. -->
+  <path d="M25 1045 Q25 1028 47 1028 H653 Q675 1028 675 1050 V1282 Q675 1300 653 1300 H47 Q25 1300 25 1282 Z" fill="#030508" opacity=".9"/>
+  <path d="M31 1051 Q31 1035 49 1035 H651 Q669 1035 669 1053 V1278 Q669 1294 651 1294 H49 Q31 1294 31 1278 Z" fill="url(#deck)" stroke="#737b87" stroke-opacity=".45" stroke-width="2"/>
+  <path d="M39 1060 Q39 1045 53 1045 H647 Q661 1045 661 1060" fill="none" stroke="#ffffff" stroke-opacity=".12" stroke-width="2"/>
+  <path d="M40 1280 H660" stroke="#000" stroke-opacity=".85" stroke-width="7"/>
+  <path d="M44 1281 H656" stroke="#ffffff" stroke-opacity=".05" stroke-width="1"/>
+  <!-- Button sockets; actual interactive button faces sit in the transparent holes. -->
+  <rect x="45" y="1128" width="91" height="91" rx="17" fill="#05070a" stroke="#050609" stroke-width="5"/>
+  <rect x="48" y="1131" width="85" height="85" rx="15" fill="none" stroke="#9aa3af" stroke-opacity=".8" stroke-width="2"/>
+  <rect x="235" y="1128" width="91" height="91" rx="17" fill="#05070a" stroke="#050609" stroke-width="5"/>
+  <rect x="238" y="1131" width="85" height="85" rx="15" fill="none" stroke="#9aa3af" stroke-opacity=".8" stroke-width="2"/>
+  <circle cx="574" cy="1128" r="75" fill="#05070a" stroke="#020306" stroke-width="5"/>
+  <circle cx="574" cy="1128" r="71" fill="none" stroke="#858e9a" stroke-opacity=".85" stroke-width="2"/>
+  <circle cx="529" cy="1242" r="39" fill="#05070a" stroke="#030508" stroke-width="4"/>
+  <circle cx="529" cy="1242" r="36" fill="none" stroke="#7f8997" stroke-opacity=".75" stroke-width="2"/>
+  <circle cx="611" cy="1242" r="39" fill="#05070a" stroke="#030508" stroke-width="4"/>
+  <circle cx="611" cy="1242" r="36" fill="none" stroke="#7f8997" stroke-opacity=".75" stroke-width="2"/>
+  <!-- Subtle diagonal reflection creates scale, not a graphic overlay on the game. -->
+  <path d="M0 180 L170 0 H260 L0 280 Z" fill="#ffffff" opacity=".025"/>
+  <rect width="700" height="1320" filter="url(#grain)" opacity=".13"/>
+</g>
+</svg>
