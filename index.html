@@ -733,11 +733,11 @@ body{display:block;padding:0}
 .console > .screen-bezel{
   position:absolute!important;
   left:4.5714%!important;
-  top:9.8485%!important;
+  top:10.6061%!important;
   right:auto!important;
   bottom:auto!important;
   width:90.8571%!important;
-  height:67.8788%!important;
+  height:65.9091%!important;
   max-width:none!important;
   max-height:none!important;
   min-width:0!important;
@@ -766,7 +766,7 @@ body{display:block;padding:0}
   object-fit:fill!important;
   background:#000!important;
 }
-@media(max-height:650px){.console > .screen-bezel{left:4.5714%!important;top:9.8485%!important;width:90.8571%!important;height:67.8788%!important;aspect-ratio:auto!important}}
+@media(max-height:650px){.console > .screen-bezel{left:4.5714%!important;top:10.6061%!important;width:90.8571%!important;height:65.9091%!important;aspect-ratio:auto!important}}
 
 </style></head>
 <body><main class="console" data-skin="dark"><div class="skin-tools"><div class="power-status"><span class="power-led" aria-hidden="true"></span><span>POWER ON</span></div><button class="skin-open" id="skinOpen" type="button" aria-expanded="false" aria-controls="skinPicker">SKINS ▾</button></div><div class="skin-picker" id="skinPicker" role="group" aria-label="Console skins"><div class="skin-picker-title"><span>CONSOLE SKIN</span><span>8 MODES</span></div><button class="skin-option" type="button" data-skin-choice="checker" aria-pressed="false"><span class="skin-swatch checker"></span>CHECKERBOARD</button><button class="skin-option" type="button" data-skin-choice="hazard" aria-pressed="false"><span class="skin-swatch hazard"></span>BLACK / YELLOW</button><button class="skin-option" type="button" data-skin-choice="rainbow" aria-pressed="false"><span class="skin-swatch rainbow"></span>RAINBOW</button><button class="skin-option" type="button" data-skin-choice="animated" aria-pressed="false"><span class="skin-swatch animated"></span>NEON FLOW</button><button class="skin-option" type="button" data-skin-choice="light" aria-pressed="false"><span class="skin-swatch light"></span>LIGHT</button><button class="skin-option" type="button" data-skin-choice="dark" aria-pressed="true"><span class="skin-swatch dark"></span>DARK</button><button class="skin-option" type="button" data-skin-choice="green" aria-pressed="false"><span class="skin-swatch green"></span>FOREST</button><button class="skin-option" type="button" data-skin-choice="steel" aria-pressed="false"><span class="skin-swatch steel"></span>STEEL</button></div><div class="screen-bezel"><canvas id="c"></canvas></div><section class="controls" aria-label="Console controls"><div class="dpad" aria-label="Movement"><button class="hw-btn left" data-control="left" aria-label="Move left">◀</button><span class="dpad-core" aria-hidden="true">✦</span><button class="hw-btn right" data-control="right" aria-label="Move right">▶</button></div><div class="action-cluster"><button class="hw-btn action-main" data-control="jump" aria-label="Jump or interact">ACTION</button><div class="utility-row"><button class="hw-btn utility" data-control="lantern" aria-label="Toggle lamp">☼<small>LAMP</small></button><button class="hw-btn utility" data-control="pause" aria-label="Pause">Ⅱ<small>PAUSE</small></button></div></div></section></main><script>
@@ -806,7 +806,7 @@ const ws=()=>{try{localStorage.setItem(SK,JSON.stringify(save))}catch(e){}};
 const ST={MENU:0,LEVELS:1,PLAY:2,DEAD:3,WIN:4,ENDING:5,PAUSE:6};let state=ST.MENU,stateT=0,levelIndex=0,level=null,cam={x:0,y:0},crSt=new Map(),stars=[];
 const P={x:0,y:0,w:9,h:13,vx:0,vy:0,onGround:false,coyote:0,jumpBuf:0,facing:1,lanternOn:true,alive:true,animT:0,stepT:0,prevY:0,riding:null,hasKey:false,crystals:0};
 const I={left:false,right:false,jump:false,jumpPressed:false,lanternPressed:false};
-function rs(){/* Portrait 9:16 logical viewport; enough horizontal pixels for the bitmap font and HUD. */VW=180;VH=320;cv.width=VW;cv.height=VH;cv.style.width='100%';cv.style.height='100%';cx.imageSmoothingEnabled=false;bpt()}
+function rs(){/* Match the logical pixel viewport to the physical display aperture; keep pixel art undistorted on mobile screens. */const r=cv.getBoundingClientRect();VH=320;VW=Math.max(180,Math.round(VH*(r.width/Math.max(1,r.height))));cv.width=VW;cv.height=VH;cv.style.width='100%';cv.style.height='100%';cx.imageSmoothingEnabled=false;bpt()}
 function pl(d){const rows=d.r,H=rows.length;let W=0;for(let i=0;i<H;i++)W=Math.max(W,rows[i].length);const ti=new Uint8Array(W*H),lv={w:W,h:H,tiles:ti,spawn:{x:32,y:32},keys:[],crystals:[],doors:[],goal:null,objects:[],def:d};for(let y=0;y<H;y++){const row=rows[y];for(let x=0;x<W;x++){const ch=x<row.length?row.charAt(x):'.',idx=y*W+x;if(ch==='#')ti[idx]=1;else if(ch===':')ti[idx]=2;else if(ch==='^')ti[idx]=3;else if(ch==='=')ti[idx]=4;else if(ch==='K')lv.keys.push({x:x*T+8,y:y*T+8,got:false,t:0});else if(ch==='C')lv.crystals.push({x:x*T+8,y:y*T+8,got:false,t:0});else if(ch==='G')lv.goal={x:x*T+8,y:y*T+8,t:0};else if(ch==='S')lv.spawn={x:x*T+3,y:y*T+3};else if(ch==='D'){const dr={cx:x,cy:y,open:false,anim:0};lv.doors.push(dr);for(let k=0;k<3;k++)if(y-k>=0)ti[(y-k)*W+x]=5}}}
 const objs=d.o||[];for(const s of objs){const o=Object.assign({},s);if(o.type==='saw'){o.x=o.ax;o.y=o.ay;o.t=o.phase||0;o.dir=1;o.r=o.r||7;o.speed=o.speed||.5}else if(o.type==='gear'){o.x=o.gx;o.y=o.gy;o.r=o.r||10;o.rot=0;o.spin=o.spin||1.5}lv.objects.push(o)}return lv}
 function stl(i){levelIndex=cl(i,0,LVS.length-1);level=pl(LVS[levelIndex]);crSt=new Map();Object.assign(P,{x:level.spawn.x,y:level.spawn.y,vx:0,vy:0,onGround:false,coyote:0,jumpBuf:0,facing:1,lanternOn:true,alive:true,animT:0,stepT:0,prevY:level.spawn.y,riding:null,hasKey:false,crystals:0});cam.x=cl(P.x-VW/2,0,Math.max(0,level.w*T-VW));cam.y=cl(P.y-VH/2,0,Math.max(0,level.h*T-VH));I.left=I.right=I.jump=false;I.jumpPressed=false;I.lanternPressed=false;state=ST.PLAY;stateT=0}
