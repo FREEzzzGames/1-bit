@@ -273,11 +273,11 @@ function onKD(e){ia();const k=e.key.toLowerCase();if(state===ST.PAUSE){if(k==='e
 function onKU(e){const k=e.key.toLowerCase();if(k==='arrowleft'||k==='a')I.left=false;else if(k==='arrowright'||k==='d')I.right=false;else if(k==='arrowup'||k==='w'||k===' ')I.jump=false}
 function iStars(){stars=[];for(let i=0;i<70;i++)stars.push({x:Math.random()*VW,y:Math.random()*VH*.75,s:Math.random()})}
 ls();rs();bpt();iStars();
-cv.addEventListener('pointerdown',onDown,{passive:false});
-cv.addEventListener('pointerup',onUp,{passive:false});
-cv.addEventListener('pointermove',onMove,{passive:false});
-cv.addEventListener('pointercancel',onCancel,{passive:false});
-cv.addEventListener('pointerleave',onCancel,{passive:false});
+// Canvas is display-only; all gameplay actions use console buttons.
+// Canvas is display-only; all gameplay actions use console buttons.
+// Canvas is display-only; all gameplay actions use console buttons.
+// Canvas is display-only; all gameplay actions use console buttons.
+// Canvas is display-only; all gameplay actions use console buttons.
 document.querySelectorAll('[data-control]').forEach(el=>{const id=el.dataset.control;el.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();ia();el.classList.add('pressed');try{el.setPointerCapture(e.pointerId)}catch(_){}pts.set(e.pointerId,id);if(state!==ST.PLAY){if(id==='jump'){if(state===ST.LEVELS){if(save.unlocked>0){SFX.ui();stl(0)}}else hMenu(VW/2,VH/2)}else if(id==='pause'&&state===ST.PAUSE){state=ST.PLAY;stateT=0;SFX.ui()}else if(id==='pause'&&state===ST.LEVELS){state=ST.MENU;stateT=0;SFX.ui()}}else if(id==='pause'&&state===ST.PAUSE){state=ST.PLAY;stateT=0;SFX.ui()}else prB(id)},{passive:false});const release=e=>{e.preventDefault();el.classList.remove('pressed');rlB(id);pts.delete(e.pointerId)};el.addEventListener('pointerup',release,{passive:false});el.addEventListener('pointercancel',release,{passive:false});el.addEventListener('lostpointercapture',()=>{el.classList.remove('pressed');rlB(id)})});
 cv.addEventListener('contextmenu',e=>e.preventDefault());
 window.addEventListener('keydown',onKD,{passive:false});
