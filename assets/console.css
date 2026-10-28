@@ -71,3 +71,9 @@ body{font-family:monospace;color:var(--cream)}
 .menu-home .controls{display:block!important;visibility:visible!important;opacity:1!important;z-index:10!important}
 .menu-home .controls .hw-btn{display:flex!important;visibility:visible!important;opacity:1!important;background:linear-gradient(145deg,var(--pad-button-top),var(--pad-button-mid) 38%,var(--pad-button-bottom))!important;color:var(--pad-ink)!important;border:1px solid var(--pad-edge)!important;box-shadow:0 4px 0 #030407,0 6px 9px #000a,inset 0 1px 2px var(--pad-glow),inset 0 -3px 5px #000a!important}
 .menu-home .controls .hw-btn.action-main,.menu-home .controls .hw-btn.utility{background:radial-gradient(circle at 30% 20%,var(--pad-button-top),var(--pad-button-mid) 45%,var(--pad-button-bottom))!important}
+
+/* Header controls are part of the same draggable layout as gameplay buttons. */
+.controls .style-trigger{position:absolute;z-index:13;display:flex;align-items:center;justify-content:center;pointer-events:auto;touch-action:none;white-space:nowrap}
+.controls .game-switch-trigger{padding:5px 2px;text-decoration:none;font-size:clamp(6px,1.55vw,9px)}
+.controls .style-trigger.layout-editable,.controls .control-layout-trigger.layout-editable{outline:1px dashed #9ceeff;outline-offset:2px}
+.control-layout-toolbar{top:72.4%;min-height:3.3%}
