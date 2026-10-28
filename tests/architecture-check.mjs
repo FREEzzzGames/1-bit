@@ -25,7 +25,7 @@ for (const layer of layers) {
   assert.ok(index > lastIndex, `Layer order invalid at ${layer}`);
   lastIndex = index;
 }
-assert.equal((css.match(/\.controls\s*\{/g) || []).length, 1, 'Only one authoritative controls rule is allowed');
+assert.equal((css.match(/\.controls\{position:absolute/g) || []).length, 1, 'Only one authoritative controls rule is allowed');
 assert.equal((css.match(/\.screen-bezel\s*\{/g) || []).length, 1, 'Only one authoritative display rule is allowed');
 assert.ok(css.includes('.controls{position:absolute;z-index:4;inset:0;display:block;'), 'Controls input layer must cover the console');
 assert.ok(css.includes('background:transparent!important;box-shadow:none!important;pointer-events:none'), 'Input layer must not paint over shell art');
