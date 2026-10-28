@@ -44,10 +44,10 @@ body{font-family:monospace;color:var(--cream)}
 @media(prefers-reduced-motion:reduce){.style-picker.open{animation:none}.hw-btn,.style-trigger,.style-option{transition:none!important}}
 
 /* User-adjustable hardware controls: activate by double-tapping any control. */
-.control-layout-toolbar{position:absolute;z-index:20;left:5%;right:5%;top:78.2%;min-height:5.5%;display:flex;align-items:center;justify-content:center;gap:6px;padding:3px 5px;border:1px solid #8b9aaa;border-radius:7px;background:#090d14f5;color:#fff8e8;font:700 clamp(6px,1.5vw,9px)/1.2 monospace;pointer-events:auto}
+.control-layout-toolbar{position:absolute;z-index:20;left:5%;right:5%;top:76.7%;min-height:3.3%;display:flex;align-items:center;justify-content:center;gap:6px;padding:3px 5px;border:1px solid #8b9aaa;border-radius:7px;background:#090d14f5;color:#fff8e8;font:700 clamp(6px,1.5vw,9px)/1.2 monospace;pointer-events:auto}
 .control-layout-toolbar[hidden],.control-resize-handle[hidden]{display:none!important}
 .control-layout-toolbar span{flex:1;text-align:center}
-.control-layout-toolbar button{min-height:24px;padding:3px 6px;border:1px solid #8b9aaa;border-radius:4px;background:#252e39;color:#fff8e8;font:700 clamp(7px,1.7vw,10px)/1 monospace;touch-action:manipulation}
+.control-layout-toolbar button{min-height:19px;padding:2px 5px;border:1px solid #8b9aaa;border-radius:4px;background:#252e39;color:#fff8e8;font:700 clamp(7px,1.7vw,10px)/1 monospace;touch-action:manipulation}
 .controls.editing-controls .hw-btn{touch-action:none;user-select:none;outline:1px dashed #9ceeff;outline-offset:2px}
 .controls.editing-controls .hw-btn:active{transform:none}
 .control-resize-handle{position:absolute;z-index:25;right:-3px;bottom:-3px;width:18px;height:18px;border:2px solid #071018;border-radius:4px;background:#9ceeff;box-shadow:0 0 0 1px #fff,0 0 8px #66fcf1;touch-action:none;cursor:nwse-resize}
