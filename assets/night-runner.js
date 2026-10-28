@@ -12,9 +12,9 @@ const STORE='nightRunnerBest_v1';
 let best=0;try{best=Number(localStorage.getItem(STORE)||0)||0}catch(_){}
 let mode='title',last=0,elapsed=0,score=0,speed=90,boost=0,spawn=0,shake=0;
 let player={x:W/2,y:258,w:15,h:25,steer:0};
-let traffic=[],particles=[],roadOffset=0,flash=0;
+let traffic=[],particles=[],pickups=[],hazards=[],roadOffset=0,flash=0,invuln=0,skid=0,combo=0,nearMisses=0,coins=0,level=1;
 const lanes=[64,104,144];
-function reset(){mode='play';elapsed=0;score=0;speed=90;boost=0;spawn=.5;shake=0;flash=0;traffic=[];particles=[];player.x=W/2;player.steer=0;roadOffset=0}
+function reset(){mode='play';elapsed=0;score=0;speed=90;boost=0;spawn=.5;shake=0;flash=0;traffic=[];particles=[];pickups=[];hazards=[];invuln=0;skid=0;combo=0;nearMisses=0;coins=0;level=1;player.x=W/2;player.steer=0;roadOffset=0}
 function rect(x,y,w,h,col){ctx.fillStyle=col;ctx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h))}
 function text(s,x,y,size=8,align='center',col=C){ctx.fillStyle=col;ctx.font='bold '+size+'px monospace';ctx.textAlign=align;ctx.textBaseline='top';ctx.fillText(s,Math.round(x),Math.round(y))}
 function car(x,y,w,h,enemy=false){x=Math.round(x);y=Math.round(y);const body=enemy?B:C,trim=enemy?C:B;
@@ -47,21 +47,39 @@ function spawnCar(){
  traffic.push({x:lane+(Math.random()*8-4),y:-34,w:types>.72?17:14,h:types>.72?27:23,v:Math.random()*24+15,kind:types>.72?'truck':'car',passed:false});
 }
 function burst(x,y){for(let i=0;i<10;i++)particles.push({x,y,vx:(Math.random()-.5)*100,vy:(Math.random()-.7)*90,t:.35+Math.random()*.3})}
+function spawnPickup(){const lane=lanes[Math.floor(Math.random()*lanes.length)];pickups.push({x:lane,y:-12,type:Math.random()<.72?'nitro':'coin'})}
+function spawnHazard(){const lane=lanes[Math.floor(Math.random()*lanes.length)];hazards.push({x:lane,y:-14,w:15,h:8})}
+function nearMiss(o){const dx=Math.abs(o.x-player.x),dy=Math.abs((o.y+o.h/2)-(player.y+player.h/2));return dx<(o.w+player.w)*1.15&&dx>(o.w+player.w)*.72&&dy<(o.h+player.h)*.9}
 function update(dt){
  if(mode!=='play')return;
- elapsed+=dt;speed=clamp(90+elapsed*2.3,90,190);
+ elapsed+=dt;level=1+Math.floor(elapsed/18);speed=clamp(90+elapsed*2.3,90,190);
  if(input.action){boost=clamp(boost+dt*.55,0,1)}else boost=clamp(boost-dt*.8,0,1);
  const actual=speed+boost*75;roadOffset=(roadOffset+actual*dt)%32;
  const steer=(input.right?1:0)-(input.left?1:0);
  player.steer+=(steer-player.steer)*Math.min(1,dt*10);
- player.x=clamp(player.x+player.steer*(115+actual*.14)*dt,39,W-39);
- spawn-=dt;if(spawn<=0){spawnCar();spawn=Math.max(.36,1.08-(actual-90)*.004)+Math.random()*.28}
- for(const o of traffic){o.y+=(actual*.72+o.v)*dt;if(!o.passed&&o.y>player.y+player.h/2){o.passed=true;score+=10}}
+ const steeringScale=skid>0?.48:1;
+ player.x=clamp(player.x+player.steer*(115+actual*.14)*dt*steeringScale,39,W-39);
+ spawn-=dt;if(spawn<=0){spawnCar();spawn=Math.max(.34,1.08-(actual-90)*.004-level*.025)+Math.random()*.28}
+ if(Math.random()<dt*(.12+level*.012))spawnPickup();
+ if(Math.random()<dt*(.055+level*.008))spawnHazard();
+ invuln=Math.max(0,invuln-dt);skid=Math.max(0,skid-dt);
+ for(const o of traffic){o.y+=(actual*.72+o.v)*dt;
+   if(!o.passed&&o.y>player.y+player.h/2){o.passed=true;score+=10}
+   if(!o.nearAwarded&&nearMiss(o)){o.nearAwarded=true;nearMisses++;combo=Math.min(9,combo+1);score+=25*combo;burst(player.x,player.y+8)}
+ }
  for(let i=traffic.length-1;i>=0;i--){const o=traffic[i];if(o.y>H+40){traffic.splice(i,1);continue}
-   if(Math.abs(o.x-player.x)<(o.w+player.w)*.72&&Math.abs((o.y+o.h/2)-(player.y+player.h/2))<(o.h+player.h)*.68){
+   if(invuln<=0&&Math.abs(o.x-player.x)<(o.w+player.w)*.72&&Math.abs((o.y+o.h/2)-(player.y+player.h/2))<(o.h+player.h)*.68){
      burst(player.x,player.y);shake=0.24;flash=.2;mode='crash';
      if(score>best){best=score;try{localStorage.setItem(STORE,String(best))}catch(_){}}
    }
+ }
+ for(let i=pickups.length-1;i>=0;i--){const p=pickups[i];p.y+=(actual*.72)*dt;
+   if(Math.abs(p.x-player.x)<13&&Math.abs(p.y-(player.y+12))<17){if(p.type==='nitro'){boost=clamp(boost+.48,0,1);score+=40}else{coins++;score+=75;invuln=.35}burst(p.x,p.y);pickups.splice(i,1);continue}
+   if(p.y>H+15)pickups.splice(i,1)
+ }
+ for(let i=hazards.length-1;i>=0;i--){const h=hazards[i];h.y+=(actual*.72)*dt;
+   if(!h.hit&&Math.abs(h.x-player.x)<13&&Math.abs(h.y-(player.y+12))<16){h.hit=true;skid=1.15;speed=Math.max(70,speed-18);score=Math.max(0,score-35);burst(player.x,player.y+12)}
+   if(h.y>H+15)hazards.splice(i,1)
  }
  for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.t-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=180*dt;if(p.t<=0)particles.splice(i,1)}
  shake=Math.max(0,shake-dt);flash=Math.max(0,flash-dt);
@@ -72,7 +90,9 @@ function drawHUD(){
  rect(4,4,W-8,19,B);rect(4,4,W-8,1,C);rect(4,22,W-8,1,C);
  text('NIGHT RUNNER',8,8,8,'left');text(String(Math.floor(score)).padStart(4,'0'),W-8,8,8,'right');
  text('BEST '+String(Math.floor(best)).padStart(4,'0'),W-8,27,6,'right',MID);
- const barW=44;rect(8,29,barW,4,MID);rect(8,29,barW*boost,4,C);text('BOOST',8,35,5,'left',MID);
+ text('LV '+level+' x'+Math.max(1,combo),8,27,6,'left',MID);
+ const barW=44;rect(8,37,barW,4,MID);rect(8,37,barW*boost,4,C);text('N2O',8,43,5,'left',MID);
+ if(skid>0)text('SKID!',W/2,52,7,'center',C);
 }
 function drawTitle(){
  rect(0,0,W,H,B);
@@ -84,23 +104,27 @@ function drawTitle(){
  car(W/2-8,222,16,26,false);
  text('NIGHT',W/2,37,23);text('RUNNER',W/2,61,23);
  rect(24,96,W-48,1,C);text('1-BIT ARCADE RACING',W/2,106,8);
- text('LEFT / RIGHT TO STEER',W/2,128,7);
- text('HOLD ACTION: BOOST',W/2,141,7);
+ text('LEFT / RIGHT TO STEER',W/2,126,7);
+ text('HOLD ACTION: NITRO',W/2,138,7);
+ text('GRAB N2O + COINS',W/2,150,7);
+ text('DODGE OIL + TRAFFIC',W/2,162,7);
  const pulse=Math.floor(performance.now()/420)%2===0;
  if(pulse){rect(29,174,W-58,24,C);text('TAP ACTION TO START',W/2,181,8,'center',B)}
  text('DODGE TRAFFIC',W/2,276,7);text('CHASE THE HIGH SCORE',W/2,289,6,'center',MID);
 }
 function drawCrash(){
  rect(20,119,W-40,78,C);rect(22,121,W-44,74,B);
- text('CRASH!',W/2,130,15);text('DISTANCE '+Math.floor(score),W/2,151,7);
+ text('CRASH!',W/2,130,15);text('DISTANCE '+Math.floor(score),W/2,151,7);text('COINS '+coins+'  NEAR MISSES '+nearMisses,W/2,176,5,'center',MID);
  text('BEST '+Math.floor(best),W/2,164,7,'center',MID);
  text('ACTION: RETRY',W/2,211,8);
 }
 function render(dt){
  ctx.save();if(shake>0)ctx.translate((Math.random()-.5)*shake*18,(Math.random()-.5)*shake*18);
  drawRoad(dt);
+ for(const h of hazards){rect(h.x-8,h.y,16,8,MID);rect(h.x-5,h.y+2,3,2,C);rect(h.x+2,h.y+4,4,2,C)}
+ for(const p of pickups){if(p.type==='nitro'){rect(p.x-5,p.y-5,10,10,C);rect(p.x-2,p.y-3,4,6,B);rect(p.x-1,p.y-1,2,2,C)}else{rect(p.x-4,p.y-4,8,8,C);rect(p.x-2,p.y-2,4,4,B)}}
  for(const o of traffic)car(o.x-o.w/2,o.y,o.w,o.h,true);
- if(mode==='play'||mode==='crash')car(player.x-player.w/2,player.y,player.w,player.h,false);
+ if((mode==='play'||mode==='crash')&&(invuln<=0||Math.floor(performance.now()/70)%2===0))car(player.x-player.w/2,player.y,player.w,player.h,false);
  for(const p of particles){rect(p.x,p.y,2,2,C)}
  drawHUD();ctx.restore();
  if(mode==='crash'){if(flash>0)rect(0,0,W,H,C);drawCrash()}
