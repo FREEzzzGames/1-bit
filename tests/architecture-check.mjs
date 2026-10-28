@@ -47,7 +47,7 @@ assert.ok(screenContract.includes('width: 208, height: 320'), 'Shared game scree
 assert.ok(html.includes('./assets/game-screen.js?v=1'), 'Shared game screen contract must load before games');
 assert.ok(game.includes('window.CONSOLE_GAME_SCREEN'), 'Game must use the shared screen contract');
 assert.ok(game.includes('function makeTowerRows'), 'Levels must be generated for the fixed portrait game screen');
-const generatorMatch = game.match(/function makeTowerRows\\(seed,style\\)\\{[\\s\\S]*?\\n\\}/);
+const generatorMatch = game.match(/function makeTowerRows\(seed,style\)\{[\s\S]*?\n\}/);
 assert.ok(generatorMatch, 'Portrait level generator must be inspectable for reachability checks');
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const makeTowerRows = new Function('cl', `${generatorMatch[0]}; return makeTowerRows;`)(clamp);
