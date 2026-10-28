@@ -113,10 +113,15 @@ function drawTitle(){
  text('DODGE TRAFFIC',W/2,276,7);text('CHASE THE HIGH SCORE',W/2,289,6,'center',MID);
 }
 function drawCrash(){
- rect(20,119,W-40,78,C);rect(22,121,W-44,74,B);
- text('CRASH!',W/2,130,15);text('DISTANCE '+Math.floor(score),W/2,151,7);text('COINS '+coins+'  NEAR MISSES '+nearMisses,W/2,176,5,'center',MID);
- text('BEST '+Math.floor(best),W/2,164,7,'center',MID);
- text('ACTION: RETRY',W/2,211,8);
+  // Keep the failure state in the same black-and-ivory 1-bit palette.
+  rect(12,104,W-24,105,MID);rect(14,106,W-28,101,B);
+  rect(20,112,W-40,1,C);rect(20,194,W-40,1,C);
+  text('RUN OVER',W/2,119,14);
+  text('DISTANCE',W/2,143,6,'center',MID);text(String(Math.floor(score)).padStart(4,'0'),W/2,153,12);
+  text('BEST '+String(Math.floor(best)).padStart(4,'0'),W/2,171,7,'center',C);
+  text('COINS '+coins+'  NEAR '+nearMisses,W/2,184,5,'center',MID);
+  rect(28,220,W-56,22,C);text('ACTION: RETRY',W/2,227,8,'center',B);
+  text('TAP SCREEN TO RACE AGAIN',W/2,252,5,'center',MID);
 }
 function render(dt){
  ctx.save();if(shake>0)ctx.translate((Math.random()-.5)*shake*18,(Math.random()-.5)*shake*18);
