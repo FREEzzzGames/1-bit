@@ -7,13 +7,14 @@ const css = read('../assets/console.css');
 const game = read('../assets/game.js');
 const skins = read('../assets/skins.js');
 const svg = read('../assets/console-shell.svg');
+const screenContract = read('../assets/game-screen.js');
 
 assert.equal((html.match(/<canvas\b/g) || []).length, 1, 'Expected one game canvas');
 assert.equal((html.match(/<main\b/g) || []).length, 1, 'Expected one console root');
 assert.equal((html.match(/<style\b/gi) || []).length, 0, 'Styles must live in console.css');
 assert.equal((html.match(/<script(?![^>]*\bsrc=)[^>]*>/gi) || []).length, 0, 'Scripts must be external modules');
 assert.ok(html.includes('./assets/console.css?v=20'), 'Console stylesheet must be linked');
-assert.ok(html.includes('./assets/game.js?v=20'), 'Game runtime must be linked');
+assert.ok(html.includes('./assets/game.js?v=21'), 'Game runtime must be linked');
 assert.ok(html.includes('./assets/skins.js?v=20'), 'Skin module must be linked');
 
 const layers = ['class="shell-art"', 'class="shell-skin-art"', 'class="deck-tint"', 'class="screen-bezel"', 'class="controls"'];
@@ -42,6 +43,10 @@ assert.ok(skins.includes('.style-option[data-shell-skin]') && skins.includes('.s
 for (const fn of ['rs','pl','stl','up','rd','loop','onDown','onUp','onMove','onCancel','onKD','onKU','dMenu','dHUD']) {
   assert.ok(new RegExp(`function\\s+${fn}\\s*\\(`).test(game), `Missing runtime function: ${fn}`);
 }
+assert.ok(screenContract.includes('width: 208, height: 320'), 'Shared game screen must stay 208x320');
+assert.ok(html.includes('./assets/game-screen.js?v=1'), 'Shared game screen contract must load before games');
+assert.ok(game.includes('window.CONSOLE_GAME_SCREEN'), 'Game must use the shared screen contract');
+assert.ok(game.includes('function makeTowerRows'), 'Levels must be generated for the fixed portrait game screen');
 assert.ok(game.includes('requestAnimationFrame(loop)'), 'Game loop must be active');
 assert.ok(game.includes('localStorage'), 'Game progress persistence must remain present');
 
