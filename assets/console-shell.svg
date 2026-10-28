@@ -10,7 +10,7 @@
   <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".72" numOctaves="2" seed="9"/><feColorMatrix values="0 0 0 0 .55 0 0 0 0 .57 0 0 0 0 .6 0 0 0 .12 0"/></filter>
   <mask id="cutouts" maskUnits="userSpaceOnUse" x="0" y="0" width="700" height="1320">
     <rect width="700" height="1320" fill="white"/>
-    <rect x="95" y="220" width="510" height="804" rx="18" fill="black"/>
+    <rect x="18" y="55" width="664" height="1230" rx="18" fill="black"/>
     <rect x="52" y="1135" width="77" height="77" rx="12" fill="black"/>
     <rect x="242" y="1135" width="77" height="77" rx="12" fill="black"/>
     <circle cx="574" cy="1128" r="67" fill="black"/>
@@ -138,12 +138,12 @@
     <feGaussianBlur stdDeviation="8"/>
   </filter>
 </defs>
-<rect x="87" y="215" width="526" height="819" rx="39" fill="#000" opacity=".72" filter="url(#expandedShadow)"/>
-<rect x="95" y="220" width="510" height="804" rx="34" fill="#07090d" stroke="#030407" stroke-width="7"/>
-<rect x="99" y="224" width="502" height="796" rx="30" fill="url(#expandedBezel)" stroke="url(#expandedRim)" stroke-width="3"/>
-<rect x="105" y="230" width="490" height="784" rx="25" fill="none" stroke="#020306" stroke-width="6"/>
-<rect x="110" y="235" width="480" height="774" rx="18" fill="none" stroke="#ffffff" stroke-opacity=".18" stroke-width="1.5"/>
-<path d="M116 239 H584" stroke="#ffffff" stroke-opacity=".13" stroke-width="1.5"/>
-<path d="M116 1005 H584" stroke="#000000" stroke-opacity=".85" stroke-width="3"/>
+<rect x="10" y="45" width="680" height="1250" rx="39" fill="#000" opacity=".72" filter="url(#expandedShadow)"/>
+<rect x="18" y="55" width="664" height="1230" rx="34" fill="#07090d" stroke="#030407" stroke-width="7"/>
+<rect x="22" y="59" width="656" height="1222" rx="30" fill="url(#expandedBezel)" stroke="url(#expandedRim)" stroke-width="3"/>
+<rect x="28" y="65" width="644" height="1210" rx="25" fill="none" stroke="#020306" stroke-width="6"/>
+<rect x="32" y="70" width="636" height="1200" rx="18" fill="none" stroke="#ffffff" stroke-opacity=".18" stroke-width="1.5"/>
+<path d="M38 74 H662" stroke="#ffffff" stroke-opacity=".13" stroke-width="1.5"/>
+<path d="M38 1267 H662" stroke="#000000" stroke-opacity=".85" stroke-width="3"/>
 
 </svg>
