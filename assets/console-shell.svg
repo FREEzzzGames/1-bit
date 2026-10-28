@@ -10,7 +10,7 @@
   <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".72" numOctaves="2" seed="9"/><feColorMatrix values="0 0 0 0 .55 0 0 0 0 .57 0 0 0 0 .6 0 0 0 .12 0"/></filter>
   <mask id="cutouts" maskUnits="userSpaceOnUse" x="0" y="0" width="700" height="1320">
     <rect width="700" height="1320" fill="white"/>
-    <rect x="95" y="20" width="510" height="1004" rx="18" fill="black"/>
+    <rect x="95" y="20" width="510" height="680" rx="18" fill="black"/>
     <rect x="52" y="1135" width="77" height="77" rx="12" fill="black"/>
     <rect x="242" y="1135" width="77" height="77" rx="12" fill="black"/>
     <circle cx="574" cy="1128" r="67" fill="black"/>
@@ -36,13 +36,13 @@
     <path d="M247 38 l24 0 -18 24 -24 0 Z"/><path d="M293 38 l24 0 -18 24 -24 0 Z"/><path d="M339 38 l24 0 -18 24 -24 0 Z"/><path d="M385 38 l24 0 -18 24 -24 0 Z"/><path d="M431 38 l24 0 -18 24 -24 0 Z"/>
   </g>
   <!-- Removed broad translucent surround: screen shading stays confined to the bezel. -->
-  <rect x="98" y="124" width="504" height="842" rx="31" fill="#000" opacity=".42" filter="url(#shadow)"/>
+  <rect x="98" y="124" width="504" height="570" rx="31" fill="#000" opacity=".42" filter="url(#shadow)"/>
   <!-- Screen recess and precision bezel. The active display itself is a transparent cutout. -->
-  <rect x="101" y="126" width="498" height="848" rx="29" fill="#06080c" stroke="#050609" stroke-width="7"/>
-  <rect x="105" y="130" width="490" height="840" rx="26" fill="url(#bezel)" stroke="#77818e" stroke-opacity=".62" stroke-width="2"/>
-  <rect x="112" y="137" width="476" height="826" rx="20" fill="none" stroke="#020306" stroke-width="7"/>
-  <rect x="117" y="142" width="466" height="816" rx="15" fill="none" stroke="#ffffff" stroke-opacity=".12" stroke-width="1.4"/>
-  <path d="M120 150 H575 V950 H125 Q120 950 120 945 Z" fill="none" stroke="#000" stroke-opacity=".5" stroke-width="2"/>
+  <rect x="101" y="126" width="498" height="568" rx="29" fill="#06080c" stroke="#050609" stroke-width="7"/>
+  <rect x="105" y="130" width="490" height="560" rx="26" fill="url(#bezel)" stroke="#77818e" stroke-opacity=".62" stroke-width="2"/>
+  <rect x="112" y="137" width="476" height="546" rx="20" fill="none" stroke="#020306" stroke-width="7"/>
+  <rect x="117" y="142" width="466" height="538" rx="15" fill="none" stroke="#ffffff" stroke-opacity=".12" stroke-width="1.4"/>
+  <path d="M120 150 H575 V675 H125 Q120 675 120 670 Z" fill="none" stroke="#000" stroke-opacity=".5" stroke-width="2"/>
   <!-- Control deck is molded into the same shell. -->
   <path d="M25 1045 Q25 1028 47 1028 H653 Q675 1028 675 1050 V1282 Q675 1300 653 1300 H47 Q25 1300 25 1282 Z" fill="#030508" opacity=".9"/>
   <path d="M31 1051 Q31 1035 49 1035 H651 Q669 1035 669 1053 V1278 Q669 1294 651 1294 H49 Q31 1294 31 1278 Z" fill="url(#deck)" stroke="#737b87" stroke-opacity=".45" stroke-width="2"/>
@@ -99,8 +99,8 @@
   <path d="M36 126 H664" stroke="#000000" stroke-opacity=".8" stroke-width="5"/>
   <path d="M38 129 H662" stroke="#ffffff" stroke-opacity=".08" stroke-width="1"/>
   <!-- Ambient occlusion outside the screen opening, not over the active pixels. -->
-  <rect x="93" y="119" width="514" height="864" rx="34" fill="none" stroke="#000000" stroke-opacity=".66" stroke-width="12"/>
-  <rect x="100" y="126" width="500" height="850" rx="30" fill="none" stroke="#ffffff" stroke-opacity=".045" stroke-width="2"/>
+  <rect x="93" y="119" width="514" height="584" rx="34" fill="none" stroke="#000000" stroke-opacity=".66" stroke-width="12"/>
+  <rect x="100" y="126" width="500" height="570" rx="30" fill="none" stroke="#ffffff" stroke-opacity=".045" stroke-width="2"/>
   <rect x="18" y="18" width="664" height="1284" rx="30" fill="url(#micrograin)" opacity=".34"/>
   <!-- Light rolls over the lower deck; the buttons remain transparent cutouts. -->
   <path d="M34 1054 Q34 1038 51 1038 H649 Q666 1038 666 1055" fill="none" stroke="#ffffff" stroke-opacity=".17" stroke-width="2"/>
@@ -138,12 +138,12 @@
     <feGaussianBlur stdDeviation="8"/>
   </filter>
 </defs>
-<rect x="87" y="15" width="526" height="1018" rx="39" fill="#000" opacity=".72" filter="url(#expandedShadow)"/>
-<rect x="95" y="20" width="510" height="1004" rx="34" fill="#07090d" stroke="#030407" stroke-width="7"/>
-<rect x="99" y="24" width="502" height="996" rx="30" fill="url(#expandedBezel)" stroke="url(#expandedRim)" stroke-width="3"/>
-<rect x="105" y="30" width="490" height="984" rx="25" fill="none" stroke="#020306" stroke-width="6"/>
-<rect x="110" y="35" width="480" height="974" rx="18" fill="none" stroke="#ffffff" stroke-opacity=".18" stroke-width="1.5"/>
+<rect x="87" y="15" width="526" height="694" rx="39" fill="#000" opacity=".72" filter="url(#expandedShadow)"/>
+<rect x="95" y="20" width="510" height="680" rx="34" fill="#07090d" stroke="#030407" stroke-width="7"/>
+<rect x="99" y="24" width="502" height="672" rx="30" fill="url(#expandedBezel)" stroke="url(#expandedRim)" stroke-width="3"/>
+<rect x="105" y="30" width="490" height="660" rx="25" fill="none" stroke="#020306" stroke-width="6"/>
+<rect x="110" y="35" width="480" height="640" rx="18" fill="none" stroke="#ffffff" stroke-opacity=".18" stroke-width="1.5"/>
 <path d="M116 39 H584" stroke="#ffffff" stroke-opacity=".13" stroke-width="1.5"/>
-<path d="M116 1005 H584" stroke="#000000" stroke-opacity=".85" stroke-width="3"/>
+<path d="M116 680 H584" stroke="#000000" stroke-opacity=".85" stroke-width="3"/>
 
 </svg>
