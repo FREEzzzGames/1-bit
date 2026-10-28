@@ -34,6 +34,12 @@ let selected=0;
 function hit(x,y){const r=cards.find(v=>x>=v.x&&x<=v.x+v.w&&y>=v.y&&y<=v.y+v.h);if(r)location.href=r.href}
 function coords(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}}
 canvas.addEventListener('pointerdown',e=>{e.preventDefault();const p=coords(e);const i=cards.findIndex(r=>p.x>=r.x&&p.x<=r.x+r.w&&p.y>=r.y&&p.y<=r.y+r.h);if(i>=0){selected=i;draw();setTimeout(()=>location.href=cards[i].href,70)}},{passive:false});
+function bindControl(id,fn){const el=document.querySelector('[data-control="'+id+'"]');if(!el)return;el.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();fn()},{passive:false});}
+bindControl('left',()=>{selected=0;draw()});
+bindControl('right',()=>{selected=1;draw()});
+bindControl('jump',()=>{location.href=cards[selected].href});
+bindControl('lantern',()=>{selected=selected===0?1:0;draw()});
+bindControl('pause',()=>{selected=selected===0?1:0;draw()});
 window.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();selected=selected===0?1:0;draw()}else if(e.key==='Enter'||e.key===' '){e.preventDefault();location.href=cards[selected].href}});
 draw();
 })();
