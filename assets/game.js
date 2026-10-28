@@ -2,7 +2,7 @@
 (function(){
 'use strict';
 const CL='#FFF8E8',CD='#000000',T=16;
-const SCREEN_WIDTH=208,SCREEN_HEIGHT=320;let VW=SCREEN_WIDTH,VH=SCREEN_HEIGHT,S=1;
+const SCREEN=window.CONSOLE_GAME_SCREEN;const SCREEN_WIDTH=SCREEN.width,SCREEN_HEIGHT=SCREEN.height;let VW=SCREEN_WIDTH,VH=SCREEN_HEIGHT,S=1;
 const GR=700,MF=430,MV=112,AC=1000,FG=1400,FA=260,JU=250;
 const cv=document.getElementById('c'),cx=cv.getContext('2d',{alpha:false});
 cx.imageSmoothingEnabled=false;
