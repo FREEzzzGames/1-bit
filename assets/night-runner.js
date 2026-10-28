@@ -145,7 +145,7 @@ function bind(id){const el=document.querySelector('[data-control="'+id+'"]');if(
  el.addEventListener('pointerdown',down,{passive:false});el.addEventListener('pointerup',up,{passive:false});el.addEventListener('pointercancel',up,{passive:false});el.addEventListener('lostpointercapture',up);
 }
 bind('left');bind('right');bind('jump');
-canvas.addEventListener('pointerdown',e=>{e.preventDefault();if(mode!=='play')reset()},{passive:false});
+// Gameplay canvas is display-only; all race input comes from console buttons.
 window.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(['arrowleft','a'].includes(k)){input.left=true;e.preventDefault()}if(['arrowright','d'].includes(k)){input.right=true;e.preventDefault()}if([' ','enter','arrowup','w'].includes(k)){input.action=true;if(mode!=='play')reset();e.preventDefault()}});
 window.addEventListener('keyup',e=>{const k=e.key.toLowerCase();if(['arrowleft','a'].includes(k))input.left=false;if(['arrowright','d'].includes(k))input.right=false;if([' ','enter','arrowup','w'].includes(k))input.action=false});
 window.addEventListener('blur',()=>{input.left=input.right=input.action=false});
