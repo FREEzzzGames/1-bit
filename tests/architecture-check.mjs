@@ -14,7 +14,7 @@ assert.equal((html.match(/<main\b/g) || []).length, 1, 'Expected one console roo
 assert.equal((html.match(/<style\b/gi) || []).length, 0, 'Styles must live in console.css');
 assert.equal((html.match(/<script(?![^>]*\bsrc=)[^>]*>/gi) || []).length, 0, 'Scripts must be external modules');
 assert.ok(html.includes('./assets/console.css?v=20'), 'Console stylesheet must be linked');
-assert.ok(html.includes('./assets/game.js?v=21'), 'Game runtime must be linked');
+assert.ok(html.includes('./assets/game.js?v=22'), 'Game runtime must be linked');
 assert.ok(html.includes('./assets/skins.js?v=20'), 'Skin module must be linked');
 
 const layers = ['class="shell-art"', 'class="shell-skin-art"', 'class="deck-tint"', 'class="screen-bezel"', 'class="controls"'];
@@ -47,6 +47,30 @@ assert.ok(screenContract.includes('width: 208, height: 320'), 'Shared game scree
 assert.ok(html.includes('./assets/game-screen.js?v=1'), 'Shared game screen contract must load before games');
 assert.ok(game.includes('window.CONSOLE_GAME_SCREEN'), 'Game must use the shared screen contract');
 assert.ok(game.includes('function makeTowerRows'), 'Levels must be generated for the fixed portrait game screen');
+const generatorMatch = game.match(/function makeTowerRows\\(seed,style\\)\\{[\\s\\S]*?\\n\\}/);
+assert.ok(generatorMatch, 'Portrait level generator must be inspectable for reachability checks');
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+const makeTowerRows = new Function('cl', `${generatorMatch[0]}; return makeTowerRows;`)(clamp);
+for (let seed = 0; seed < 10; seed++) {
+  const rows = makeTowerRows(seed, seed % 3);
+  assert.equal(rows.length, 28, `Level ${seed + 1} must have 28 rows`);
+  assert.ok(rows.every(row => row.length === 13), `Level ${seed + 1} rows must align to the 13-tile grid`);
+  assert.ok(rows[26].includes('S'), `Level ${seed + 1} must have a spawn`);
+  assert.ok(rows[2].includes('G'), `Level ${seed + 1} must have an exit`);
+  assert.ok(rows[17].includes('P'), `Level ${seed + 1} must have a checkpoint`);
+  assert.ok(rows[27] === '#'.repeat(13), `Level ${seed + 1} must have a continuous starting floor`);
+  const platforms = rows.map((row, y) => {
+    const xs = [...row].map((ch, x) => '#:=P'.includes(ch) ? x : -1).filter(x => x >= 0);
+    return xs.length ? { y, left: Math.min(...xs), right: Math.max(...xs) } : null;
+  }).filter(Boolean).filter(p => p.y < 27);
+  assert.ok(platforms.length >= 12, `Level ${seed + 1} needs enough climbing platforms`);
+  for (let i = 1; i < platforms.length; i++) {
+    const a = platforms[i - 1], b = platforms[i];
+    assert.ok((b.y - a.y) * 16 <= (250 * 250) / (2 * 700) + 1, `Level ${seed + 1} has a vertical jump beyond normal jump height`);
+    const horizontalGap = Math.max(0, b.left - a.right - 1, a.left - b.right - 1) * 16;
+    assert.ok(horizontalGap <= 112 * (2 * 250 / 700) + 9, `Level ${seed + 1} has an excessive horizontal platform gap`);
+  }
+}
 for (const [feature,pattern] of [
   ['coyote-time jump forgiveness', 'p.coyote>0'],
   ['jump input buffering', 'p.jumpBuf=.14'],
