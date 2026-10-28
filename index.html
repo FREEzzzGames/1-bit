@@ -486,6 +486,116 @@ canvas{position:relative;z-index:1}
   }
 }
 
+
+/* MATERIAL DEPTH PASS — layered lighting, contact shadows and recesses.
+   Decorative CSS layers only; preserve all control geometry and game rendering. */
+.console{
+  background-color:var(--shell-b,#171a20);
+  background-image:
+    radial-gradient(ellipse at 0% 17%,#23aaff35 0%,#1685c01b 10%,transparent 30%),
+    radial-gradient(ellipse at 100% 15%,#ffbd7430 0%,#d78d3b14 11%,transparent 32%),
+    radial-gradient(ellipse at 50% -12%,#ffffff20 0%,transparent 43%),
+    radial-gradient(ellipse at 50% 48%,#ffffff04 0%,transparent 58%),
+    linear-gradient(90deg,#020307 0%,#090b0f 1%,#ffffff0b 1.6%,transparent 3.5%,transparent 96.5%,#ffffff08 98.4%,#090b0f 99%,#020307 100%),
+    linear-gradient(180deg,#ffffff0b 0%,transparent 12%,transparent 82%,#0005 100%),
+    linear-gradient(155deg,var(--shell-a,#343943) 0%,#292d35 18%,#20242b 38%,#171a20 68%,#242831 87%,var(--shell-b,#171a20) 100%);
+  background-size:100% 100%;
+  box-shadow:
+    0 0 0 1px #b5bdc72b,0 0 0 4px #101217,0 0 0 5px #62697575,
+    0 18px 36px #000d,
+    inset 0 2px 2px #ffffff3a,
+    inset 2px 0 16px #36b7ff14,
+    inset -2px 0 16px #ffb75d12,
+    inset 0 10px 16px #ffffff04,
+    inset 0 -12px 24px #000d;
+}
+.console:after{
+  z-index:0;
+  background:
+    repeating-linear-gradient(0deg,#ffffff018 0 1px,transparent 1px 4px),
+    linear-gradient(112deg,#ffffff08 0%,transparent 18%,transparent 75%,#ffffff03 100%),
+    radial-gradient(ellipse at 0% 28%,#36baff0a,transparent 36%),
+    radial-gradient(ellipse at 100% 28%,#ffbd7409,transparent 36%);
+  border-color:#ffffff12;
+  box-shadow:inset 0 0 0 1px #0008,inset 0 1px 12px #ffffff05;
+  pointer-events:none;
+}
+/* Make the display feel seated in a molded cavity instead of floating above the shell. */
+.screen-bezel{
+  z-index:1;
+  background:
+    linear-gradient(112deg,#c6ccd5 0%,#717985 1.4%,#353a44 3.5%,#111319 10%,#08090d 23%,#171a21 72%,#07080b 92%,#8c939e 98%,#252a32 100%);
+  box-shadow:
+    0 0 0 2px #08090c,
+    0 0 0 3px #aeb6c15c,
+    0 0 0 5px #252a32,
+    0 4px 0 #08090c,
+    0 8px 10px #000d,
+    0 18px 24px #0009,
+    0 0 22px #54baff0a,
+    inset 0 2px 2px #ffffff6b,
+    inset 0 5px 10px #ffffff09,
+    inset 0 -5px 9px #000e;
+}
+.screen-bezel:before{
+  inset:7px;
+  z-index:2;
+  border-radius:8px;
+  border:1px solid #ffffff15;
+  background:
+    linear-gradient(118deg,#ffffff20 0%,#ffffff12 5%,#ffffff07 11%,transparent 23%,transparent 70%,#ffffff04 84%,#0003 100%);
+  box-shadow:inset 0 1px 2px #ffffff10,inset 0 -4px 7px #0007;
+}
+.screen-bezel:after{
+  inset:3px;
+  z-index:3;
+  border:1px solid #000;
+  border-radius:12px;
+  background:linear-gradient(120deg,#ffffff08,transparent 18%,transparent 78%,#ffffff03);
+  box-shadow:0 0 0 1px #ffffff12,inset 0 1px 3px #ffffff08;
+}
+/* Recessed control deck: darker contact edge + broad reflected light across the plastic. */
+.controls{
+  z-index:1;
+  background:
+    radial-gradient(ellipse at 8% -8%,#ffffff18 0%,transparent 42%),
+    radial-gradient(ellipse at 95% 0%,#ffffff0a 0%,transparent 35%),
+    linear-gradient(90deg,#05070b 0%,#ffffff0a 1%,transparent 4%,transparent 96%,#0008 100%),
+    linear-gradient(180deg,#090b10 0%,#30353e 7%,#252a32 22%,#1c2027 66%,#11141a 91%,#07080b 100%);
+  border-color:#08090c;
+  box-shadow:
+    0 4px 0 #08090c,0 8px 13px #0009,
+    inset 0 1px 1px #ffffff3a,
+    inset 0 4px 8px #ffffff07,
+    inset 0 -4px 10px #000e;
+}
+.controls:before{
+  background:linear-gradient(112deg,#ffffff0b,transparent 23%,transparent 74%,#0005);
+  border-color:#ffffff14;
+  box-shadow:inset 0 1px 2px #ffffff0b,inset 0 -2px 5px #0007;
+}
+/* Keep selectable skins, but remove flat checker/hazard stripes from the device surface. */
+.console[data-skin="checker"],
+.console[data-skin="hazard"],
+.console[data-skin="rainbow"],
+.console[data-skin="animated"],
+.console[data-skin="light"],
+.console[data-skin="dark"],
+.console[data-skin="green"],
+.console[data-skin="steel"]{
+  background-color:var(--shell-b,#171a20);
+  background-image:
+    radial-gradient(ellipse at 0% 17%,#23aaff35 0%,#1685c01b 10%,transparent 30%),
+    radial-gradient(ellipse at 100% 15%,#ffbd7430 0%,#d78d3b14 11%,transparent 32%),
+    radial-gradient(ellipse at 50% -12%,#ffffff20 0%,transparent 43%),
+    radial-gradient(ellipse at 50% 48%,#ffffff04 0%,transparent 58%),
+    linear-gradient(90deg,#020307 0%,#090b0f 1%,#ffffff0b 1.6%,transparent 3.5%,transparent 96.5%,#ffffff08 98.4%,#090b0f 99%,#020307 100%),
+    linear-gradient(180deg,#ffffff0b 0%,transparent 12%,transparent 82%,#0005 100%),
+    linear-gradient(155deg,var(--shell-a,#343943) 0%,#292d35 18%,#20242b 38%,#171a20 68%,#242831 87%,var(--shell-b,#171a20) 100%);
+  background-size:100% 100%;
+  animation:none;
+}
+
 </style></head>
 <body><main class="console" data-skin="dark"><div class="skin-tools"><div class="power-status"><span class="power-led" aria-hidden="true"></span><span>POWER ON</span></div><button class="skin-open" id="skinOpen" type="button" aria-expanded="false" aria-controls="skinPicker">SKINS ▾</button></div><div class="skin-picker" id="skinPicker" role="group" aria-label="Console skins"><div class="skin-picker-title"><span>CONSOLE SKIN</span><span>8 MODES</span></div><button class="skin-option" type="button" data-skin-choice="checker" aria-pressed="false"><span class="skin-swatch checker"></span>CHECKERBOARD</button><button class="skin-option" type="button" data-skin-choice="hazard" aria-pressed="false"><span class="skin-swatch hazard"></span>BLACK / YELLOW</button><button class="skin-option" type="button" data-skin-choice="rainbow" aria-pressed="false"><span class="skin-swatch rainbow"></span>RAINBOW</button><button class="skin-option" type="button" data-skin-choice="animated" aria-pressed="false"><span class="skin-swatch animated"></span>NEON FLOW</button><button class="skin-option" type="button" data-skin-choice="light" aria-pressed="false"><span class="skin-swatch light"></span>LIGHT</button><button class="skin-option" type="button" data-skin-choice="dark" aria-pressed="true"><span class="skin-swatch dark"></span>DARK</button><button class="skin-option" type="button" data-skin-choice="green" aria-pressed="false"><span class="skin-swatch green"></span>FOREST</button><button class="skin-option" type="button" data-skin-choice="steel" aria-pressed="false"><span class="skin-swatch steel"></span>STEEL</button></div><div class="screen-bezel"><canvas id="c"></canvas></div><section class="controls" aria-label="Console controls"><div class="dpad" aria-label="Movement"><button class="hw-btn left" data-control="left" aria-label="Move left">◀</button><span class="dpad-core" aria-hidden="true">✦</span><button class="hw-btn right" data-control="right" aria-label="Move right">▶</button></div><div class="action-cluster"><button class="hw-btn action-main" data-control="jump" aria-label="Jump or interact">ACTION</button><div class="utility-row"><button class="hw-btn utility" data-control="lantern" aria-label="Toggle lamp">☼<small>LAMP</small></button><button class="hw-btn utility" data-control="pause" aria-label="Pause">Ⅱ<small>PAUSE</small></button></div></div></section></main><script>
 (function(){
