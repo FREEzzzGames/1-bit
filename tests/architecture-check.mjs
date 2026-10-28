@@ -40,9 +40,10 @@ for (const id of ['graphite','cyan','amber','violet','ivory']) {
 }
 assert.ok(skins.includes('shadowSpireShellSkin') && skins.includes('shadowSpirePadSkin'), 'Skin preferences must persist independently');
 const layoutEditor = read('../assets/control-layout.js');
-assert.ok(html.includes('./assets/control-layout.js?v=1'), 'Control layout editor must load');
+assert.ok(html.includes('./assets/control-layout.js?v=3'), 'Control layout editor must load');
 assert.ok(layoutEditor.includes("const buttons=[...controls.querySelectorAll('[data-control]')]"), 'Editor must support each control independently');
-assert.ok(layoutEditor.includes("document.addEventListener('dblclick'"), 'Double tap must activate layout editing');
+assert.ok(layoutEditor.includes("trigger.addEventListener('click'"), 'Visible settings button must activate layout editing');
+assert.ok(!layoutEditor.includes("document.addEventListener('dblclick'"), 'Legacy double-tap activation must be removed');
 assert.ok(layoutEditor.includes("'resize':'move'"), 'Controls must support moving and resizing');
 assert.ok(layoutEditor.includes('shadowSpireControlLayout_v1'), 'Control layout must persist');
 
