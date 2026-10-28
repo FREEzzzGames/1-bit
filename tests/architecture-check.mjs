@@ -80,7 +80,8 @@ for (const [feature,pattern] of [
   ['wall slide', 'p.wallDir!==0&&!p.onGround&&p.vy>95'],
   ['double-tap dash', 'now-dirTap.right<280'],
   ['dash damage grace', 'if(p.dashT>0)return'],
-  ['high-contrast level label', 'cx.fillRect(2,2,Math.min(VW-4,tw(title,1)+10),11)']
+  ['high-contrast level label', 'cx.fillRect(2,2,Math.min(VW-4,tw(title,1)+10),11)'],
+  ['on-screen control tutorial', "dtc('DOUBLE TAP L/R: DASH'"]
 ]) assert.ok(game.includes(pattern), `Missing gameplay feature: ${feature}`);
 
 assert.ok(game.includes('requestAnimationFrame(loop)'), 'Game loop must be active');
