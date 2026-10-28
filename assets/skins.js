@@ -14,6 +14,6 @@ shellOptions.forEach(b=>b.addEventListener('click',()=>{setShellSkin(b.dataset.s
 padOptions.forEach(b=>b.addEventListener('click',()=>{setPadSkin(b.dataset.padSkin);closePickers()}));
 let savedShell='dark',savedPad='graphite';try{savedShell=localStorage.getItem('shadowSpireShellSkin')||'dark';savedPad=localStorage.getItem('shadowSpirePadSkin')||'graphite'}catch(_){}
 setShellSkin(savedShell);setPadSkin(savedPad);
-document.addEventListener('pointerdown',e=>{if(!e.target.closest('.style-tools')&&!e.target.closest('.style-picker'))closePickers()});
+document.addEventListener('pointerdown',e=>{if(!e.target.closest('.style-tools')&&!e.target.closest('.controls .style-trigger')&&!e.target.closest('.style-picker'))closePickers()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closePickers()});
 })();
