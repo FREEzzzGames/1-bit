@@ -66,3 +66,8 @@ body{font-family:monospace;color:var(--cream)}
 /* Main launcher: retain the console shell, use the whole display for the 1-bit game selector. */
 .menu-home .controls{display:block}
 .style-tools .menu-mode-label{position:absolute;left:41%;width:18%;min-width:0;display:flex;align-items:center;justify-content:center;padding:5px 2px;white-space:nowrap;font-size:clamp(6px,1.55vw,9px);pointer-events:none}
+
+/* Explicit launcher override: buttons must remain painted above the display canvas. */
+.menu-home .controls{display:block!important;visibility:visible!important;opacity:1!important;z-index:10!important}
+.menu-home .controls .hw-btn{display:flex!important;visibility:visible!important;opacity:1!important;background:linear-gradient(145deg,var(--pad-button-top),var(--pad-button-mid) 38%,var(--pad-button-bottom))!important;color:var(--pad-ink)!important;border:1px solid var(--pad-edge)!important;box-shadow:0 4px 0 #030407,0 6px 9px #000a,inset 0 1px 2px var(--pad-glow),inset 0 -3px 5px #000a!important}
+.menu-home .controls .hw-btn.action-main,.menu-home .controls .hw-btn.utility{background:radial-gradient(circle at 30% 20%,var(--pad-button-top),var(--pad-button-mid) 45%,var(--pad-button-bottom))!important}
