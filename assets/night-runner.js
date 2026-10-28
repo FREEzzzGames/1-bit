@@ -99,9 +99,11 @@ function drawTitle(){
  // Night skyline, distant road and pixel horizon.
  for(let i=0;i<22;i++){const x=(i*37+9)%W,y=(i*29+15)%145;rect(x,y,1+(i%3===0?1:0),1,C)}
  for(let i=0;i<8;i++){const x=i*29-3,h=15+(i*17)%42;rect(x,H-104-h,18,h,MID);rect(x+4,H-100-h,2,3,C);rect(x+11,H-90-h,2,3,C)}
- ctx.fillStyle=MID;ctx.beginPath();ctx.moveTo(50,H);ctx.lineTo(85,150);ctx.lineTo(123,150);ctx.lineTo(158,H);ctx.closePath();ctx.fill();
- rect(51,H-4,107,4,C);for(let y=166;y<H;y+=22)rect(W/2-1,y,2,10,C);
- car(W/2-8,222,16,26,false);
+ // Road starts below the instruction block and widens toward the player.
+ ctx.fillStyle='#34332f';ctx.beginPath();ctx.moveTo(42,H);ctx.lineTo(87,190);ctx.lineTo(121,190);ctx.lineTo(166,H);ctx.closePath();ctx.fill();
+ ctx.fillStyle=MID;ctx.beginPath();ctx.moveTo(48,H);ctx.lineTo(89,194);ctx.lineTo(119,194);ctx.lineTo(160,H);ctx.closePath();ctx.fill();
+ rect(42,H-4,124,4,C);for(let i=0;i<5;i++){const y=202+i*24,w=2+i;rect(W/2-w/2,y,w,Math.max(3,10-i),C)}
+ car(W/2-8,248,16,25,false);
  text('NIGHT',W/2,37,23);text('RUNNER',W/2,61,23);
  rect(24,96,W-48,1,C);text('1-BIT ARCADE RACING',W/2,106,8);
  text('LEFT / RIGHT TO STEER',W/2,126,7);
