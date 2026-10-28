@@ -60,7 +60,7 @@ const ls=()=>{try{const r=localStorage.getItem(SK);if(r){const s=JSON.parse(r);i
 const ws=()=>{try{localStorage.setItem(SK,JSON.stringify(save))}catch(e){}};
 const ST={MENU:0,LEVELS:1,PLAY:2,DEAD:3,WIN:4,ENDING:5,PAUSE:6};let state=ST.MENU,stateT=0,levelIndex=0,level=null,cam={x:0,y:0},crSt=new Map(),stars=[];
 const P={x:0,y:0,w:9,h:13,vx:0,vy:0,onGround:false,coyote:0,jumpBuf:0,jumpsUsed:0,wallDir:0,dashT:0,dashCd:0,dashDir:1,facing:1,lanternOn:true,alive:true,animT:0,stepT:0,prevY:0,riding:null,hasKey:false,crystals:0};
-const dirTap={left:0,right:0};
+const dirTap={left:-Infinity,right:-Infinity};
 const I={left:false,right:false,jump:false,jumpPressed:false,lanternPressed:false};
 function rs(){/* Canonical portrait game surface shared by every title on this console. */VW=SCREEN_WIDTH;VH=SCREEN_HEIGHT;cv.width=SCREEN_WIDTH;cv.height=SCREEN_HEIGHT;cv.style.width='100%';cv.style.height='100%';cx.imageSmoothingEnabled=false;bpt()}
 function pl(d){const rows=d.r,H=rows.length;let W=0;for(let i=0;i<H;i++)W=Math.max(W,rows[i].length);const ti=new Uint8Array(W*H),lv={w:W,h:H,tiles:ti,spawn:{x:32,y:32},keys:[],crystals:[],doors:[],goal:null,objects:[],def:d};for(let y=0;y<H;y++){const row=rows[y];for(let x=0;x<W;x++){const ch=x<row.length?row.charAt(x):'.',idx=y*W+x;if(ch==='#')ti[idx]=1;else if(ch===':')ti[idx]=2;else if(ch==='^')ti[idx]=3;else if(ch==='=')ti[idx]=4;else if(ch==='K')lv.keys.push({x:x*T+8,y:y*T+8,got:false,t:0});else if(ch==='C')lv.crystals.push({x:x*T+8,y:y*T+8,got:false,t:0});else if(ch==='G')lv.goal={x:x*T+8,y:y*T+8,t:0};else if(ch==='S')lv.spawn={x:x*T+3,y:y*T+3};else if(ch==='D'){const dr={cx:x,cy:y,open:false,anim:0};lv.doors.push(dr);for(let k=0;k<3;k++)if(y-k>=0)ti[(y-k)*W+x]=5}}}
