@@ -40,9 +40,10 @@ for (const id of ['graphite','cyan','amber','violet','ivory']) {
   assert.ok(html.includes(`data-pad-skin="${id}"`), `Missing control-panel skin: ${id}`);
 }
 assert.ok(skins.includes('shadowSpireShellSkin') && skins.includes('shadowSpirePadSkin'), 'Skin preferences must persist independently');
+assert.ok(skins.includes("!e.target.closest('.controls .style-trigger')"), 'Moved skin buttons must retain picker interaction');
 const layoutEditor = read('../assets/control-layout.js');
 const shadowPage = read('../shadow-spire.html');
-assert.ok(shadowPage.includes('./assets/control-layout.js?v=3'), 'SHADOW SPIRE control layout editor must load');
+assert.ok(shadowPage.includes('./assets/control-layout.js?v=4'), 'SHADOW SPIRE control layout editor must load');
 assert.ok(html.includes('./assets/console-menu.js?v=2'), 'Home page must load its launcher');
 assert.ok(html.includes('class="menu-home"'), 'Startup page must use launcher layout');
 const menu = read('../assets/console-menu.js');
@@ -75,7 +76,10 @@ assert.ok(racer.includes('level=1+Math.floor(elapsed/18)'), 'Traffic difficulty 
 assert.ok(racer.includes("mode='crash'"), 'Racing game must detect collisions');
 assert.ok(racer.includes("text('RUN OVER'"), 'Crash screen must use the revised run-over layout');
 assert.ok(racer.includes("ctx.lineTo(87,190)"), 'Title road must not overlap the instruction block');
-assert.ok(layoutEditor.includes("const buttons=[...controls.querySelectorAll('[data-control]')]"), 'Editor must support each control independently');
+assert.ok(layoutEditor.includes("const hardware=[...controls.querySelectorAll('[data-control]')]"), 'Editor must support each hardware control independently');
+assert.ok(layoutEditor.includes("el.dataset.layoutId=id;defaults[id]=measure(el);controls.appendChild(el)"), 'Editor must make shell, menu and pad-skin buttons draggable');
+assert.ok(layoutEditor.includes("trigger.dataset.layoutId='controlSettings'"), 'Settings trigger must be editable too');
+assert.ok(layoutEditor.includes("const KEY='shadowSpireControlLayout_v2'"), 'Expanded layout must use a fresh storage schema');
 assert.ok(layoutEditor.includes("trigger.addEventListener('click'"), 'Visible settings button must activate layout editing');
 assert.ok(!layoutEditor.includes("document.addEventListener('dblclick'"), 'Legacy double-tap activation must be removed');
 assert.ok(layoutEditor.includes("'resize':'move'"), 'Controls must support moving and resizing');
