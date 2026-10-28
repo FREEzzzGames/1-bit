@@ -16,7 +16,7 @@ assert.equal((html.match(/<script(?![^>]*\bsrc=)[^>]*>/gi) || []).length, 0, 'Sc
 assert.ok(html.includes('./assets/console.css?v=25'), 'Console stylesheet must be linked');
 assert.ok(html.includes('./assets/console-menu.js?v=2'), 'Console launcher runtime must be linked');
 assert.ok(html.includes('<title>FREEzzz ARCADE — Game Select</title>'), 'Startup page must be the game selector');
-assert.ok(html.includes('./assets/skins.js?v=20'), 'Skin module must be linked');
+assert.ok(html.includes('./assets/skins.js?v=21'), 'Skin module must be linked');
 
 const layers = ['class="shell-art"', 'class="shell-skin-art"', 'class="deck-tint"', 'class="screen-bezel"', 'class="controls"'];
 let lastIndex = -1;
