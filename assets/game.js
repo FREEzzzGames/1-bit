@@ -121,8 +121,90 @@ for(const k of level.keys)if(!k.got)dKey(k);for(const c of level.crystals)if(!c.
 function gBtn(){ return []; }
 function dBtn(b,a){const x=b.x,y=b.y,w=b.w,h=b.h;if(b.id==='pause'){cx.fillStyle=a?CL:PT.W50;cx.fillRect(x,y,w,h);cx.fillStyle=a?CD:CL;cx.fillRect(x+5,y+4,3,h-8);cx.fillRect(x+12,y+4,3,h-8);return}cx.fillStyle=a?CL:PT.W50;cx.fillRect(x,y,w,h);cx.fillStyle=a?CD:CL;if(b.id==='left'){for(let i=0;i<7;i++){cx.fillRect(x+12+i,y+10+i,2,2);cx.fillRect(x+12+i,y+h-12-i,2,2)}cx.fillRect(x+12,y+16,2,h-32)}else if(b.id==='right'){for(let j=0;j<7;j++){cx.fillRect(x+w-14-j,y+10+j,2,2);cx.fillRect(x+w-14-j,y+h-12-j,2,2)}cx.fillRect(x+w-14,y+16,2,h-32)}else if(b.id==='jump'){dtc('JUMP',x+w/2,y+h/2-5,1,a?CD:CL);dtc('^',x+w/2-4,y+6,1,a?CD:CL)}else if(b.id==='lantern'){const lx=x+w/2,ly=y+h/2;cx.beginPath();cx.moveTo(lx,ly-9);cx.lineTo(lx+6,ly);cx.lineTo(lx,ly+9);cx.lineTo(lx-6,ly);cx.closePath();cx.fill();if(a){cx.fillStyle=CL;cx.fillRect(lx-2,ly-2,4,4)}}}
 function dHUD(){const B=gBtn();for(const b of B){let a=false;if(b.id==='left')a=I.left;else if(b.id==='right')a=I.right;else if(b.id==='jump')a=I.jump;else if(b.id==='lantern')a=P.lanternOn;dBtn(b,a)}const title=LVS[levelIndex].n;cx.fillStyle=CD;cx.fillRect(2,2,Math.min(VW-4,tw(title,1)+10),11);cx.fillStyle=PT.W50;cx.fillRect(2,2,Math.min(VW-4,tw(title,1)+10),1);cx.fillRect(2,12,Math.min(VW-4,tw(title,1)+10),1);dt(title,6,5,1,CL);if(level.keys.length>0){const kx=6,ky=16;cx.fillStyle=P.hasKey?CL:PT.W50;cx.fillRect(kx,ky,3,3);cx.fillRect(kx+1,ky+3,1,4);cx.fillRect(kx+1,ky+5,3,1)}if(levelIndex===LVS.length-1){const tt=level.crystals.length,gt=P.crystals,bx=6,by=26;for(let c=0;c<tt;c++){cx.fillStyle=(c<gt)?CL:PT.W50;cx.beginPath();cx.moveTo(bx+c*8+3,by);cx.lineTo(bx+c*8+6,by+4);cx.lineTo(bx+c*8+3,by+8);cx.lineTo(bx+c*8,by+4);cx.closePath();cx.fill()}}}
-function dMenu(){cx.fillStyle=CD;cx.fillRect(0,0,VW,VH);cx.fillStyle=PT.W25;for(let i=0;i<9;i++){const bx=(i*41+11)%VW,bh=30+((i*29)%60);cx.fillRect(bx,VH-bh,9,bh)}cx.fillStyle=PT.W50;const sx=VW/2;cx.beginPath();cx.moveTo(sx-26,VH);cx.lineTo(sx,VH-130);cx.lineTo(sx+26,VH);cx.closePath();cx.fill();cx.fillStyle=CL;cx.beginPath();cx.moveTo(sx,VH-142);cx.lineTo(sx+5,VH-130);cx.lineTo(sx,VH-118);cx.lineTo(sx-5,VH-130);cx.closePath();cx.fill();const bob=Math.sin(stateT*2)*1.5;dtc('SHADOW',VW/2,24+bob,4,CL);dtc('SPIRE',VW/2,47+bob,4,CL);dtc('A 1-BIT JOURNEY TO THE STARS',VW/2,76,1,CL);dtc('ACTION: JUMP / AIR JUMP',VW/2,91,1,CL);dtc('DOUBLE TAP L/R: DASH',VW/2,102,1,CL);dtc('WALL + ACTION: WALL JUMP',VW/2,113,1,CL);if(Math.floor(stateT*1.6)%2===0){const label='TAP TO START',sc=2,tw0=tw(label,sc),bx=Math.round((VW-tw0-12)/2),by=VH-49;cx.fillStyle=CD;cx.fillRect(bx,by,tw0+12,16);cx.fillStyle=PT.W50;cx.fillRect(bx,by,tw0+12,1);cx.fillRect(bx,by+15,tw0+12,1);cx.fillRect(bx,by,1,16);cx.fillRect(bx+tw0+11,by,1,16);dtc(label,VW/2,by+3,sc,CL)}if(save.unlocked>1){const label='PROGRESS: '+save.unlocked+'/10',sc=1,tw0=tw(label,sc),bx=Math.round((VW-tw0-8)/2),by=VH-25;cx.fillStyle=CD;cx.fillRect(bx,by,tw0+8,8);cx.fillStyle=PT.W50;cx.fillRect(bx,by,tw0+8,1);cx.fillRect(bx,by+7,tw0+8,1);dtc(label,VW/2,by+1,sc,CL)}}
-function dLS(){cx.fillStyle=CD;cx.fillRect(0,0,VW,VH);dtc('SELECT LEVEL',VW/2,14,2,CL);const cols=2,tw2=34,th=18,gap=4,tW=cols*tw2+(cols-1)*gap,sX=Math.round((VW-tW)/2),sY=34;for(let i=0;i<LVS.length;i++){const col=i%cols,row=Math.floor(i/cols),x=sX+col*(tw2+gap),y=sY+row*(th+gap),un=(i<save.unlocked),clr=!!save.cleared[i];if(un){cx.fillStyle=clr?CL:PT.W50;cx.fillRect(x,y,tw2,th);cx.fillStyle=CD;dtc(String(i+1),x+tw2/2,y+10,2,CD);if(clr){cx.fillRect(x+4,y+th-6,4,2);cx.fillRect(x+9,y+th-8,4,4)}}else{cx.fillStyle=PT.W25;cx.fillRect(x,y,tw2,th);dtc('-',x+tw2/2,y+10,2,CL)}}dtc('TAP LEVEL TO PLAY',VW/2,VH-24,1,CL);cx.fillStyle=PT.W50;cx.fillRect(6,6,26,16);dtc('<',18,10,1,CL)}
+function dMenu(){
+  cx.fillStyle=CD;cx.fillRect(0,0,VW,VH);
+  const sx=Math.round(VW/2),ground=VH;
+  // Deep-space stars: deterministic twinkle keeps the pixel-art scene stable.
+  for(let i=0;i<stars.length;i++){
+    const st=stars[i],pulse=Math.sin(stateT*2.1+i*1.7);
+    const x=Math.round((st.x+(stateT*(st.s*1.3+.12))%VW)%VW),y=Math.round(st.y);
+    if(y>122&&y<VH-35)continue;
+    cx.fillStyle=(pulse>.58&&st.s>.48)?CL:PT.W50;
+    const z=st.s>.88?2:1;cx.fillRect(x,y,z,z);
+    if(st.s>.96&&pulse>.35){cx.fillRect(x-2,y,5,1);cx.fillRect(x,y-2,1,5)}
+  }
+  // Distant skyline with stepped rooftops and tiny lit windows.
+  const skyline=[
+    {x:8,w:18,h:48},{x:30,w:15,h:78},{x:48,w:20,h:58},
+    {x:VW-68,w:18,h:64},{x:VW-48,w:17,h:88},{x:VW-28,w:20,h:52}
+  ];
+  for(let i=0;i<skyline.length;i++){
+    const b=skyline[i],top=ground-b.h;
+    cx.fillStyle=PT.W25;cx.fillRect(b.x,top,b.w,b.h);
+    cx.fillStyle=CD;cx.fillRect(b.x+2,top+2,b.w-4,b.h);
+    cx.fillStyle=PT.W50;
+    for(let wy=top+7;wy<ground-7;wy+=8)for(let wx=b.x+4;wx<b.x+b.w-3;wx+=6)
+      if(((wx+wy+i*3)%3)!==0)cx.fillRect(wx,wy,2,2);
+    cx.fillStyle=CL;cx.fillRect(b.x+Math.floor(b.w/2)-1,top-3,2,3);
+  }
+  // The Spire: a stepped silhouette, inner stonework and a bright summit.
+  cx.fillStyle=PT.W25;
+  cx.beginPath();cx.moveTo(sx-43,ground);cx.lineTo(sx-30,ground-47);
+  cx.lineTo(sx-23,ground-47);cx.lineTo(sx-18,ground-94);
+  cx.lineTo(sx-12,ground-94);cx.lineTo(sx-7,ground-137);
+  cx.lineTo(sx,ground-157);cx.lineTo(sx+7,ground-137);
+  cx.lineTo(sx+12,ground-94);cx.lineTo(sx+18,ground-94);
+  cx.lineTo(sx+23,ground-47);cx.lineTo(sx+30,ground-47);
+  cx.lineTo(sx+43,ground);cx.closePath();cx.fill();
+  cx.fillStyle=PT.W50;
+  cx.beginPath();cx.moveTo(sx-37,ground);cx.lineTo(sx-25,ground-47);
+  cx.lineTo(sx-15,ground-94);cx.lineTo(sx-5,ground-137);
+  cx.lineTo(sx,ground-153);cx.lineTo(sx+5,ground-137);
+  cx.lineTo(sx+15,ground-94);cx.lineTo(sx+25,ground-47);
+  cx.lineTo(sx+37,ground);cx.closePath();cx.fill();
+  // Vertical ribs and scattered masonry pixels.
+  cx.fillStyle=CD;
+  cx.fillRect(sx-2,ground-126,1,ground-(ground-12));
+  cx.fillRect(sx+2,ground-126,1,ground-(ground-12));
+  for(let y=ground-118,row=0;y<ground-8;y+=11,row++){
+    const half=Math.max(2,Math.floor((y-(ground-150))*.28));
+    cx.fillStyle=(row%2===0)?PT.B25:PT.B50;
+    cx.fillRect(sx-half,y,half*2,2);
+    if(row%2===0){cx.fillStyle=CL;cx.fillRect(sx-half-3,y+4,2,2);cx.fillRect(sx+half+1,y+4,2,2)}
+  }
+  // Beacon and a narrow checkerboard beam reaching into the sky.
+  const beaconY=ground-166;
+  cx.fillStyle=CL;cx.beginPath();cx.moveTo(sx,beaconY-9);cx.lineTo(sx+5,beaconY+1);
+  cx.lineTo(sx+3,beaconY+10);cx.lineTo(sx,beaconY+15);
+  cx.lineTo(sx-3,beaconY+10);cx.lineTo(sx-5,beaconY+1);cx.closePath();cx.fill();
+  cx.fillStyle=PT.W50;
+  cx.beginPath();cx.moveTo(sx-2,beaconY+15);cx.lineTo(sx+2,beaconY+15);
+  cx.lineTo(sx+22,ground-28);cx.lineTo(sx-22,ground-28);cx.closePath();cx.fill();
+  cx.fillStyle=CD;cx.fillRect(sx-1,beaconY-3,2,7);
+  // Thin horizon and isolated foreground stones give the scene depth.
+  cx.fillStyle=PT.W50;cx.fillRect(0,ground-1,VW,1);
+  for(let i=0;i<18;i++){const x=(i*37+13)%VW,y=ground-((i*19)%13);cx.fillStyle=(i%3===0)?CL:PT.W50;cx.fillRect(x,y,1+(i%2),1)}
+  const bob=Math.sin(stateT*2)*1.5;
+  // Small ornamental rules frame the title without competing with it.
+  cx.fillStyle=PT.W50;cx.fillRect(Math.round(VW*.19),19,Math.round(VW*.62),1);
+  cx.fillRect(Math.round(VW*.27),69,Math.round(VW*.46),1);
+  dtc('SHADOW',VW/2,24+bob,4,CL);dtc('SPIRE',VW/2,47+bob,4,CL);
+  dtc('A 1-BIT JOURNEY TO THE STARS',VW/2,76,1,CL);
+  dtc('ACTION: JUMP / AIR JUMP',VW/2,91,1,CL);
+  dtc('DOUBLE TAP L/R: DASH',VW/2,102,1,CL);
+  dtc('WALL + ACTION: WALL JUMP',VW/2,113,1,CL);
+  if(Math.floor(stateT*1.6)%2===0){
+    const label='TAP TO START',sc=2,tw0=tw(label,sc),bx=Math.round((VW-tw0-12)/2),by=VH-49;
+    cx.fillStyle=CD;cx.fillRect(bx,by,tw0+12,16);cx.fillStyle=PT.W50;
+    cx.fillRect(bx,by,tw0+12,1);cx.fillRect(bx,by+15,tw0+12,1);
+    cx.fillRect(bx,by,1,16);cx.fillRect(bx+tw0+11,by,1,16);dtc(label,VW/2,by+3,sc,CL)
+  }
+  if(save.unlocked>1){
+    const label='PROGRESS: '+save.unlocked+'/'+LVS.length,sc=1,tw0=tw(label,sc),bx=Math.round((VW-tw0-8)/2),by=VH-25;
+    cx.fillStyle=CD;cx.fillRect(bx,by,tw0+8,8);cx.fillStyle=PT.W50;
+    cx.fillRect(bx,by,tw0+8,1);cx.fillRect(bx,by+7,tw0+8,1);dtc(label,VW/2,by+1,sc,CL)
+  }
+}function dLS(){cx.fillStyle=CD;cx.fillRect(0,0,VW,VH);dtc('SELECT LEVEL',VW/2,14,2,CL);const cols=2,tw2=34,th=18,gap=4,tW=cols*tw2+(cols-1)*gap,sX=Math.round((VW-tW)/2),sY=34;for(let i=0;i<LVS.length;i++){const col=i%cols,row=Math.floor(i/cols),x=sX+col*(tw2+gap),y=sY+row*(th+gap),un=(i<save.unlocked),clr=!!save.cleared[i];if(un){cx.fillStyle=clr?CL:PT.W50;cx.fillRect(x,y,tw2,th);cx.fillStyle=CD;dtc(String(i+1),x+tw2/2,y+10,2,CD);if(clr){cx.fillRect(x+4,y+th-6,4,2);cx.fillRect(x+9,y+th-8,4,4)}}else{cx.fillStyle=PT.W25;cx.fillRect(x,y,tw2,th);dtc('-',x+tw2/2,y+10,2,CL)}}dtc('TAP LEVEL TO PLAY',VW/2,VH-24,1,CL);cx.fillStyle=PT.W50;cx.fillRect(6,6,26,16);dtc('<',18,10,1,CL)}
 function dOv(title,sub){cx.fillStyle=CD;cx.fillRect(0,0,VW,VH);const bW=Math.min(VW-24,220),bH=74,bx=Math.round((VW-bW)/2),by=Math.round((VH-bH)/2);cx.fillStyle=CL;cx.fillRect(bx,by,bW,bH);cx.fillStyle=CD;cx.fillRect(bx+2,by+2,bW-4,bH-4);cx.fillStyle=CL;cx.fillRect(bx+4,by+4,bW-8,bH-8);dtc(title,VW/2,by+14,2,CD);if(sub&&Math.floor(stateT*2)%2===0)dtc(sub,VW/2,by+44,1,CD)}
 function dEnd(){cx.fillStyle=CD;cx.fillRect(0,0,VW,VH);cx.fillStyle=CL;for(let i=0;i<stars.length;i++){const s=stars[i],tw3=(Math.sin(stateT*3+i)+1)*.5;if(tw3>.4)cx.fillRect(Math.round(s.x),Math.round(s.y),1,1)}cx.fillStyle=PT.W50;const sx=VW/2;cx.beginPath();cx.moveTo(sx-30,VH);cx.lineTo(sx,VH-120);cx.lineTo(sx+30,VH);cx.closePath();cx.fill();cx.fillStyle=CL;cx.beginPath();cx.moveTo(sx,VH-140);cx.lineTo(sx+6,VH-124);cx.lineTo(sx,VH-108);cx.lineTo(sx-6,VH-124);cx.closePath();cx.fill();dtc('THE SPIRE AWAKENS',VW/2,26,2,CL);dtc('LIGHT RETURNS TO THE',VW/2,50,1,CL);dtc('PIXEL WORLD',VW/2,62,1,CL);if(Math.floor(stateT*1.6)%2===0)dtc('TAP TO RETURN',VW/2,VH-26,1,CL)}
 function rd(){cx.fillStyle=CD;cx.fillRect(0,0,VW,VH);if(state===ST.MENU)return dMenu();if(state===ST.LEVELS)return dLS();if(state===ST.ENDING)return dEnd();dBg();dSt();dWrld();if(level.def.inv&&!P.lanternOn){cx.globalCompositeOperation='difference';cx.fillStyle=CL;cx.fillRect(0,0,VW,VH);cx.globalCompositeOperation='source-over'}dHUD();if(state===ST.PAUSE)dOv('PAUSED','TAP TO RESUME');else if(state===ST.DEAD)dOv('YOU FELL','TAP TO RETRY');else if(state===ST.WIN){const isLast=(levelIndex===LVS.length-1);dOv(isLast?'SPIRE IGNITED':'LEVEL CLEARED',isLast?'TAP TO CONTINUE':'TAP FOR NEXT LEVEL')}}
