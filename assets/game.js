@@ -204,7 +204,39 @@ function dMenu(){
     cx.fillStyle=CD;cx.fillRect(bx,by,tw0+8,8);cx.fillStyle=PT.W50;
     cx.fillRect(bx,by,tw0+8,1);cx.fillRect(bx,by+7,tw0+8,1);dtc(label,VW/2,by+1,sc,CL)
   }
-}function dLS(){cx.fillStyle=CD;cx.fillRect(0,0,VW,VH);dtc('SELECT LEVEL',VW/2,14,2,CL);const cols=2,tw2=34,th=18,gap=4,tW=cols*tw2+(cols-1)*gap,sX=Math.round((VW-tW)/2),sY=34;for(let i=0;i<LVS.length;i++){const col=i%cols,row=Math.floor(i/cols),x=sX+col*(tw2+gap),y=sY+row*(th+gap),un=(i<save.unlocked),clr=!!save.cleared[i];if(un){cx.fillStyle=clr?CL:PT.W50;cx.fillRect(x,y,tw2,th);cx.fillStyle=CD;dtc(String(i+1),x+tw2/2,y+10,2,CD);if(clr){cx.fillRect(x+4,y+th-6,4,2);cx.fillRect(x+9,y+th-8,4,4)}}else{cx.fillStyle=PT.W25;cx.fillRect(x,y,tw2,th);dtc('-',x+tw2/2,y+10,2,CL)}}dtc('TAP LEVEL TO PLAY',VW/2,VH-24,1,CL);cx.fillStyle=PT.W50;cx.fillRect(6,6,26,16);dtc('<',18,10,1,CL)}
+}function dLS(){
+  cx.fillStyle=CD;cx.fillRect(0,0,VW,VH);
+  dtc('SELECT LEVEL',VW/2,14,2,CL);
+  const cols=2,cardW=38,cardH=18,gapX=4,gapY=4;
+  const gridW=cols*cardW+gapX,sX=Math.round((VW-gridW)/2),sY=34;
+  for(let i=0;i<LVS.length;i++){
+    const col=i%cols,row=Math.floor(i/cols),x=sX+col*(cardW+gapX),y=sY+row*(cardH+gapY);
+    const unlocked=i<save.unlocked,cleared=!!save.cleared[i],current=i===Math.max(0,save.unlocked-1)&&!cleared;
+    // High-contrast card states: unlocked, completed, and locked.
+    cx.fillStyle=unlocked?(cleared?CL:PT.W50):CD;
+    cx.fillRect(x,y,cardW,cardH);
+    cx.strokeStyle=unlocked?CL:PT.W50;cx.lineWidth=1;cx.strokeRect(x+.5,y+.5,cardW-1,cardH-1);
+    if(!unlocked){
+      // Sparse corner pixels replace the noisy full-card halftone.
+      cx.fillStyle=PT.W25;cx.fillRect(x+2,y+2,4,2);cx.fillRect(x+cardW-6,y+cardH-4,4,2);
+      cx.fillStyle=CL;
+      // Compact pixel lock at the right; keep the level number readable.
+      cx.fillRect(x+cardW-9,y+9,5,4);cx.fillRect(x+cardW-8,y+7,3,2);
+      cx.fillStyle=CD;cx.fillRect(x+cardW-7,y+10,1,2);
+      cx.fillStyle=CL;dtc(String(i+1),x+(cardW-7)/2,y+4,2,CL);
+    }else{
+      cx.fillStyle=CD;dtc(String(i+1),x+cardW/2,y+4,2,CD);
+      if(cleared){
+        // Clear, compact completion tick.
+        cx.fillStyle=CD;cx.fillRect(x+cardW-9,y+5,2,5);cx.fillRect(x+cardW-7,y+8,2,2);cx.fillRect(x+cardW-5,y+4,2,6);
+      }else if(current){
+        cx.fillStyle=CL;cx.fillRect(x+2,y+2,2,2);cx.fillRect(x+cardW-4,y+cardH-4,2,2);
+      }
+    }
+  }
+  dtc('TAP LEVEL TO PLAY',VW/2,VH-24,1,CL);
+  cx.fillStyle=PT.W50;cx.fillRect(6,6,26,16);dtc('<',18,10,1,CL);
+}
 function dOv(title,sub){cx.fillStyle=CD;cx.fillRect(0,0,VW,VH);const bW=Math.min(VW-24,220),bH=74,bx=Math.round((VW-bW)/2),by=Math.round((VH-bH)/2);cx.fillStyle=CL;cx.fillRect(bx,by,bW,bH);cx.fillStyle=CD;cx.fillRect(bx+2,by+2,bW-4,bH-4);cx.fillStyle=CL;cx.fillRect(bx+4,by+4,bW-8,bH-8);dtc(title,VW/2,by+14,2,CD);if(sub&&Math.floor(stateT*2)%2===0)dtc(sub,VW/2,by+44,1,CD)}
 function dEnd(){cx.fillStyle=CD;cx.fillRect(0,0,VW,VH);cx.fillStyle=CL;for(let i=0;i<stars.length;i++){const s=stars[i],tw3=(Math.sin(stateT*3+i)+1)*.5;if(tw3>.4)cx.fillRect(Math.round(s.x),Math.round(s.y),1,1)}cx.fillStyle=PT.W50;const sx=VW/2;cx.beginPath();cx.moveTo(sx-30,VH);cx.lineTo(sx,VH-120);cx.lineTo(sx+30,VH);cx.closePath();cx.fill();cx.fillStyle=CL;cx.beginPath();cx.moveTo(sx,VH-140);cx.lineTo(sx+6,VH-124);cx.lineTo(sx,VH-108);cx.lineTo(sx-6,VH-124);cx.closePath();cx.fill();dtc('THE SPIRE AWAKENS',VW/2,26,2,CL);dtc('LIGHT RETURNS TO THE',VW/2,50,1,CL);dtc('PIXEL WORLD',VW/2,62,1,CL);if(Math.floor(stateT*1.6)%2===0)dtc('TAP TO RETURN',VW/2,VH-26,1,CL)}
 function rd(){cx.fillStyle=CD;cx.fillRect(0,0,VW,VH);if(state===ST.MENU)return dMenu();if(state===ST.LEVELS)return dLS();if(state===ST.ENDING)return dEnd();dBg();dSt();dWrld();if(level.def.inv&&!P.lanternOn){cx.globalCompositeOperation='difference';cx.fillStyle=CL;cx.fillRect(0,0,VW,VH);cx.globalCompositeOperation='source-over'}dHUD();if(state===ST.PAUSE)dOv('PAUSED','TAP TO RESUME');else if(state===ST.DEAD)dOv('YOU FELL','TAP TO RETRY');else if(state===ST.WIN){const isLast=(levelIndex===LVS.length-1);dOv(isLast?'SPIRE IGNITED':'LEVEL CLEARED',isLast?'TAP TO CONTINUE':'TAP FOR NEXT LEVEL')}}
