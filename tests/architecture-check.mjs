@@ -47,6 +47,18 @@ assert.ok(screenContract.includes('width: 208, height: 320'), 'Shared game scree
 assert.ok(html.includes('./assets/game-screen.js?v=1'), 'Shared game screen contract must load before games');
 assert.ok(game.includes('window.CONSOLE_GAME_SCREEN'), 'Game must use the shared screen contract');
 assert.ok(game.includes('function makeTowerRows'), 'Levels must be generated for the fixed portrait game screen');
+for (const [feature,pattern] of [
+  ['coyote-time jump forgiveness', 'p.coyote>0'],
+  ['jump input buffering', 'p.jumpBuf=.14'],
+  ['variable jump height', 'p.vy-=GR*.22*dt'],
+  ['double jump', 'p.jumpsUsed<2'],
+  ['wall jump', 'wallContact!==0'],
+  ['wall slide', 'p.wallDir!==0&&!p.onGround&&p.vy>95'],
+  ['double-tap dash', 'now-dirTap.right<280'],
+  ['dash damage grace', 'if(p.dashT>0)return'],
+  ['high-contrast level label', 'cx.fillRect(2,2,Math.min(VW-4,tw(title,1)+10),11)']
+]) assert.ok(game.includes(pattern), `Missing gameplay feature: ${feature}`);
+
 assert.ok(game.includes('requestAnimationFrame(loop)'), 'Game loop must be active');
 assert.ok(game.includes('localStorage'), 'Game progress persistence must remain present');
 
