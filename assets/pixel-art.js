@@ -15,7 +15,7 @@ function actor(ctx,x,y,s=16,type='hero',frame=0,variant=0){
  const u=s/16; const p=(a,b,w,h,c=C)=>px(ctx,x+a*u,y+b*u,w*u,h*u,c);
  if(type==='hero'||type==='enemy'||type==='creature'){
  p(5,0,6,2);p(3,2,10,6);p(4,8,8,3);p(2,11,4,4);p(10,11,4,4);
- p(5,4,2,2,B);p(10,4,2,2,B);if(type==='enemy'){p(6,7,4,1,B);p(4,1,2,2,G)}else{p(6,7,4,1,C)}
+ p(5,4,2,2,B);p(10,4,2,2,B);p(4,2,8,1,G);p(3,3,1,4,B);p(12,3,1,4,B);p(4,10,8,1,B);p(3,12,3,2,B);p(10,12,3,2,B);if(type==='enemy'){p(6,7,4,1,B);p(4,1,2,2,G)}else{p(6,7,4,1,C);p(7,9,2,1,G)}
  if(frame%2){p(1,9,2,3);p(13,9,2,3)}
  if(type==='hero'){
   const v=((variant|0)%10+10)%10;
