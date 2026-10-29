@@ -22,47 +22,72 @@ function makeTowerRows(seed,style){
   const W=13,H=28,grid=Array.from({length:H},()=>Array(W).fill('.'));
   const put=(x,y,ch)=>{if(y>=0&&y<H&&x>=0&&x<W)grid[y][x]=ch};
   const fill=(x,y,w,ch='#')=>{for(let i=0;i<w;i++)put(x+i,y,ch)};
-  fill(0,H-1,W,'#');
-  const centers=[6];let center=6;
-  for(let i=0,row=25;row>=3;row-=2,i++){
-    const step=1+((seed+i)%2);
-    center=cl(center+(((i+seed)%2===0)?step:-step),3,9);
-    centers.push(center);
-    const width=5+((seed+i)%3);
+  const archetype=seed%10;
+  const routes=[
+    [6,4,7,5,8,6,9,7,5,8,6,7],
+    [3,5,7,9,7,5,3,5,7,9,7,5],
+    [6,7,8,7,6,5,4,5,6,7,8,7],
+    [2,4,6,8,10,8,6,4,2,4,6,8],
+    [10,8,6,4,2,4,6,8,10,8,6,4],
+    [4,6,8,10,8,6,4,2,4,6,8,10],
+    [3,6,9,6,3,6,9,6,3,6,9,6],
+    [9,7,5,3,5,7,9,7,5,3,5,7],
+    [6,3,6,9,6,3,6,9,6,3,6,9],
+    [2,4,7,10,8,5,2,4,7,10,8,5]
+  ];
+  const baseRoute=routes[archetype],route=seed<10?baseRoute:baseRoute.map((v,i)=>cl(12-v+((i%3)-1),2,10));
+  const rows=[25,23,21,19,17,15,13,11,9,7,5,3];
+  fill(0,27,W,'#');
+  let prev=6;const centers=[];
+  for(let i=0;i<rows.length;i++){
+    const y=rows[i],target=route[i],center=cl(target,prev-2,prev+2);
+    const width=([0,3,6,8].includes(archetype)?(i%3===1?3:5):([4,9].includes(archetype)?(i%2?4:6):(i%4===2?4:5)));
     const left=cl(center-Math.floor(width/2),0,W-width);
-    const kind=(style===1&&i%3===1)?':':(style===2&&i%3===2?'=':'#');
-    fill(left,row,width,kind);
-    if(seed%3===1&&i%4===2&&width>=5)put(left+2,row,'^');
-    if(seed%4===2&&i%5===3&&width>=6)put(left+width-2,row,'^');
+    let tile='#';
+    if((archetype===3&&i%3===1)||(archetype===9&&i%4===2))tile=':';
+    if((archetype===4&&i%4===1)||(archetype===8&&i%3===0))tile='=';
+    fill(left,y,width,tile);
+    if(i===2&&seed%4===0)put(cl(left+1,0,W-1),y,'B');
+    if(i===4&&seed%3===1)put(cl(left+Math.floor(width/2),0,W-1),y,'P');
+    if(i===6&&seed%4===2)put(cl(left+1,0,W-1),y,'B');
+    if(i===8&&seed%3===2)put(cl(left+Math.floor(width/2),0,W-1),y,'P');
+    if(i===3&&seed%3===0)put(cl(left+Math.floor(width/2),0,W-1),y-1,'^');
+    if(i===7&&seed%4===1)put(cl(left+1,0,W-1),y-1,'^');
+    if(i===9&&seed%5===2)put(cl(left+width-2,0,W-1),y-1,'^');
+    if(i===5&&seed%4===3)put(cl(left+Math.floor(width/2),0,W-1),y-1,'C');
+    if(i===8&&seed%3===0)put(cl(left+Math.floor(width/2),0,W-1),y-1,'K');
+    if(i===10&&seed%4===2)put(cl(left+Math.floor(width/2),0,W-1),y-1,'C');
+    centers.push(center);prev=center;
   }
-  const startX=cl(centers[0],2,10),goalX=cl(centers[centers.length-1],2,10);
-  put(startX,H-2,'S');put(goalX,2,'G');
-  put(cl(centers[4],1,11),17,'P');
-  if(seed%3===0){put(cl(centers[3],1,11),19,'K');}
-  if(seed%2===0){put(cl(centers[4],1,11),15,'C');}
-  if(seed%4===1){put(cl(centers[6],1,11),9,'C');}
-  if(seed===9){put(cl(centers[2]-2,1,11),21,'C');put(cl(centers[4]+1,1,11),15,'C');put(cl(centers[7]-1,1,11),9,'C');}
-  if(seed===19){put(cl(centers[2]-1,1,11),21,'C');put(cl(centers[4]+1,1,11),15,'C');put(cl(centers[7]-1,1,11),9,'C');}
+  const startX=cl(centers[0],1,11),goalX=cl(centers[centers.length-1],1,11);
+  put(startX,26,'S');put(goalX,2,'G');
+  put(cl(centers[4]+(seed%3)-1,1,11),17,'P');
+  if(seed%2===0)put(cl(centers[2]+1,1,11),22,'C');
+  if(seed%3===1)put(cl(centers[6]-1,1,11),12,'K');
+  if(seed%4===3)put(cl(centers[9]+1,1,11),6,'C');
+  if(seed===9||seed===19){put(cl(centers[2]-1,1,11),20,'C');put(cl(centers[5]+1,1,11),14,'C');put(cl(centers[8]-1,1,11),8,'C')}
+  if([3,8].includes(archetype)){for(let x=0;x<W;x++)if(x<2||x>10)put(x,26,'.')}
+  if(archetype===6){fill(0,24,3,'#');fill(10,24,3,'#')}
   return grid.map(row=>row.join(''));
 }
 const LVS=[
 {n:'OUTSKIRTS OF SHADOW',d:0,bg:'forest',w:0,o:[],r:makeTowerRows(0,0)},
 {n:'WHISPERING FOREST',d:0,bg:'forest',w:0,o:[{type:'saw',ax:55,ay:320,bx:150,by:320,r:7,speed:.55}],r:makeTowerRows(1,1)},
 {n:'FORGOTTEN GATES',d:0,bg:'ruins',w:0,o:[{type:'saw',ax:150,ay:250,bx:55,by:250,r:7,speed:.8}],r:makeTowerRows(2,2)},
-{n:'BRIDGE OF SOLITUDE',d:0,bg:'cliff',w:12,o:[{type:'saw',ax:55,ay:190,bx:150,by:190,r:7,speed:.6}],r:makeTowerRows(3,0)},
+{n:'BRIDGE OF SOLITUDE',d:0,bg:'cliff',w:12,o:[{type:'saw',ax:55,ay:190,bx:150,by:190,r:7,speed:.6},{type:'plat',ax:35,ay:270,bx:145,by:270,w:30,h:6,speed:.28}],r:makeTowerRows(3,0)},
 {n:'CAVES OF ECHO',d:1,bg:'cave',w:0,o:[{type:'saw',ax:150,ay:300,bx:55,by:300,r:7,speed:.6},{type:'saw',ax:55,ay:150,bx:150,by:150,r:7,speed:.65}],r:makeTowerRows(4,1)},
-{n:'STEEP ASCENT',d:.35,bg:'cliff',w:0,o:[{type:'saw',ax:55,ay:240,bx:150,by:240,r:7,speed:.55}],r:makeTowerRows(5,2)},
-{n:'OUTER SPIRE WALL',d:.15,bg:'castle',w:0,o:[{type:'gear',gx:104,gy:220,r:11,spin:2.2}],r:makeTowerRows(6,0)},
-{n:'HALL OF MIRRORS',d:.25,bg:'mirror',w:0,inv:1,o:[{type:'saw',ax:55,ay:170,bx:150,by:170,r:7,speed:.8}],r:makeTowerRows(7,1)},
+{n:'STEEP ASCENT',d:.35,bg:'cliff',w:0,o:[{type:'saw',ax:55,ay:240,bx:150,by:240,r:7,speed:.55},{type:'plat',ax:25,ay:205,bx:145,by:205,w:28,h:6,speed:.34}],r:makeTowerRows(5,2)},
+{n:'OUTER SPIRE WALL',d:.15,bg:'castle',w:0,o:[{type:'gear',gx:104,gy:220,r:11,spin:2.2},{type:'plat',ax:30,ay:175,bx:150,by:175,w:26,h:6,speed:.42}],r:makeTowerRows(6,0)},
+{n:'HALL OF MIRRORS',d:.25,bg:'mirror',w:0,inv:1,o:[{type:'saw',ax:55,ay:170,bx:150,by:170,r:7,speed:.8},{type:'plat',ax:150,ay:230,bx:35,by:230,w:28,h:6,speed:.38}],r:makeTowerRows(7,1)},
 {n:'CLOCK TOWER',d:.2,bg:'castle',w:0,o:[{type:'gear',gx:104,gy:280,r:10,spin:2.6},{type:'saw',ax:55,ay:120,bx:150,by:120,r:7,speed:.35}],r:makeTowerRows(8,2)},
 {n:'STAR SPIRE',d:.55,bg:'spire',w:8,o:[{type:'saw',ax:55,ay:280,bx:150,by:280,r:7,speed:.85},{type:'gear',gx:104,gy:190,r:11,spin:3}],r:makeTowerRows(9,0)},
 {n:'SUNKEN ARCHIVE',d:.35,bg:'cave',w:0,o:[{type:'saw',ax:150,ay:300,bx:55,by:300,r:7,speed:.7}],r:makeTowerRows(10,1)},
 {n:'GLASS CATACOMBS',d:.4,bg:'mirror',w:0,inv:1,o:[{type:'saw',ax:55,ay:240,bx:150,by:240,r:7,speed:.75},{type:'saw',ax:150,ay:120,bx:55,by:120,r:7,speed:.55}],r:makeTowerRows(11,2)},
-{n:'BROKEN AQUEDUCT',d:.25,bg:'ruins',w:14,o:[{type:'saw',ax:55,ay:200,bx:150,by:200,r:7,speed:.7}],r:makeTowerRows(12,0)},
+{n:'BROKEN AQUEDUCT',d:.25,bg:'ruins',w:14,o:[{type:'saw',ax:55,ay:200,bx:150,by:200,r:7,speed:.7},{type:'plat',ax:25,ay:155,bx:150,by:155,w:25,h:6,speed:.48}],r:makeTowerRows(12,0)},
 {n:'HOLLOW ENGINE',d:.45,bg:'castle',w:0,o:[{type:'gear',gx:104,gy:250,r:11,spin:2.4},{type:'saw',ax:150,ay:150,bx:55,by:150,r:7,speed:.7}],r:makeTowerRows(13,1)},
 {n:'VEIL GARDEN',d:.65,bg:'forest',w:0,o:[{type:'saw',ax:55,ay:280,bx:150,by:280,r:7,speed:.8},{type:'saw',ax:150,ay:180,bx:55,by:180,r:7,speed:.7}],r:makeTowerRows(14,2)},
-{n:'BLACK FURNACE',d:.7,bg:'cliff',w:12,o:[{type:'gear',gx:104,gy:220,r:12,spin:2.8}],r:makeTowerRows(15,0)},
-{n:'SHATTERED ORRERY',d:.45,bg:'mirror',w:0,inv:1,o:[{type:'gear',gx:104,gy:260,r:10,spin:3},{type:'gear',gx:104,gy:150,r:10,spin:-2.6}],r:makeTowerRows(16,1)},
+{n:'BLACK FURNACE',d:.7,bg:'cliff',w:12,o:[{type:'gear',gx:104,gy:220,r:12,spin:2.8},{type:'plat',ax:145,ay:185,bx:28,by:185,w:30,h:6,speed:.5}],r:makeTowerRows(15,0)},
+{n:'SHATTERED ORRERY',d:.45,bg:'mirror',w:0,inv:1,o:[{type:'gear',gx:104,gy:260,r:10,spin:3},{type:'gear',gx:104,gy:150,r:10,spin:-2.6},{type:'plat',ax:30,ay:210,bx:150,by:210,w:26,h:6,speed:.56}],r:makeTowerRows(16,1)},
 {n:'LAST WATCH',d:.55,bg:'castle',w:8,o:[{type:'saw',ax:55,ay:280,bx:150,by:280,r:7,speed:.9},{type:'gear',gx:104,gy:190,r:12,spin:3.2},{type:'saw',ax:150,ay:100,bx:55,by:100,r:7,speed:.7}],r:makeTowerRows(17,2)},
 {n:'ECHO VAULT',d:.9,bg:'cave',w:0,inv:1,o:[{type:'saw',ax:150,ay:240,bx:55,by:240,r:7,speed:.8},{type:'gear',gx:104,gy:130,r:11,spin:3}],r:makeTowerRows(18,0)},
 {n:'HEART OF THE SPIRE',d:.85,bg:'spire',w:10,inv:1,o:[{type:'saw',ax:55,ay:280,bx:150,by:280,r:7,speed:.95},{type:'gear',gx:104,gy:190,r:12,spin:3.4},{type:'saw',ax:150,ay:100,bx:55,by:100,r:7,speed:.8}],r:makeTowerRows(19,1)}
@@ -75,15 +100,15 @@ const P={x:0,y:0,w:9,h:13,vx:0,vy:0,onGround:false,coyote:0,jumpBuf:0,jumpsUsed:
 const dirTap={left:-Infinity,right:-Infinity};
 const I={left:false,right:false,jump:false,jumpPressed:false,lanternPressed:false};
 function rs(){/* Canonical portrait game surface shared by every title on this console. */VW=SCREEN_WIDTH;VH=SCREEN_HEIGHT;cv.width=SCREEN_WIDTH;cv.height=SCREEN_HEIGHT;cv.style.width='100%';cv.style.height='100%';cx.imageSmoothingEnabled=false;bpt()}
-function pl(d){const rows=d.r,H=rows.length;let W=0;for(let i=0;i<H;i++)W=Math.max(W,rows[i].length);const ti=new Uint8Array(W*H),lv={w:W,h:H,tiles:ti,spawn:{x:32,y:32},keys:[],crystals:[],checkpoints:[],doors:[],goal:null,objects:[],def:d};for(let y=0;y<H;y++){const row=rows[y];for(let x=0;x<W;x++){const ch=x<row.length?row.charAt(x):'.',idx=y*W+x;if(ch==='#')ti[idx]=1;else if(ch===':')ti[idx]=2;else if(ch==='^')ti[idx]=3;else if(ch==='=')ti[idx]=4;else if(ch==='K')lv.keys.push({x:x*T+8,y:y*T+8,got:false,t:0});else if(ch==='C')lv.crystals.push({x:x*T+8,y:y*T+8,got:false,t:0});else if(ch==='P'){ti[idx]=6;lv.checkpoints.push({x:x*T,y:y*T,active:false})}else if(ch==='G')lv.goal={x:x*T+8,y:y*T+8,t:0};else if(ch==='S')lv.spawn={x:x*T+3,y:y*T+3};else if(ch==='D'){const dr={cx:x,cy:y,open:false,anim:0};lv.doors.push(dr);for(let k=0;k<3;k++)if(y-k>=0)ti[(y-k)*W+x]=5}}}
-const objs=d.o||[];for(const s of objs){const o=Object.assign({},s);if(o.type==='saw'){o.x=o.ax;o.y=o.ay;o.t=o.phase||0;o.dir=1;o.r=o.r||7;o.speed=o.speed||.5}else if(o.type==='gear'){o.x=o.gx;o.y=o.gy;o.r=o.r||10;o.rot=0;o.spin=o.spin||1.5}lv.objects.push(o)}return lv}
+function pl(d){const rows=d.r,H=rows.length;let W=0;for(let i=0;i<H;i++)W=Math.max(W,rows[i].length);const ti=new Uint8Array(W*H),lv={w:W,h:H,tiles:ti,spawn:{x:32,y:32},keys:[],crystals:[],checkpoints:[],doors:[],goal:null,objects:[],def:d};for(let y=0;y<H;y++){const row=rows[y];for(let x=0;x<W;x++){const ch=x<row.length?row.charAt(x):'.',idx=y*W+x;if(ch==='#')ti[idx]=1;else if(ch===':')ti[idx]=2;else if(ch==='^')ti[idx]=3;else if(ch==='=')ti[idx]=4;else if(ch==='B')ti[idx]=7;else if(ch==='K')lv.keys.push({x:x*T+8,y:y*T+8,got:false,t:0});else if(ch==='C')lv.crystals.push({x:x*T+8,y:y*T+8,got:false,t:0});else if(ch==='P'){ti[idx]=6;lv.checkpoints.push({x:x*T,y:y*T,active:false})}else if(ch==='G')lv.goal={x:x*T+8,y:y*T+8,t:0};else if(ch==='S')lv.spawn={x:x*T+3,y:y*T+3};else if(ch==='D'){const dr={cx:x,cy:y,open:false,anim:0};lv.doors.push(dr);for(let k=0;k<3;k++)if(y-k>=0)ti[(y-k)*W+x]=5}}}
+const objs=d.o||[];for(const s of objs){const o=Object.assign({},s);if(o.type==='saw'){o.x=o.ax;o.y=o.ay;o.t=o.phase||0;o.dir=1;o.r=o.r||7;o.speed=o.speed||.5}else if(o.type==='gear'){o.x=o.gx;o.y=o.gy;o.r=o.r||10;o.rot=0;o.spin=o.spin||1.5}else if(o.type==='plat'){o.x=o.ax??o.x;o.y=o.ay??o.y;o.px=o.x;o.py=o.y;o.dx=0;o.dy=0;o.t=o.t||0;o.dir=1;o.speed=o.speed||.45}lv.objects.push(o)}return lv}
 function stl(i,fromCheckpoint){const resume=fromCheckpoint&&level&&levelIndex===i?P.checkpoint:null;levelIndex=cl(i,0,LVS.length-1);level=pl(LVS[levelIndex]);crSt=new Map();Object.assign(P,{x:resume?resume.x:level.spawn.x,y:resume?resume.y:level.spawn.y,vx:0,vy:0,onGround:false,coyote:0,jumpBuf:0,jumpsUsed:0,wallDir:0,dashT:0,dashCd:0,dashDir:1,facing:1,lanternOn:true,alive:true,animT:0,stepT:0,prevY:resume?resume.y:level.spawn.y,riding:null,hasKey:false,crystals:0,checkpoint:resume||{x:level.spawn.x,y:level.spawn.y}});if(resume)for(const cp of level.checkpoints)if(resume.x>=cp.x&&resume.x<cp.x+T&&Math.abs(resume.y+P.h-cp.y)<1)cp.active=true;cam.x=cl(P.x-VW/2,0,Math.max(0,level.w*T-VW));cam.y=cl(P.y-VH/2,0,Math.max(0,level.h*T-VH));I.left=I.right=I.jump=false;I.jumpPressed=false;I.lanternPressed=false;state=ST.PLAY;stateT=0}
 const tr=(c,r)=>(c<0||c>=level.w||r<0||r>=level.h)?0:level.tiles[r*level.w+c];
-function isol(c,r){if(c<0||c>=level.w)return true;if(r<0||r>=level.h)return false;const t=level.tiles[r*level.w+c];if(t===1)return true;if(t===2)return P.lanternOn;if(t===4){const s=crSt.get(r*level.w+c);return!(s&&s.gone)}if(t===5||t===6)return true;return false}
+function isol(c,r){if(c<0||c>=level.w)return true;if(r<0||r>=level.h)return false;const t=level.tiles[r*level.w+c];if(t===1||t===7)return true;if(t===2)return P.lanternOn;if(t===4){const s=crSt.get(r*level.w+c);return!(s&&s.gone)}if(t===5||t===6)return true;return false}
 function gcr(i){let s=crSt.get(i);if(!s){s={t:0,gone:false,regen:0};crSt.set(i,s)}return s}
 function mvX(p,dt){p.x+=p.vx*dt;const r0=Math.floor(p.y/T),r1=Math.floor((p.y+p.h-.01)/T);if(p.vx>0){const cR=Math.floor((p.x+p.w-.01)/T);for(let r=r0;r<=r1;r++)if(isol(cR,r)){p.x=cR*T-p.w;p.vx=0;p.wallDir=1;break}}else if(p.vx<0){const cL=Math.floor(p.x/T);for(let r=r0;r<=r1;r++)if(isol(cL,r)){p.x=(cL+1)*T;p.vx=0;p.wallDir=-1;break}}}
-function mvY(p,dt){p.y+=p.vy*dt;const c0=Math.floor(p.x/T),c1=Math.floor((p.x+p.w-.01)/T);if(p.vy>0){const rB=Math.floor((p.y+p.h-.01)/T);for(let c=c0;c<=c1;c++)if(isol(c,rB)){p.y=rB*T-p.h;p.vy=0;p.onGround=true;break}}else if(p.vy<0){const rT=Math.floor(p.y/T);for(let c=c0;c<=c1;c++)if(isol(c,rT)){p.y=(rT+1)*T;p.vy=0;break}}}
-function uObj(dt){for(const o of level.objects){if(o.type==='saw'){o.t+=o.speed*dt*o.dir;if(o.t>=1){o.t=1;o.dir=-1}else if(o.t<=0){o.t=0;o.dir=1}o.x=o.ax+(o.bx-o.ax)*o.t;o.y=o.ay+(o.by-o.ay)*o.t}else if(o.type==='gear')o.rot+=o.spin*dt}}
+function mvY(p,dt){p.y+=p.vy*dt;const c0=Math.floor(p.x/T),c1=Math.floor((p.x+p.w-.01)/T);if(p.vy>0){const rB=Math.floor((p.y+p.h-.01)/T);for(let c=c0;c<=c1;c++)if(isol(c,rB)){p.y=rB*T-p.h;if(tr(c,rB)===7){p.vy=-JU*1.42;p.onGround=false;p.jumpsUsed=0;SFX.jump()}else{p.vy=0;p.onGround=true}break}}else if(p.vy<0){const rT=Math.floor(p.y/T);for(let c=c0;c<=c1;c++)if(isol(c,rT)){p.y=(rT+1)*T;p.vy=0;break}}}
+function uObj(dt){for(const o of level.objects){if(o.type==='saw'){o.t+=o.speed*dt*o.dir;if(o.t>=1){o.t=1;o.dir=-1}else if(o.t<=0){o.t=0;o.dir=1}o.x=o.ax+(o.bx-o.ax)*o.t;o.y=o.ay+(o.by-o.ay)*o.t}else if(o.type==='gear')o.rot+=o.spin*dt;else if(o.type==='plat'&&o.ax!==undefined){o.px=o.x;o.py=o.y;o.t+=o.speed*dt*o.dir;if(o.t>=1){o.t=1;o.dir=-1}else if(o.t<=0){o.t=0;o.dir=1}o.x=o.ax+(o.bx-o.ax)*o.t;o.y=(o.ay??o.y)+((o.by??o.ay??o.y)-(o.ay??o.y))*o.t;o.dx=o.x-o.px;o.dy=o.y-o.py}}}
 function uCr(dt){if(P.onGround){const fy=Math.floor((P.y+P.h+2)/T),fx0=Math.floor(P.x/T),fx1=Math.floor((P.x+P.w-1)/T);for(let fx=fx0;fx<=fx1;fx++){if(fx<0||fx>=level.w||fy<0||fy>=level.h)continue;const idx=fy*level.w+fx;if(level.tiles[idx]===4){const st=gcr(idx);if(!st.gone&&st.t<=0)st.t=.34}}}crSt.forEach(st=>{if(st.t>0){st.t-=dt;if(st.t<=0){st.t=0;st.gone=true;st.regen=2.6}}else if(st.gone){st.regen-=dt;if(st.regen<=0){st.gone=false;st.regen=0}}})}
 function uPl(dt){const p=P,dir=(I.right?1:0)-(I.left?1:0),wallContact=p.wallDir;p.dashT=Math.max(0,p.dashT-dt);p.dashCd=Math.max(0,p.dashCd-dt);p.wallDir=0;if(dir!==0){p.vx+=dir*AC*dt;p.facing=dir}else{const f=(p.onGround?FG:FA)*dt;if(Math.abs(p.vx)<=f)p.vx=0;else p.vx-=sg(p.vx)*f}p.vx=cl(p.vx,-MV,MV);
 if(I.jumpPressed){p.jumpBuf=.14;I.jumpPressed=false}p.jumpBuf-=dt;p.coyote-=dt;
@@ -105,10 +130,11 @@ function dBg(){const d=level.def;cx.fillStyle=CD;cx.fillRect(0,0,VW,VH);if(d.bg=
 if(PIX){const step=58,shift=Math.floor(cam.x*.11)%step;for(let n=-1;n<Math.ceil(VW/step)+2;n++){const x=n*step-shift+8,kind=(n+100)%4;if(d.bg==='forest'||d.bg==='ruins'||d.bg==='castle'){PIX.actor(cx,x,VH-138+(n%2)*9,24,'tree',Math.floor(stateT*2));if((d.bg==='ruins'||d.bg==='castle')&&kind===1)PIX.building(cx,x+18,VH-125,25,kind===1?'tower':'temple')}else if(kind===0)PIX.building(cx,x,VH-66,22,'temple');}}
 /* foreground silhouettes */const ox2=cam.x*.27,sp=46;cx.fillStyle=PT.W50;for(let j=Math.floor(ox2/sp)-1;j<Math.floor(ox2/sp)+Math.ceil(VW/sp)+3;j++){const x=j*sp-ox2+23,h=29+Math.abs((j*37)%49),base=VH+13-cam.y*.022;cx.beginPath();cx.moveTo(x-16,base);cx.lineTo(x,base-h);cx.lineTo(x+16,base);cx.closePath();cx.fill();cx.fillRect(Math.round(x-2),Math.round(base-4),4,8);if(d.bg==='forest'&&j%3===0){cx.fillStyle=PT.W25;cx.fillRect(Math.round(x-6),Math.round(base-h+12),2,2);cx.fillRect(Math.round(x+4),Math.round(base-h+20),1,2);cx.fillStyle=PT.W50}}/* subtle fog bands */cx.fillStyle=PT.W25;for(let i=0;i<4;i++){const x=((i*79+Math.floor(stateT*2))%(VW+50))-25,y=VH-35-(i%3)*12;if(x<VW)cx.fillRect(x,y,16+(i%3)*5,1)}}
 function dSt(){if(level.def.d>.5)return;cx.fillStyle=CL;for(const s of stars){const sx=Math.round(s.x-cam.x*.05),sy=Math.round(s.y-cam.y*.05);if(sx<-2||sx>VW+2||sy<-2||sy>VH+2)continue;cx.fillRect(sx,sy,1,1)}}
-function dSol(px,py,tx,ty){const top=tr(tx,ty-1)!==1;cx.fillStyle=CL;cx.fillRect(px,py,T,T);/* carved stone face */cx.fillStyle=PT.B25;cx.fillRect(px,py+2,T,2);cx.fillStyle=PT.B50;cx.fillRect(px,py+9,T,7);cx.fillStyle=CD;cx.fillRect(px,py+15,T,1);if(top){cx.fillStyle=CL;cx.fillRect(px,py,T,1);cx.fillStyle=PT.B25;cx.fillRect(px+2,py+1,T-4,1);/* tiny grassless stone chips */if((tx*7+ty*3)%4===0){cx.fillStyle=CD;cx.fillRect(px+3,py+4,1,1);cx.fillRect(px+5,py+5,2,1)}if((tx+ty)%5===0){cx.fillStyle=PT.B50;cx.fillRect(px+10,py+5,3,1)}}if((tx+ty)%3===0){cx.fillStyle=PT.B25;cx.fillRect(px+3,py+7,4,1);cx.fillRect(px+11,py+12,2,1)}if((tx*3+ty)%7===0){cx.fillStyle=CD;cx.fillRect(px+8,py+3,1,3);cx.fillRect(px+7,py+5,2,1)}}
+function dSol(px,py,tx,ty){const top=tr(tx,ty-1)!==1,bg=level.def.bg;cx.fillStyle=CL;cx.fillRect(px,py,T,T);cx.fillStyle=PT.B25;cx.fillRect(px,py+2,T,2);cx.fillStyle=PT.B50;cx.fillRect(px,py+9,T,7);cx.fillStyle=CD;cx.fillRect(px,py+15,T,1);if(top){cx.fillStyle=CL;cx.fillRect(px,py,T,1);cx.fillStyle=PT.B25;cx.fillRect(px+2,py+1,T-4,1)}if(bg==='cave'){cx.fillStyle=CD;cx.fillRect(px+3,py+4,2,5);cx.fillRect(px+9,py+7,4,1);cx.fillStyle=PT.W25;cx.fillRect(px+4,py+5,1,2)}else if(bg==='ruins'||bg==='castle'){cx.fillStyle=CD;cx.fillRect(px+3,py+4,1,4);cx.fillRect(px+7,py+4,1,4);cx.fillRect(px+11,py+4,1,4);cx.fillStyle=PT.W50;cx.fillRect(px+4,py+6,3,1)}else if(bg==='mirror'||bg==='spire'){cx.fillStyle=PT.B50;cx.fillRect(px+3,py+4,10,1);cx.fillRect(px+5,py+6,6,1);cx.fillStyle=CD;cx.fillRect(px+7,py+3,2,5)}else if(bg==='forest'){cx.fillStyle=CD;cx.fillRect(px+2,py+5,2,1);cx.fillRect(px+9,py+4,3,1);cx.fillStyle=PT.W50;cx.fillRect(px+4,py+6,2,1)}else{cx.fillStyle=PT.B25;cx.fillRect(px+3,py+7,4,1);cx.fillRect(px+11,py+12,2,1)}if((tx*3+ty)%7===0){cx.fillStyle=CD;cx.fillRect(px+8,py+3,1,3);cx.fillRect(px+7,py+5,2,1)}}
 function dHid(px,py){if(P.lanternOn){cx.fillStyle=CL;cx.fillRect(px,py,T,T);cx.fillStyle=PT.B50;cx.fillRect(px,py+10,T,6);cx.fillStyle=CD;cx.fillRect(px,py,T,1);cx.fillRect(px,py+T-1,T,1)}else{cx.fillStyle=PT.W25;cx.fillRect(px+1,py+1,T-2,T-2);cx.fillStyle=PT.W50;cx.fillRect(px,py,T,2);cx.fillRect(px,py+T-2,T,2)}}
 function dSpk(px,py){cx.fillStyle=PT.W25;cx.fillRect(px+2,py+T-2,T-4,2);cx.fillStyle=CL;cx.beginPath();cx.moveTo(px,py+T);cx.lineTo(px+3,py+T-5);cx.lineTo(px+8,py+3);cx.lineTo(px+12,py+T-5);cx.lineTo(px+T,py+T);cx.closePath();cx.fill();cx.fillStyle=PT.B25;cx.fillRect(px+4,py+T-4,2,2);cx.fillRect(px+10,py+T-4,2,2);cx.fillStyle=CD;cx.fillRect(px+7,py+8,2,3);cx.fillRect(px+6,py+11,4,1)}
 function dCrm(px,py,idx){const st=crSt.get(idx);if(st&&st.gone){cx.fillStyle=PT.W25;cx.fillRect(px,py+T-3,T,3);return}cx.fillStyle=CL;cx.fillRect(px,py,T,8);cx.fillStyle=PT.B50;cx.fillRect(px,py+4,T,4);cx.fillStyle=CD;cx.fillRect(px,py+7,T,1);if(st&&st.t>0){cx.fillStyle=(Math.floor(st.t*24)%2===0)?CD:CL;cx.fillRect(px+4,py+2,2,2);cx.fillRect(px+10,py+2,2,2)}}
+function dSpring(px,py){cx.fillStyle=CL;cx.fillRect(px+2,py+8,T-4,8);cx.fillStyle=CD;cx.fillRect(px+2,py+8,T-4,2);cx.fillRect(px+4,py+11,2,3);cx.fillRect(px+9,py+11,2,3);cx.fillStyle=CL;cx.fillRect(px+4,py+4,8,4);cx.fillStyle=CD;cx.fillRect(px+6,py+5,4,2);cx.fillStyle=PT.W50;cx.fillRect(px+1,py+14,T-2,2)}
 function dDor(px,py){cx.fillStyle=PT.W50;cx.fillRect(px,py,T,T);cx.fillStyle=CL;cx.fillRect(px+2,py+2,T-4,T-4);cx.fillStyle=CD;cx.fillRect(px+6,py+6,4,4)}
 function dCkp(px,py,active){cx.fillStyle=active?CL:PT.W50;cx.fillRect(px+2,py+2,2,T-3);cx.fillStyle=active?CL:PT.W25;cx.beginPath();cx.moveTo(px+4,py+2);cx.lineTo(px+13,py+5);cx.lineTo(px+4,py+9);cx.closePath();cx.fill();cx.fillStyle=active?CL:CD;cx.fillRect(px+1,py+T-2,T-2,1)}
 function dKey(k){const px=Math.round(k.x-cam.x),py=Math.round(k.y-cam.y+Math.sin(k.t*3)*2);cx.fillStyle=PT.W25;cx.fillRect(px-4,py-5,8,11);cx.fillStyle=CL;cx.fillRect(px-2,py-4,4,4);cx.fillRect(px-1,py,2,5);cx.fillRect(px-1,py+3,4,1);cx.fillStyle=CD;cx.fillRect(px-1,py-3,2,2);cx.fillRect(px+2,py+3,1,1)}
@@ -118,7 +144,7 @@ function dObj(){const now=performance.now();for(const o of level.objects){const 
 function dPl(){const p=P,px=Math.round(p.x-cam.x),py=Math.round(p.y-cam.y);if(!p.alive){cx.fillStyle=PT.W50;cx.fillRect(px,py+8,9,5);cx.fillStyle=CD;cx.fillRect(px+3,py+9,3,2);return}const walk=p.onGround&&Math.abs(p.vx)>15,fr=walk?(Math.floor(p.animT)%2):0;if(PIX){cx.save();if(p.facing<0){cx.translate(px*2+9,0);cx.scale(-1,1);PIX.actor(cx,px,py,16,'hero',fr,selectedCharacter)}else PIX.actor(cx,px-3,py-1,16,'hero',fr,selectedCharacter);cx.restore()}else{cx.fillStyle=PT.W25;cx.fillRect(px-2,py+13,13,1);cx.fillStyle=CL;cx.fillRect(px+1,py,7,5);cx.fillStyle=CD;cx.fillRect(px+2,py+1,5,2);cx.fillStyle=CL;cx.fillRect(px+(p.facing>0?5:2),py+2,2,1);cx.fillRect(px+2,py+5,5,5);cx.fillStyle=PT.B50;cx.fillRect(px+2,py+6,5,3);cx.fillStyle=CL;cx.fillRect(px+(p.facing>0?7:0),py+5,2,4);if(walk){if(fr===0){cx.fillRect(px+1,py+10,3,3);cx.fillRect(px+6,py+10,2,2)}else{cx.fillRect(px+2,py+10,2,2);cx.fillRect(px+5,py+10,3,3)}}else{cx.fillRect(px+2,py+10,2,3);cx.fillRect(px+5,py+10,2,3)}}if(p.lanternOn){cx.fillStyle=CL;cx.fillRect(px+(p.facing>0?8:0),py+7,1,1)}}
 function dDrk(){const d=level.def;if(!d.d)return;const fO=(P.facing>0)?7:-7;const lx=Math.round(P.x+P.w/2+fO-cam.x),ly=Math.round(P.y+P.h/2-cam.y);const R=P.lanternOn?92-d.d*30:30;cx.fillStyle=CD;cx.beginPath();cx.rect(0,0,VW,VH);cx.moveTo(lx+R,ly);cx.arc(lx,ly,R,0,Math.PI*2,true);cx.fill();cx.save();cx.beginPath();cx.arc(lx,ly,R+9,0,Math.PI*2);cx.arc(lx,ly,R,0,Math.PI*2,true);cx.fillStyle=PT.B50;cx.fill();cx.beginPath();cx.arc(lx,ly,R+18,0,Math.PI*2);cx.arc(lx,ly,R+9,0,Math.PI*2,true);cx.fillStyle=PT.B25;cx.fill();cx.restore()}
 function dWrld(){const cx0=Math.max(0,Math.floor(cam.x/T)),cx1=Math.min(level.w-1,Math.floor((cam.x+VW)/T)),cy0=Math.max(0,Math.floor(cam.y/T)),cy1=Math.min(level.h-1,Math.floor((cam.y+VH)/T)),dk=level.def.d;let lX=0,lY=0,lR=0;if(dk>0){const fO=(P.facing>0)?7:-7;lX=P.x+P.w/2+fO;lY=P.y+P.h/2;lR=P.lanternOn?(92-dk*30)+22:50}
-for(let y=cy0;y<=cy1;y++)for(let x=cx0;x<=cx1;x++){const t=level.tiles[y*level.w+x];if(t===0)continue;if(dk>.5){const tcx=x*T+8,tcy=y*T+8,ddx=tcx-lX,ddy=tcy-lY;if(ddx*ddx+ddy*ddy>lR*lR)continue}const px=Math.round(x*T-cam.x),py=Math.round(y*T-cam.y);if(t===1)dSol(px,py,x,y);else if(t===2)dHid(px,py);else if(t===3)dSpk(px,py);else if(t===4)dCrm(px,py,y*level.w+x);else if(t===5)dDor(px,py);else if(t===6){const cp=level.checkpoints.find(c=>c.x===x*T&&c.y===y*T);dCkp(px,py,!!(cp&&cp.active))}}
+for(let y=cy0;y<=cy1;y++)for(let x=cx0;x<=cx1;x++){const t=level.tiles[y*level.w+x];if(t===0)continue;if(dk>.5){const tcx=x*T+8,tcy=y*T+8,ddx=tcx-lX,ddy=tcy-lY;if(ddx*ddx+ddy*ddy>lR*lR)continue}const px=Math.round(x*T-cam.x),py=Math.round(y*T-cam.y);if(t===1)dSol(px,py,x,y);else if(t===2)dHid(px,py);else if(t===3)dSpk(px,py);else if(t===4)dCrm(px,py,y*level.w+x);else if(t===7)dSpring(px,py);else if(t===5)dDor(px,py);else if(t===6){const cp=level.checkpoints.find(c=>c.x===x*T&&c.y===y*T);dCkp(px,py,!!(cp&&cp.active))}}
 for(const k of level.keys)if(!k.got)dKey(k);for(const c of level.crystals)if(!c.got)dCry(c);dObj();if(level.goal)dGol();dPl();dDrk()}
 function gBtn(){ return []; }
 function dBtn(b,a){const x=b.x,y=b.y,w=b.w,h=b.h;if(b.id==='pause'){cx.fillStyle=a?CL:PT.W50;cx.fillRect(x,y,w,h);cx.fillStyle=a?CD:CL;cx.fillRect(x+5,y+4,3,h-8);cx.fillRect(x+12,y+4,3,h-8);return}cx.fillStyle=a?CL:PT.W50;cx.fillRect(x,y,w,h);cx.fillStyle=a?CD:CL;if(b.id==='left'){for(let i=0;i<7;i++){cx.fillRect(x+12+i,y+10+i,2,2);cx.fillRect(x+12+i,y+h-12-i,2,2)}cx.fillRect(x+12,y+16,2,h-32)}else if(b.id==='right'){for(let j=0;j<7;j++){cx.fillRect(x+w-14-j,y+10+j,2,2);cx.fillRect(x+w-14-j,y+h-12-j,2,2)}cx.fillRect(x+w-14,y+16,2,h-32)}else if(b.id==='jump'){dtc('JUMP',x+w/2,y+h/2-5,1,a?CD:CL);dtc('^',x+w/2-4,y+6,1,a?CD:CL)}else if(b.id==='lantern'){const lx=x+w/2,ly=y+h/2;cx.beginPath();cx.moveTo(lx,ly-9);cx.lineTo(lx+6,ly);cx.lineTo(lx,ly+9);cx.lineTo(lx-6,ly);cx.closePath();cx.fill();if(a){cx.fillStyle=CL;cx.fillRect(lx-2,ly-2,4,4)}}}
