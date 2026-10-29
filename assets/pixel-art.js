@@ -11,12 +11,24 @@ function tile(ctx,x,y,s,type='stone',v=0){
  else if(type==='water'){for(let r=0;r<4;r++)for(let c=0;c<3;c++)px(ctx,x+u*(1+c*5+(r%2)*2),y+u*(2+r*4),u*3,u,C)}
  else if(type==='floor'){for(let r=0;r<4;r++)for(let c=0;c<4;c++)px(ctx,x+u*(2+c*4),y+u*(2+r*4),u*2,u*2,(r+c+v)%3?C:G)}
 }
-function actor(ctx,x,y,s=16,type='hero',frame=0){
+function actor(ctx,x,y,s=16,type='hero',frame=0,variant=0){
  const u=s/16; const p=(a,b,w,h,c=C)=>px(ctx,x+a*u,y+b*u,w*u,h*u,c);
  if(type==='hero'||type==='enemy'||type==='creature'){
  p(5,0,6,2);p(3,2,10,6);p(4,8,8,3);p(2,11,4,4);p(10,11,4,4);
  p(5,4,2,2,B);p(10,4,2,2,B);if(type==='enemy'){p(6,7,4,1,B);p(4,1,2,2,G)}else{p(6,7,4,1,C)}
  if(frame%2){p(1,9,2,3);p(13,9,2,3)}
+ if(type==='hero'){
+  const v=((variant|0)%10+10)%10;
+  if(v===1){p(3,1,10,2,G);p(2,3,2,5);p(12,3,2,5)}
+  else if(v===2){p(4,0,8,2,B);p(3,2,10,2,G);p(5,3,1,3,C);p(10,3,1,3,C)}
+  else if(v===3){p(2,5,3,6,G);p(11,5,3,6,G);p(4,9,8,3,B)}
+  else if(v===4){p(3,0,10,2,G);p(2,2,12,2);p(6,3,4,3,B);p(5,11,6,4,G)}
+  else if(v===5){p(5,0,6,2,G);p(4,2,8,2,B);p(4,5,8,2,G);p(6,7,4,2,B);p(2,11,3,4,G);p(11,11,3,4,G)}
+  else if(v===6){p(4,0,8,2,B);p(3,2,10,2,G);p(2,8,3,3,G);p(11,8,3,3,G);p(5,12,6,3,B)}
+  else if(v===7){p(3,1,10,3,G);p(2,4,3,5,B);p(11,4,3,5,B);p(4,9,8,2,G)}
+  else if(v===8){p(5,0,6,2,B);p(3,2,10,4,G);p(4,6,8,2,B);p(1,9,3,4,G);p(12,9,3,4,G)}
+  else if(v===9){p(5,0,6,2,G);p(3,2,10,2);p(2,4,3,5,G);p(11,4,3,5,G);p(5,8,6,3,B);p(4,11,8,4,G)}
+ }
  }else if(type==='ship'){p(7,0,2,4);p(5,4,6,5);p(1,8,14,4);p(4,12,3,3);p(9,12,3,3);p(7,5,2,2,B)}
  else if(type==='car'){p(4,0,8,3);p(2,3,12,10);p(4,5,8,3,B);p(0,5,3,4);p(13,5,3,4);p(3,13,3,3);p(10,13,3,3)}
  else if(type==='tree'){
