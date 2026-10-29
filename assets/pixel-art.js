@@ -19,7 +19,12 @@ function actor(ctx,x,y,s=16,type='hero',frame=0){
  if(frame%2){p(1,9,2,3);p(13,9,2,3)}
  }else if(type==='ship'){p(7,0,2,4);p(5,4,6,5);p(1,8,14,4);p(4,12,3,3);p(9,12,3,3);p(7,5,2,2,B)}
  else if(type==='car'){p(4,0,8,3);p(2,3,12,10);p(4,5,8,3,B);p(0,5,3,4);p(13,5,3,4);p(3,13,3,3);p(10,13,3,3)}
- else if(type==='tree'){p(6,0,4,3);p(3,3,10,4);p(1,7,14,4);p(5,11,6,5)}
+ else if(type==='tree'){
+ // Layered conifer silhouette with a narrow trunk; avoids cross-shaped canopy.
+ p(7,0,2,2);p(6,2,4,2);p(5,4,6,2);p(4,6,8,2);p(3,8,10,2);p(2,10,12,2);p(7,12,2,4);
+ // Black cut-outs create distinct stepped branches in the white silhouette.
+ p(7,3,2,1,B);p(6,5,2,1,B);p(9,5,2,1,B);p(5,7,2,1,B);p(9,7,2,1,B);p(4,9,2,1,B);p(10,9,2,1,B);
+ }
 }
 function building(ctx,x,y,s=32,type='house',v=0){
  const u=s/16,p=(a,b,w,h,c=C)=>px(ctx,x+a*u,y+b*u,w*u,h*u,c);
