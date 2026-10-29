@@ -7,6 +7,13 @@ const screen=read('../assets/game-screen.js'), shadow=read('../shadow-spire.html
 assert.ok(home.includes('<title>FREEzzz ARCADE — Game Select</title>'),'Home must start at launcher');
 assert.ok(home.includes('./assets/console-menu.js?v=4'),'Launcher runtime cache must be current');
 assert.ok(home.includes('./assets/console.css?v=26'),'Shared console CSS must be current');
+assert.ok(shadow.includes('./assets/game.js?v=33'),'Shadow Spire gameplay cache must be current');
+assert.ok(shadow.includes('./assets/pixel-art.js?v=5'),'Shadow Spire pixel-art cache must be current');
+const game=read('../assets/game.js');
+assert.ok(game.includes('const routes=['),'Shadow Spire must define distinct level route archetypes');
+assert.ok(game.includes('function dSpring(')&&game.includes("else if(ch==='B')ti[idx]=7"),'Spring mechanics must be parsed and rendered');
+assert.ok(game.includes("o.type==='plat'&&o.ax!==undefined"),'Moving platform simulation must exist');
+assert.ok((game.match(/\{n:'/g)||[]).length>=20,'Shadow Spire must retain 20 levels');
 assert.ok(screen.includes('width: 208, height: 320'),'Logical screen must stay 208x320');
 assert.ok(css.includes('.screen-bezel{position:absolute'),'Display aperture must remain fixed');
 assert.ok(layout.includes("const KEY='shadowSpireControlLayout_v2'"),'Control layout must persist in current schema');
