@@ -22,7 +22,7 @@ for(const [page,title,slug] of [
  assert.ok(html.includes('<title>'+title+'</title>'),title+' title missing');
  assert.ok(html.includes('data-game="'+slug+'"'),title+' mode missing');
  assert.ok(html.includes('./assets/game-screen.js?v=1'),title+' must use fixed screen contract');
- assert.ok(html.includes('./assets/arcade-extras.js?v=3'),title+' runtime cache must be current');
+ assert.ok(html.includes('./assets/arcade-extras.js?v=4'),title+' runtime cache must be current');
  assert.ok(html.includes('href="./index.html"'),title+' must link back to launcher');
  assert.ok(html.includes('data-control="left"')&&html.includes('data-control="right"')&&html.includes('data-control="jump"'),title+' must expose physical buttons');
 }
