@@ -5,7 +5,7 @@ const W=SCREEN.width,H=SCREEN.height;
 const canvas=document.getElementById('c');
 canvas.width=W;canvas.height=H;canvas.style.width='100%';canvas.style.height='100%';canvas.style.objectFit='contain';canvas.style.objectPosition='center';canvas.style.imageRendering='pixelated';
 const ctx=canvas.getContext('2d',{alpha:false});ctx.imageSmoothingEnabled=false;
-const C='#FFF8E8',B='#000000',MID='#77736b';
+const C='#FFF8E8',B='#000000',MID='#77736b',PIX=window.PixelArt1Bit;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const input={left:false,right:false,action:false};
 const STORE='nightRunnerBest_v1';
@@ -29,6 +29,8 @@ function car(x,y,w,h,enemy=false){x=Math.round(x);y=Math.round(y);const body=ene
 }
 function drawRoad(dt){
  rect(0,0,W,H,B);
+ // Pixel-art city blocks scroll beside the road, using the shared 1-bit structure atlas.
+ if(PIX){for(let y=-24+(roadOffset%72),n=0;y<H;y+=72,n++){PIX.building(ctx,1,y,22,n%3===0?'factory':n%3===1?'tower':'house');PIX.building(ctx,W-23,y+30,22,n%3===0?'house':n%3===1?'temple':'tower');}}
  // Crisp three-lane road with shoulders, rumble strips and perspective markers.
  rect(25,0,3,H,MID);rect(28,0,2,H,C);rect(W-30,0,2,H,C);rect(W-28,0,3,H,MID);
  rect(32,0,W-64,H,B);
