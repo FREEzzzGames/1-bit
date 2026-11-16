@@ -1,0 +1,45 @@
+name: Cardputer firmware build
+
+on:
+  push:
+    paths:
+      - "firmware/**"
+      - ".github/workflows/cardputer-build.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-cardputer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Arduino CLI
+        uses: arduino/setup-arduino-cli@v2
+
+      - name: Update Arduino indexes
+        run: arduino-cli core update-index
+
+      - name: Install ESP32 core
+        run: arduino-cli core install esp32:esp32@3.2.1
+
+      - name: Install Cardputer library
+        run: arduino-cli lib install M5Cardputer
+
+      - name: Compile DrumMachine for M5Stack Cardputer
+        run: |
+          arduino-cli compile \
+            --fqbn esp32:esp32:m5stack_cardputer \
+            --warnings all \
+            --output-dir build/DrumMachine \
+            firmware/DrumMachine
+
+      - name: Upload firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: DrumMachine-Cardputer-ADV
+          path: build/DrumMachine/*.bin
+          if-no-files-found: error
+          retention-days: 30
