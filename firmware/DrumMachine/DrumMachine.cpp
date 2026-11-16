@@ -964,7 +964,8 @@ static uint32_t lastDraw = 0;
 void setup() {
   auto cfg = M5.config();
   M5Cardputer.begin(cfg, true);
-  M5Cardputer.Display.setRotation(1);
+  // Cardputer ADV landscape: rotation 0 in current M5GFX 0.3.x (position 1).
+  M5Cardputer.Display.setRotation(0);
   cv.setColorDepth(16);
   cv.createSprite(SW, SH);
   prefs.begin("drum", false);
