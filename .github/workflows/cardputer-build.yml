@@ -19,24 +19,23 @@ jobs:
       - name: Set up Arduino CLI
         uses: arduino/setup-arduino-cli@v2
 
-      - name: Update Arduino indexes
-        run: arduino-cli core update-index
+      - name: Install M5Stack board package
+        run: |
+          arduino-cli core update-index --additional-urls https://static-cdn.m5stack.com/resource/arduino/package_m5stack_index.json
+          arduino-cli core install m5stack:esp32 --additional-urls https://static-cdn.m5stack.com/resource/arduino/package_m5stack_index.json
 
-      - name: Install ESP32 core
-        run: arduino-cli core install esp32:esp32@3.2.1
+      - name: Install Cardputer libraries
+        run: arduino-cli lib install M5Cardputer M5Unified M5GFX
 
-      - name: Install Cardputer library
-        run: arduino-cli lib install M5Cardputer
-
-      - name: Compile DrumMachine for M5Stack Cardputer
+      - name: Compile DrumMachine for Cardputer ADV
         run: |
           arduino-cli compile \
-            --fqbn esp32:esp32:m5stack_cardputer \
+            --fqbn "m5stack:esp32:m5stack_cardputer:FlashSize=8M,PartitionScheme=default_8MB" \
             --warnings all \
             --output-dir build/DrumMachine \
             firmware/DrumMachine
 
-      - name: Upload firmware
+      - name: Upload firmware artifact
         uses: actions/upload-artifact@v4
         with:
           name: DrumMachine-Cardputer-ADV
