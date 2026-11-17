@@ -1,6 +1,10 @@
 #include <M5Cardputer.h>
 #include <Preferences.h>
 
+M5Canvas canvas(&M5Cardputer.Display);
+unsigned long lastRender = 0;
+const unsigned long FRAME_INTERVAL_MS = 33;
+
 const int SCREEN_W = 240;
 const int SCREEN_H = 135;
 const int ROAD_W = 130;
@@ -82,7 +86,9 @@ void setup() {
   auto cfg = M5.config();
   M5Cardputer.begin(cfg, true);
   M5Cardputer.Display.setRotation(0);
-  M5Cardputer.Display.fillScreen(TFT_BLACK);
+  canvas.setColorDepth(16);
+  canvas.createSprite(SCREEN_W, SCREEN_H);
+  canvas.fillScreen(TFT_BLACK);
   M5Cardputer.Speaker.setVolume(110);
   randomSeed(millis());
   loadHS();
@@ -110,30 +116,30 @@ bool collide(Car& a, Car& b) {
 
 void drawCar(Car& c, uint16_t bodyColor) {
   int x = (int)c.x, y = (int)c.y;
-  M5Cardputer.Display.fillRoundRect(x, y, c.w, c.h, 3, bodyColor);
-  M5Cardputer.Display.fillRect(x + 3, y + 5, c.w - 6, 6, TFT_NAVY);
-  M5Cardputer.Display.fillRect(x + 3, y + 13, c.w - 6, 8, TFT_DARKGREY);
-  M5Cardputer.Display.fillRect(x + 3, y + c.h - 11, c.w - 6, 6, TFT_NAVY);
-  M5Cardputer.Display.drawRoundRect(x, y, c.w, c.h, 3, TFT_BLACK);
+  canvas.fillRoundRect(x, y, c.w, c.h, 3, bodyColor);
+  canvas.fillRect(x + 3, y + 5, c.w - 6, 6, TFT_NAVY);
+  canvas.fillRect(x + 3, y + 13, c.w - 6, 8, TFT_DARKGREY);
+  canvas.fillRect(x + 3, y + c.h - 11, c.w - 6, 6, TFT_NAVY);
+  canvas.drawRoundRect(x, y, c.w, c.h, 3, TFT_BLACK);
 }
 
 void drawGame() {
-  M5Cardputer.Display.fillScreen(TFT_BLACK);
+  canvas.fillScreen(TFT_BLACK);
 
-  M5Cardputer.Display.fillRect(0, 0, ROAD_X, SCREEN_H, TFT_DARKGREEN);
-  M5Cardputer.Display.fillRect(ROAD_X + ROAD_W, 0, SCREEN_W - ROAD_X - ROAD_W, SCREEN_H, TFT_DARKGREEN);
+  canvas.fillRect(0, 0, ROAD_X, SCREEN_H, TFT_DARKGREEN);
+  canvas.fillRect(ROAD_X + ROAD_W, 0, SCREEN_W - ROAD_X - ROAD_W, SCREEN_H, TFT_DARKGREEN);
 
-  M5Cardputer.Display.fillRect(ROAD_X, 0, ROAD_W, SCREEN_H, TFT_DARKGREY);
-  M5Cardputer.Display.drawFastVLine(ROAD_X, 0, SCREEN_H, TFT_WHITE);
-  M5Cardputer.Display.drawFastVLine(ROAD_X + ROAD_W - 1, 0, SCREEN_H, TFT_WHITE);
+  canvas.fillRect(ROAD_X, 0, ROAD_W, SCREEN_H, TFT_DARKGREY);
+  canvas.drawFastVLine(ROAD_X, 0, SCREEN_H, TFT_WHITE);
+  canvas.drawFastVLine(ROAD_X + ROAD_W - 1, 0, SCREEN_H, TFT_WHITE);
 
   int dashOffset = ((int)roadScroll) % 20;
   for (int y = -20 + dashOffset; y < SCREEN_H; y += 20)
-    M5Cardputer.Display.fillRect(SCREEN_W / 2 - 1, y, 2, 10, TFT_YELLOW);
+    canvas.fillRect(SCREEN_W / 2 - 1, y, 2, 10, TFT_YELLOW);
 
   for (int y = -10 + (((int)roadScroll * 2) % 15); y < SCREEN_H; y += 15) {
-    M5Cardputer.Display.fillRect(ROAD_X + 5, y, 3, 6, TFT_LIGHTGREY);
-    M5Cardputer.Display.fillRect(ROAD_X + ROAD_W - 8, y, 3, 6, TFT_LIGHTGREY);
+    canvas.fillRect(ROAD_X + 5, y, 3, 6, TFT_LIGHTGREY);
+    canvas.fillRect(ROAD_X + ROAD_W - 8, y, 3, 6, TFT_LIGHTGREY);
   }
 
   for (int i = 0; i < MAX_ENEMIES; i++)
@@ -143,19 +149,19 @@ void drawGame() {
   if (!blink) drawCar(player, TFT_GREEN);
 
   if (millis() < crashFlashUntil)
-    M5Cardputer.Display.fillRect(0, 0, SCREEN_W, SCREEN_H, TFT_RED);
+    canvas.fillRect(0, 0, SCREEN_W, SCREEN_H, TFT_RED);
 
-  M5Cardputer.Display.setTextSize(1);
-  M5Cardputer.Display.setTextColor(TFT_WHITE, TFT_BLACK);
-  M5Cardputer.Display.setCursor(3, 3);
-  M5Cardputer.Display.printf("SCORE %d", score);
-  M5Cardputer.Display.setCursor(SCREEN_W - 75, 3);
-  M5Cardputer.Display.printf("HI %d", highScore);
+  canvas.setTextSize(1);
+  canvas.setTextColor(TFT_WHITE, TFT_BLACK);
+  canvas.setCursor(3, 3);
+  canvas.printf("SCORE %d", score);
+  canvas.setCursor(SCREEN_W - 75, 3);
+  canvas.printf("HI %d", highScore);
 
-  M5Cardputer.Display.setCursor(3, SCREEN_H - 12);
-  M5Cardputer.Display.print("LIVES:");
+  canvas.setCursor(3, SCREEN_H - 12);
+  canvas.print("LIVES:");
   for (int i = 0; i < lives; i++)
-    M5Cardputer.Display.fillCircle(55 + i * 10, SCREEN_H - 8, 3, TFT_RED);
+    canvas.fillCircle(55 + i * 10, SCREEN_H - 8, 3, TFT_RED);
 }
 
 void updateGame(unsigned long now) {
@@ -217,41 +223,43 @@ void updateGame(unsigned long now) {
 }
 
 void drawMenu() {
-  M5Cardputer.Display.fillScreen(TFT_BLACK);
-  M5Cardputer.Display.setTextColor(TFT_GREEN, TFT_BLACK);
-  M5Cardputer.Display.setTextSize(3);
-  M5Cardputer.Display.setCursor(55, 18);
-  M5Cardputer.Display.print("RACE");
+  canvas.fillScreen(TFT_BLACK);
+  canvas.setTextColor(TFT_GREEN, TFT_BLACK);
+  canvas.setTextSize(3);
+  canvas.setCursor(55, 18);
+  canvas.print("RACE");
 
-  M5Cardputer.Display.setTextSize(1);
-  M5Cardputer.Display.setTextColor(TFT_WHITE, TFT_BLACK);
-  M5Cardputer.Display.setCursor(30, 60);
-  M5Cardputer.Display.print("HIGH SCORE: ");
-  M5Cardputer.Display.print(highScore);
+  canvas.setTextSize(1);
+  canvas.setTextColor(TFT_WHITE, TFT_BLACK);
+  canvas.setCursor(30, 60);
+  canvas.print("HIGH SCORE: ");
+  canvas.print(highScore);
 
-  M5Cardputer.Display.setCursor(20, 80);
-  M5Cardputer.Display.print(", . or A D to drive");
+  canvas.setCursor(20, 80);
+  canvas.print(", . or A D to drive");
 
-  M5Cardputer.Display.setTextColor(TFT_YELLOW, TFT_BLACK);
-  M5Cardputer.Display.setCursor(35, 110);
-  M5Cardputer.Display.print("Press ENTER to play");
+  canvas.setTextColor(TFT_YELLOW, TFT_BLACK);
+  canvas.setCursor(35, 110);
+  canvas.print("Press ENTER to play");
+  canvas.pushSprite(0, 0);
 }
 
 void drawGameOver() {
   drawGame();
-  M5Cardputer.Display.fillRect(40, 40, SCREEN_W - 80, 60, TFT_BLACK);
-  M5Cardputer.Display.drawRect(40, 40, SCREEN_W - 80, 60, TFT_RED);
-  M5Cardputer.Display.setTextColor(TFT_RED, TFT_BLACK);
-  M5Cardputer.Display.setTextSize(2);
-  M5Cardputer.Display.setCursor(48, 46);
-  M5Cardputer.Display.print("GAME OVER");
-  M5Cardputer.Display.setTextSize(1);
-  M5Cardputer.Display.setTextColor(TFT_WHITE, TFT_BLACK);
-  M5Cardputer.Display.setCursor(60, 75);
-  M5Cardputer.Display.print("Score: ");
-  M5Cardputer.Display.print(score);
-  M5Cardputer.Display.setCursor(50, 88);
-  M5Cardputer.Display.print("Press R for menu");
+  canvas.fillRect(40, 40, SCREEN_W - 80, 60, TFT_BLACK);
+  canvas.drawRect(40, 40, SCREEN_W - 80, 60, TFT_RED);
+  canvas.setTextColor(TFT_RED, TFT_BLACK);
+  canvas.setTextSize(2);
+  canvas.setCursor(48, 46);
+  canvas.print("GAME OVER");
+  canvas.setTextSize(1);
+  canvas.setTextColor(TFT_WHITE, TFT_BLACK);
+  canvas.setCursor(60, 75);
+  canvas.print("Score: ");
+  canvas.print(score);
+  canvas.setCursor(50, 88);
+  canvas.print("Press R for menu");
+  canvas.pushSprite(0, 0);
 }
 
 void loop() {
@@ -269,7 +277,10 @@ void loop() {
       prevK = k;
       return;
     }
-    drawMenu();
+    if (now - lastRender >= FRAME_INTERVAL_MS) {
+      drawMenu();
+      lastRender = now;
+    }
     prevK = k;
     delay(30);
     return;
@@ -282,8 +293,14 @@ void loop() {
       return;
     }
     updateGame(now);
-    if (state == PLAYING) drawGame();
-    else if (state == GAME_OVER) drawGameOver();
+    if (state == PLAYING && now - lastRender >= FRAME_INTERVAL_MS) {
+      drawGame();
+      canvas.pushSprite(0, 0);
+      lastRender = now;
+    } else if (state == GAME_OVER && now - lastRender >= FRAME_INTERVAL_MS) {
+      drawGameOver();
+      lastRender = now;
+    }
     prevK = k;
     delay(10);
     return;
@@ -295,12 +312,16 @@ void loop() {
       prevK = k;
       return;
     }
-    M5Cardputer.Display.fillRect(60, 50, 120, 40, TFT_BLACK);
-    M5Cardputer.Display.drawRect(60, 50, 120, 40, TFT_YELLOW);
-    M5Cardputer.Display.setTextColor(TFT_YELLOW, TFT_BLACK);
-    M5Cardputer.Display.setTextSize(2);
-    M5Cardputer.Display.setCursor(78, 58);
-    M5Cardputer.Display.print("PAUSED");
+    canvas.fillRect(60, 50, 120, 40, TFT_BLACK);
+    canvas.drawRect(60, 50, 120, 40, TFT_YELLOW);
+    canvas.setTextColor(TFT_YELLOW, TFT_BLACK);
+    canvas.setTextSize(2);
+    canvas.setCursor(78, 58);
+    canvas.print("PAUSED");
+    if (now - lastRender >= FRAME_INTERVAL_MS) {
+      canvas.pushSprite(0, 0);
+      lastRender = now;
+    }
     prevK = k;
     delay(30);
     return;
@@ -308,7 +329,10 @@ void loop() {
 
   if (state == GAME_OVER) {
     if (pressedOnce(k.r, prevK.r)) state = MENU;
-    drawGameOver();
+    if (now - lastRender >= FRAME_INTERVAL_MS) {
+      drawGameOver();
+      lastRender = now;
+    }
     prevK = k;
     delay(30);
     return;
