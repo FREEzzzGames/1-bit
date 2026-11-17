@@ -21,6 +21,9 @@ jobs:
           mkdir -p firmware/DarkMaze
           base64 -d firmware/DarkMaze/DarkMaze.ino.gz.b64 | gzip -dc > firmware/DarkMaze/DarkMaze.ino
           test -s firmware/DarkMaze/DarkMaze.ino
+          # Arduino's prototype generator emits function declarations before
+          # the sketch body; forward-declare this custom return/argument type.
+          sed -i '/#include <M5Cardputer.h>/i struct In;' firmware/DarkMaze/DarkMaze.ino
 
       - name: Set up Arduino CLI
         uses: arduino/setup-arduino-cli@v2
