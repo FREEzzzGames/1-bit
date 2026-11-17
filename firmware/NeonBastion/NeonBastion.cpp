@@ -5,7 +5,7 @@
 // NEON BASTION — FREEzzz Arcade / Cardputer ADV
 // 240x135, landscape rotation 0. No dynamic allocation in the game loop.
 static constexpr int W=240,H=135, CW=12, CH=9, CELL=13, OX=42, OY=16;
-static constexpr uint16_t BLACK=0x0000, GREEN=0x07E0, DIM=0x0320, DARK=0x0100, WHITE=0xFFFF, AMBER=0xFD20, RED=0xF800, CYAN=0x07FF;
+static constexpr uint16_t NB_BLACK=0x0000, NB_GREEN=0x07E0, NB_DIM=0x0320, NB_DARK=0x0100, NB_WHITE=0xFFFF, NB_AMBER=0xFD20, NB_RED=0xF800, NB_CYAN=0x07FF;
 M5Canvas canvas(&M5Cardputer.Display);
 Preferences prefs;
 
@@ -20,15 +20,15 @@ static const int8_t pathY[]={3,3,3,3,3,4,5,5,5,5,5,4,3,3,3,3};
 static int cursorX=2,cursorY=1, selected=0, money=90, lives=15, wave=0, spawned=0, kills=0;
 static int waveTotal=0; static bool waveOn=false, gameOver=false, victory=false;
 static uint32_t lastTick=0,lastSpawn=0,lastDraw=0,flashUntil=0;
-static uint16_t accent=GREEN;
+static uint16_t accent=NB_GREEN;
 static const char* towerNames[]={"PULSE","LASER","FROST","BURST"};
 static const int costs[]={35,55,45,65};
-static const uint16_t towerCol[]={GREEN,CYAN,AMBER,RED};
+static const uint16_t towerCol[]={NB_GREEN,NB_CYAN,NB_AMBER,NB_RED};
 static bool onPath(int x,int y){for(int i=0;i<16;i++)if(pathX[i]==x&&pathY[i]==y)return true;return false;}
 static bool hasTower(int x,int y){for(auto &t:towers)if(t.live&&t.x==x&&t.y==y)return true;return false;}
 static float dist2(float x,float y,float a,float b){float dx=x-a,dy=y-b;return dx*dx+dy*dy;}
-static void text(int x,int y,const char*s,uint16_t c=GREEN){canvas.setTextColor(c);canvas.setCursor(x,y);canvas.print(s);}
-static void center(const char*s,int y,uint16_t c=GREEN){int x=(W-(int)strlen(s)*6)/2;text(x,y,s,c);}
+static void text(int x,int y,const char*s,uint16_t c=NB_GREEN){canvas.setTextColor(c);canvas.setCursor(x,y);canvas.print(s);}
+static void center(const char*s,int y,uint16_t c=NB_GREEN){int x=(W-(int)strlen(s)*6)/2;text(x,y,s,c);}
 static void spawnEnemy(){
   for(auto &e:enemies)if(!e.live){e.live=true;e.x=pathX[0];e.y=pathY[0];e.type=(wave%5==0&&spawned==0)?2:(spawned%6==5?1:0);
     e.maxhp=e.hp=(e.type==2?16: e.type==1?7:3)+wave*1.4f;e.speed=e.type==1?0.27f:e.type==2?0.20f:0.42f;return;}
@@ -64,26 +64,26 @@ static void updateGame(uint32_t now){
   if(spawned>=waveTotal&&!any){waveOn=false;money+=15;if(wave>=15)victory=true;}
 }
 static void drawMap(){
-  canvas.fillSprite(BLACK);
+  canvas.fillSprite(NB_BLACK);
   // CRT scan lines and subtle grid
   for(int y=0;y<H;y+=3)canvas.drawFastHLine(0,y,W,0x0841);
   for(int y=0;y<CH;y++)for(int x=0;x<CW;x++){
     int px=OX+x*CELL,py=OY+y*CELL;
     canvas.drawRect(px,py,CELL-1,CELL-1,0x0180);
   }
-  for(int i=0;i<15;i++){int x=OX+pathX[i]*CELL+CELL/2,y=OY+pathY[i]*CELL+CELL/2;canvas.fillCircle(x,y,4,0x0200);canvas.drawCircle(x,y,4,DIM);}
-  for(int i=0;i<16;i++){int x=OX+pathX[i]*CELL+CELL/2,y=OY+pathY[i]*CELL+CELL/2;canvas.fillCircle(x,y,2,GREEN);}
+  for(int i=0;i<15;i++){int x=OX+pathX[i]*CELL+CELL/2,y=OY+pathY[i]*CELL+CELL/2;canvas.fillCircle(x,y,4,0x0200);canvas.drawCircle(x,y,4,NB_DIM);}
+  for(int i=0;i<16;i++){int x=OX+pathX[i]*CELL+CELL/2,y=OY+pathY[i]*CELL+CELL/2;canvas.fillCircle(x,y,2,NB_GREEN);}
   for(auto &t:towers)if(t.live){int x=OX+t.x*CELL+6,y=OY+t.y*CELL+6;uint16_t c=towerCol[t.type];canvas.drawRect(x-4,y-4,9,9,c);canvas.drawPixel(x,y,c);canvas.drawFastHLine(x-2,y,5,c);}
-  for(auto &e:enemies)if(e.live){int x=OX+(int)(e.x*CELL)+6,y=OY+(int)(e.y*CELL)+6;uint16_t c=e.type==2?RED:e.type==1?AMBER:WHITE;canvas.fillCircle(x,y,e.type==2?4:3,c);canvas.drawPixel(x-1,y-1,BLACK);canvas.drawPixel(x+1,y-1,BLACK);canvas.drawFastHLine(x-3,y-6,6,c);}
-  for(auto &s:shots)if(s.live)canvas.drawPixel(OX+(int)(s.x*CELL)+6,OY+(int)(s.y*CELL)+6,CYAN);
-  int cx=OX+cursorX*CELL+6,cy=OY+cursorY*CELL+6;canvas.drawRect(cx-6,cy-6,13,13,WHITE);
+  for(auto &e:enemies)if(e.live){int x=OX+(int)(e.x*CELL)+6,y=OY+(int)(e.y*CELL)+6;uint16_t c=e.type==2?NB_RED:e.type==1?NB_AMBER:NB_WHITE;canvas.fillCircle(x,y,e.type==2?4:3,c);canvas.drawPixel(x-1,y-1,NB_BLACK);canvas.drawPixel(x+1,y-1,NB_BLACK);canvas.drawFastHLine(x-3,y-6,6,c);}
+  for(auto &s:shots)if(s.live)canvas.drawPixel(OX+(int)(s.x*CELL)+6,OY+(int)(s.y*CELL)+6,NB_CYAN);
+  int cx=OX+cursorX*CELL+6,cy=OY+cursorY*CELL+6;canvas.drawRect(cx-6,cy-6,13,13,NB_WHITE);
   // HUD
-  canvas.fillRect(0,0,W,14,0x0841);text(3,3,"NEON BASTION",GREEN);text(112,3,"W:",WHITE);canvas.printf("%02d",wave);text(148,3,"$:",AMBER);canvas.printf("%03d",money);text(194,3,"CORE:",WHITE);canvas.printf("%02d",lives);
+  canvas.fillRect(0,0,W,14,0x0841);text(3,3,"NEON BASTION",NB_GREEN);text(112,3,"W:",NB_WHITE);canvas.printf("%02d",wave);text(148,3,"$:",NB_AMBER);canvas.printf("%03d",money);text(194,3,"CORE:",NB_WHITE);canvas.printf("%02d",lives);
   canvas.fillRect(0, H-16, W,16,0x0841);
   canvas.setTextColor(towerCol[selected]);canvas.setCursor(3,H-12);canvas.printf("%s $%d",towerNames[selected],costs[selected]);
-  canvas.setTextColor(WHITE);canvas.setCursor(112,H-12);canvas.print(waveOn?"DEFENDING":"SPACE: WAVE");
-  if(millis()<flashUntil)text(178, H-12,"LOW $",RED);
-  if(gameOver||victory){canvas.fillRect(25,43,190,48,BLACK);canvas.drawRect(25,43,190,48,victory?GREEN:RED);center(victory?"SECTOR CLEARED":"CORE DESTROYED",53,victory?GREEN:RED);center("ENTER: RESTART",70,WHITE);}
+  canvas.setTextColor(NB_WHITE);canvas.setCursor(112,H-12);canvas.print(waveOn?"DEFENDING":"SPACE: WAVE");
+  if(millis()<flashUntil)text(178, H-12,"LOW $",NB_RED);
+  if(gameOver||victory){canvas.fillRect(25,43,190,48,NB_BLACK);canvas.drawRect(25,43,190,48,victory?NB_GREEN:NB_RED);center(victory?"SECTOR CLEANB_RED":"CORE DESTROYED",53,victory?NB_GREEN:NB_RED);center("ENTER: RESTART",70,NB_WHITE);}
 }
 static void resetGame(){for(auto &t:towers)t.live=false;for(auto &e:enemies)e.live=false;money=90;lives=15;wave=0;kills=0;waveOn=false;gameOver=victory=false;cursorX=2;cursorY=1;}
 static void handleInput(){
