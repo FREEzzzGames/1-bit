@@ -35,10 +35,26 @@ jobs:
             --output-dir build/DrumMachine \
             firmware/DrumMachine
 
-      - name: Upload firmware artifact
+      - name: Upload DrumMachine firmware artifact
         uses: actions/upload-artifact@v4
         with:
           name: DrumMachine-Cardputer-ADV
           path: build/DrumMachine/*.bin
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Compile RACE for Cardputer ADV
+        run: |
+          arduino-cli compile \
+            --fqbn "m5stack:esp32:m5stack_cardputer:FlashSize=8M,PartitionScheme=default_8MB" \
+            --warnings all \
+            --output-dir build/RACE \
+            firmware/RACE
+
+      - name: Upload RACE firmware artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RACE-Cardputer-ADV
+          path: build/RACE/*.bin
           if-no-files-found: error
           retention-days: 30
