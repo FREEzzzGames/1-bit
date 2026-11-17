@@ -23,9 +23,9 @@ jobs:
           test -s firmware/DarkMaze/DarkMaze.ino
           # Fix Arduino prototype generation for the custom In type.
           sed -i '/#include <M5Cardputer.h>/i struct In;' firmware/DarkMaze/DarkMaze.ino
-          # Cardputer ADV needs the opposite landscape rotation for this sketch.
-          sed -i 's/Display\.setRotation(1)/Display.setRotation(3)/' firmware/DarkMaze/DarkMaze.ino
-          grep -q 'Display.setRotation(3)' firmware/DarkMaze/DarkMaze.ino
+          # Use the established Cardputer ADV landscape orientation with M5GFX 0.3.x.
+          sed -i 's/Display\.setRotation(1)/Display.setRotation(0)/' firmware/DarkMaze/DarkMaze.ino
+          grep -q 'Display.setRotation(0)' firmware/DarkMaze/DarkMaze.ino
 
       - name: Set up Arduino CLI
         uses: arduino/setup-arduino-cli@v2
