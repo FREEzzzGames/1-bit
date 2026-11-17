@@ -43,6 +43,23 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+
+      - name: Compile Tarot for Cardputer ADV
+        run: |
+          arduino-cli compile \
+            --fqbn "m5stack:esp32:m5stack_cardputer:FlashSize=8M,PartitionScheme=default_8MB" \
+            --warnings all \
+            --output-dir build/Tarot \
+            firmware/Tarot
+
+      - name: Upload Tarot firmware artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Tarot-Cardputer-ADV
+          path: build/Tarot/*.bin
+          if-no-files-found: error
+          retention-days: 30
+
       - name: Compile DrumMachine for Cardputer ADV
         run: |
           arduino-cli compile \
