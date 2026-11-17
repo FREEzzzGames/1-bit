@@ -21,9 +21,11 @@ jobs:
           mkdir -p firmware/DarkMaze
           base64 -d firmware/DarkMaze/DarkMaze.ino.gz.b64 | gzip -dc > firmware/DarkMaze/DarkMaze.ino
           test -s firmware/DarkMaze/DarkMaze.ino
-          # Arduino's prototype generator emits function declarations before
-          # the sketch body; forward-declare this custom return/argument type.
+          # Fix Arduino prototype generation for the custom In type.
           sed -i '/#include <M5Cardputer.h>/i struct In;' firmware/DarkMaze/DarkMaze.ino
+          # Cardputer ADV needs the opposite landscape rotation for this sketch.
+          sed -i 's/Display\.setRotation(1)/Display.setRotation(3)/' firmware/DarkMaze/DarkMaze.ino
+          grep -q 'Display.setRotation(3)' firmware/DarkMaze/DarkMaze.ino
 
       - name: Set up Arduino CLI
         uses: arduino/setup-arduino-cli@v2
