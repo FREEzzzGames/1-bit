@@ -35,6 +35,7 @@
 #include <esp_system.h>
 #include <esp_partition.h>
 #include <esp_ota_ops.h>
+#include "FreezzzTypes.h"
 
 static const int SW = 240, SH = 135;
 static const int RXG = 1, TXG = 2;      // Grove UART pins (G1 = RX, G2 = TX)
@@ -1598,7 +1599,7 @@ static void tAddChar(char c) {
 static void tAddStr(const char* s) { while (*s) tAddChar(*s++); }
 static void terminal() {
   static const long BAUDS[8] = {9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600};
-  static const char* LEND[4] = {"NONE", "CR", "LF", "CR+LF"};
+  static const char* LINE_END_NAMES[4] = {"NONE", "CR", "LF", "CR+LF"};
   static int baudIdx = 4, lend = 3;
   static bool grove = false, hexv = false, logOn = false;
   File logF;
@@ -1633,7 +1634,7 @@ static void terminal() {
         char m[7][34];
         snprintf(m[0], 34, "PORT: %s", grove ? "GROVE UART" : "USB");
         snprintf(m[1], 34, "BAUD: %ld", BAUDS[baudIdx]);
-        snprintf(m[2], 34, "LINE END: %s", LEND[lend]);
+        snprintf(m[2], 34, "LINE END: %s", LINE_END_NAMES[lend]);
         snprintf(m[3], 34, "HEX VIEW: %s", hexv ? "ON" : "OFF");
         snprintf(m[4], 34, "LOG TO SD: %s", logOn ? "ON" : "OFF");
         snprintf(m[5], 34, "CLEAR SCREEN");
