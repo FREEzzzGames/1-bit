@@ -1,0 +1,58 @@
+name: FREEzzzFiles Cardputer ADV build
+
+on:
+  push:
+    paths:
+      - "firmware/FreezzzFiles/**"
+      - ".github/workflows/freezzz-files-build.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify Cardputer display rotation
+        run: |
+          grep -Fq 'M5Cardputer.Display.setRotation(0);' firmware/FreezzzFiles/FreezzzFiles.ino
+          if grep -Eq 'setRotation[[:space:]]*\([[:space:]]*1[[:space:]]*\)' firmware/FreezzzFiles/FreezzzFiles.ino; then
+            echo "Cardputer rotation must remain 0"
+            exit 1
+          fi
+
+      - name: Set up Arduino CLI
+        uses: arduino/setup-arduino-cli@v2
+
+      - name: Update Arduino indexes
+        run: arduino-cli core update-index
+
+      - name: Install ESP32 core
+        run: arduino-cli core install esp32:esp32@3.2.1
+
+      - name: Install Cardputer library
+        run: arduino-cli lib install M5Cardputer
+
+      - name: Compile FREEzzzFiles for M5Stack Cardputer ADV
+        run: |
+          arduino-cli compile \
+            --fqbn esp32:esp32:m5stack_cardputer \
+            --warnings all \
+            --output-dir build/FreezzzFiles \
+            firmware/FreezzzFiles
+
+      - name: Verify application binary
+        run: |
+          test -s build/FreezzzFiles/FreezzzFiles.ino.bin
+          ls -lh build/FreezzzFiles/*.bin
+
+      - name: Upload firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: FREEzzzFiles-Cardputer-ADV
+          path: build/FreezzzFiles/*.bin
+          if-no-files-found: error
+          retention-days: 30
