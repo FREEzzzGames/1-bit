@@ -13,7 +13,7 @@ main{display:grid;gap:10px}.stage{position:relative;border:1px solid #40545a;bor
 </style>
 </head>
 <body>
-<header><h1>GLYPHSCAPE</h1><span class="version">AI PHOTO WORLD / 0.4</span></header>
+<header><h1>GLYPHSCAPE</h1><span class="version">INFINITE AI WORLD / 0.5</span></header>
 <main>
 <section class="stage" id="stage"><canvas id="view" aria-label="Мир, преобразованный в цветные символы"></canvas><div class="overlay"><span id="worldInfo">WORLD NOT GENERATED</span><span>DRAG · WASD · ARROWS</span></div></section>
 <section class="panel">
@@ -25,7 +25,7 @@ main{display:grid;gap:10px}.stage{position:relative;border:1px solid #40545a;bor
   <button class="primary grow" id="generate">СОЗДАТЬ МИР</button>
  </div>
  <div class="status" id="status" role="status">AI не подключён. Подключи Pollinations, чтобы генерировать изображения.</div>
- <p class="hint">Генератор создаёт реальное изображение ландшафта. Движок анализирует его пиксели и заменяет их цветными символами. Запросы могут расходовать баланс Pollinations — лимит расходов задаётся на странице разрешения.</p>
+ <p class="hint">AI создаёт отдельные фотореалистичные участки. Движок соединяет их в карту с перекрытием и мягким смешиванием краёв. Каждый новый участок — отдельный запрос и расход баланса.</p>
 </section>
 <section class="panel">
  <div class="panel-title">02 / GLYPH RENDERER</div>
@@ -37,7 +37,7 @@ main{display:grid;gap:10px}.stage{position:relative;border:1px solid #40545a;bor
  <div class="controls">
   <button data-move="up">▲</button><button data-move="left">◀</button><button data-move="down">▼</button><button data-move="right">▶</button>
  </div>
- <p class="hint">Перемещай камеру по сгенерированной территории. Новые области создаются AI отдельными запросами.</p>
+ <div class="row" style="margin-top:8px"><button id="nextRegion">СОЗДАТЬ ОБЛАСТЬ ВПЕРЁД →</button><span class="tiny" id="tileCount">0 областей</span></div><p class="hint">Мир расширяется соседними AI-территориями по мере исследования. Удерживай направление или перетаскивай изображение.</p>
 </section>
 <section class="panel">
  <div class="panel-title">04 / AI CONNECTION</div>
