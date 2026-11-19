@@ -18,6 +18,7 @@ assert.ok(js.includes('for(let b of m.fauna.birds)'));
 assert.ok(js.includes('function height(x,z)'));
 assert.ok(js.includes('function ensure()'));
 assert.ok(js.includes('function move(dt)'));
+assert.ok(js.includes('v[a[2]],v[a[1]]'));
 assert.ok(js.includes("window.addEventListener('keydown'"));
 assert.ok(js.includes("draw(avatar,model(S.x,y,S.z,S.yaw),vp)"));
 assert.ok(js.includes("if(S.mode==='glyph')glyph()"));
