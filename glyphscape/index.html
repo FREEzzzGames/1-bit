@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080d10">
+<title>GLYPHSCAPE — Living World</title>
+<style>
+:root{color-scheme:dark;--bg:#080d10;--panel:#111b20;--line:#294047;--mint:#8fffe0;--amber:#ffc879;--muted:#8aa0a5}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:#e8f4f2;font:14px/1.45 system-ui,sans-serif}body{padding:env(safe-area-inset-top) 12px env(safe-area-inset-bottom);max-width:900px;margin:auto}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 2px 10px;border-bottom:1px solid var(--line);margin-bottom:12px}h1{font:700 18px/1.1 ui-monospace,monospace;letter-spacing:.14em;margin:0;color:var(--mint)}.version{font:11px ui-monospace,monospace;color:var(--muted)}
+main{display:grid;gap:10px}.stage{position:relative;border:1px solid #40545a;border-radius:10px;overflow:hidden;background:#030607;min-height:55vh;height:min(68vh,780px);touch-action:none}canvas{display:block;width:100%;height:100%;image-rendering:auto}.overlay{position:absolute;left:10px;right:10px;bottom:9px;display:flex;justify-content:space-between;gap:8px;pointer-events:none;font:10px ui-monospace,monospace;color:#e8f4f2;text-shadow:0 1px 4px #000,0 0 8px #000}.panel{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:12px}.panel-title{font:11px ui-monospace,monospace;color:var(--mint);letter-spacing:.1em;margin-bottom:8px}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.grow{flex:1;min-width:160px}input,select,button{font:inherit}input,select{width:100%;background:#071014;color:#e8f4f2;border:1px solid #395159;border-radius:7px;padding:11px;min-width:0}button{border:1px solid #45616a;background:#17252b;color:#e8f4f2;border-radius:7px;padding:11px 13px;cursor:pointer}button.primary{background:#173a38;border-color:#3d8c7e;color:#baffec;font-weight:700}button:disabled{opacity:.45;cursor:wait}.hint{font-size:12px;color:var(--muted);margin:7px 0 0}.status{font:12px ui-monospace,monospace;color:var(--amber);min-height:18px;margin-top:8px;overflow-wrap:anywhere}.controls{display:grid;grid-template-columns:1fr 1fr;gap:8px}.controls button{padding:12px 6px}.wide{grid-column:1/-1}.tiny{font-size:11px;color:var(--muted)}.hidden{display:none!important}.range{accent-color:#8fffe0;width:100%}.authline{display:flex;gap:8px;align-items:center}.authline input{flex:1}.kbd{font:11px ui-monospace,monospace;color:var(--muted)}a{color:var(--mint)}@media(min-width:700px){.stage{height: min(72vh,820px)}.controls{grid-template-columns:repeat(4,1fr)}.wide{grid-column:auto}}
+</style>
+</head>
+<body>
+<header><h1>GLYPHSCAPE</h1><span class="version">AI PHOTO WORLD / 0.4</span></header>
+<main>
+<section class="stage" id="stage"><canvas id="view" aria-label="Мир, преобразованный в цветные символы"></canvas><div class="overlay"><span id="worldInfo">WORLD NOT GENERATED</span><span>DRAG · WASD · ARROWS</span></div></section>
+<section class="panel">
+ <div class="panel-title">01 / AI WORLD GENERATOR</div>
+ <label class="tiny" for="prompt">Описание территории</label>
+ <input id="prompt" value="Ultra photorealistic cinematic landscape photograph, vast alpine valley with dense ancient pine forest, realistic mountains, natural atmospheric perspective, detailed vegetation, overcast soft morning light, a tiny lone traveler seen from behind for scale, 35mm documentary photography, true-to-life colors, no illustration, no painting, no text">
+ <div class="row" style="margin-top:8px">
+  <div class="grow"><label class="tiny" for="model">Модель генерации</label><select id="model"><option value="black-forest-labs/flux.1-schnell">FLUX.1 Schnell</option><option value="tongyi-mai/z-image-turbo">Z-Image Turbo</option></select></div>
+  <button class="primary grow" id="generate">СОЗДАТЬ МИР</button>
+ </div>
+ <div class="status" id="status" role="status">AI не подключён. Подключи Pollinations, чтобы генерировать изображения.</div>
+ <p class="hint">Генератор создаёт реальное изображение ландшафта. Движок анализирует его пиксели и заменяет их цветными символами. Запросы могут расходовать баланс Pollinations — лимит расходов задаётся на странице разрешения.</p>
+</section>
+<section class="panel">
+ <div class="panel-title">02 / GLYPH RENDERER</div>
+ <div class="row"><label class="grow tiny">Плотность символов <output id="densityOut">6 px</output><input class="range" id="density" type="range" min="3" max="11" value="6"></label><label class="grow tiny">Контраст <output id="contrastOut">1.15</output><input class="range" id="contrast" type="range" min=".7" max="2" step=".05" value="1.15"></label></div>
+ <div class="row" style="margin-top:8px"><button id="photo">ФОТО</button><button id="glyph" class="primary">СИМВОЛЫ</button><button id="reset">ЦЕНТР КАРТЫ</button></div>
+</section>
+<section class="panel">
+ <div class="panel-title">03 / MOVEMENT</div>
+ <div class="controls">
+  <button data-move="up">▲</button><button data-move="left">◀</button><button data-move="down">▼</button><button data-move="right">▶</button>
+ </div>
+ <p class="hint">Перемещай камеру по сгенерированной территории. Новые области создаются AI отдельными запросами.</p>
+</section>
+<section class="panel">
+ <div class="panel-title">04 / AI CONNECTION</div>
+ <div class="authline"><input id="appKey" placeholder="Pollinations App Key (pk_…)" autocomplete="off" spellcheck="false"><button id="connect">ПОДКЛЮЧИТЬ</button></div>
+ <div class="row" style="margin-top:8px"><button id="disconnect">ОТКЛЮЧИТЬ AI</button><span class="tiny" id="connection">Не подключено</span></div>
+ <p class="hint">Однократная настройка: <a href="https://enter.pollinations.ai/keys" target="_blank" rel="noopener">создай App Key</a> с Redirect URI <code id="redirectText"></code>. Введи публичный pk_-ключ и разреши приложению генерацию изображений. Секретный sk_-ключ сюда не вводить.</p>
+</section>
+</main>
+<script src="./engine.js?v=1"></script>
+</body></html>
