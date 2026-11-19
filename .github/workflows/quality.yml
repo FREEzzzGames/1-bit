@@ -24,7 +24,7 @@ jobs:
         run: node --check assets/arcade-extras.js
       - name: Check GLYPHSCAPE runtime syntax
         run: node --check glyphscape/engine.js
-      - name: Check GLYPHSCAPE AI integration
+      - name: Check GLYPHSCAPE offline generator
         run: node tests/glyphscape-check.mjs
       - name: Check architecture invariants
         run: node tests/architecture-check.mjs
