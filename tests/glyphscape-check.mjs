@@ -8,7 +8,7 @@ assert.ok(html.includes('Pollinations App Key'));
 assert.ok(js.includes('code_challenge_method:S256') || js.includes("code_challenge_method:'S256'"));
 assert.ok(js.includes('https://enter.pollinations.ai/api/oauth/token'));
 assert.ok(js.includes('https://gen.pollinations.ai/image/'));
-assert.ok(js.includes('Authorization:'Bearer '+state.token'));
+assert.ok(js.includes("Authorization:'Bearer '+state.token"));
 assert.ok(js.includes('createImageBitmap(blob)'));
 assert.ok(js.includes('getImageData(0,0,cols,rows)'));
 assert.ok(js.includes('state.mode===\'photo\''));
