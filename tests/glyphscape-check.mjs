@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+const html=readFileSync(new URL('../glyphscape/index.html',import.meta.url),'utf8');
+const js=readFileSync(new URL('../glyphscape/engine.js',import.meta.url),'utf8');
+assert.ok(html.includes('<title>GLYPHSCAPE — Living World</title>'));
+assert.ok(html.includes('./engine.js?v=1'));
+assert.ok(html.includes('Pollinations App Key'));
+assert.ok(js.includes('code_challenge_method:S256') || js.includes("code_challenge_method:'S256'"));
+assert.ok(js.includes('https://enter.pollinations.ai/api/oauth/token'));
+assert.ok(js.includes('https://gen.pollinations.ai/image/'));
+assert.ok(js.includes('Authorization:'Bearer '+state.token'));
+assert.ok(js.includes('createImageBitmap(blob)'));
+assert.ok(js.includes('getImageData(0,0,cols,rows)'));
+assert.ok(js.includes('state.mode===\'photo\''));
+assert.ok(!js.includes('image.pollinations.ai'));
+console.log('GLYPHSCAPE integration checks passed.');
