@@ -1,6 +1,12 @@
 name: Neon Bastion Cardputer ADV PlatformIO
 
 on:
+  pull_request:
+    paths:
+      - "platformio.ini"
+      - "partitions_8mb.csv"
+      - "firmware/NeonBastion/**"
+      - ".github/workflows/neon-bastion-platformio.yml"
   push:
     branches:
       - "build/neon-bastion-v2"
