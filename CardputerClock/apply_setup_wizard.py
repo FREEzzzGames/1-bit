@@ -251,7 +251,7 @@ replace_between("  if (mode == M_TEXT) {", "  if (mode == M_PICK) {", r'''  if (
   }
 ''', "text input state")
 
-replace_between("  if (mode == M_PICK) {", "  if (st.tab) { goScreen(screen + 1); return; }", r'''  if (mode == M_PICK) {
+replace_between("  if (mode == M_PICK) {", "  if (st.tab) { if (setupWizard && screen == SC_SET) { mode = M_SETUP; return; } goScreen(screen + 1); return; }", r'''  if (mode == M_PICK) {
     int n = gifList.size() + 1;
     if (st.tab || st.del) { mode = setupWizard ? M_SETUP : M_NORMAL; dirty = true; return; }
     if (st.enter) {
