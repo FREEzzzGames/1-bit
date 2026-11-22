@@ -320,3 +320,179 @@ once('  txt(";. SELECT   ENTER=OPEN", 120, 124, cMid, &fonts::Font0, D_TC);',
 once('  syncMsg = msg; syncState = 0;', '  syncMsg = msg; syncState = 0; dirty = true;', "sync status redraw")
 
 p.write_text(s)
+
+
+# Final GIF/playback hardening. This phase runs against the pristine sketch
+# after the setup overlay has been applied above.
+s = p.read_text()
+
+def final_once(old, new, label):
+    global s
+    if old not in s:
+        raise SystemExit("FINAL PATCH ANCHOR NOT FOUND: " + label)
+    s = s.replace(old, new, 1)
+
+final_once("static const uint32_t BG_MAXF = 400;",
+           "static const uint32_t BG_MAXF = 4096;",
+           "larger bounded animation cache")
+final_once("uint16_t* cvBuf = nullptr; uint32_t* cvHist = nullptr; uint8_t* cvLut = nullptr;",
+           "uint16_t* cvBuf = nullptr; uint16_t* cvRestore = nullptr; uint32_t* cvHist = nullptr; uint8_t* cvLut = nullptr;\n"
+           "bool cvPrevValid = false; uint8_t cvPrevDisp = 0; int cvPrevX = 0, cvPrevY = 0, cvPrevW = 0, cvPrevH = 0; uint16_t cvPrevBg = 0;",
+           "GIF disposal state")
+final_once('String cachePath(const String& src) { return String(CACHE_DIR) + "/" + baseName(src) + ".cbg"; }',
+r'''String cachePath(const String& src) {
+  uint32_t h = 2166136261UL;
+  for (size_t i = 0; i < src.length(); ++i) { h ^= (uint8_t)src[i]; h *= 16777619UL; }
+  char name[24]; snprintf(name, sizeof(name), "/%08lX.cbg", (unsigned long)h);
+  return String(CACHE_DIR) + name;
+}''', "collision-safe GIF cache")
+
+def replace_gifdraw():
+    global s
+    a = s.find("void GIFDraw(GIFDRAW* d) {")
+    b = s.find("// ---- converter UI", a)
+    if a < 0 or b < 0: raise SystemExit("FINAL PATCH ANCHOR NOT FOUND: GIFDraw")
+    replacement = r'''void GIFDraw(GIFDRAW* d) {
+  uint8_t* src = d->pPixels;
+  uint16_t* pal = d->pPalette;
+  bool hasT = d->ucHasTransparency;
+  uint8_t tr = d->ucTransparent;
+
+  if (cvPass == 1) {
+    if (!cvHist || (d->y & 1)) return;
+    for (int x = 0; x < d->iWidth; x++) {
+      uint8_t ix = src[x];
+      if (hasT && ix == tr) continue;
+      uint16_t bin = bin444(pal[ix]);
+      if (cvHist[bin] != UINT32_MAX) cvHist[bin]++;
+    }
+    return;
+  }
+  if (cvPass != 2 || !cvBuf) return;
+
+  // Dispose the previous image before drawing the next image descriptor.
+  if (d->y == 0) {
+    if (cvPrevValid) {
+      if (cvPrevDisp == 2) {
+        for (int dy = 0; dy < SCR_H; ++dy) {
+          int sy = syMap[dy];
+          if (sy < cvPrevY || sy >= cvPrevY + cvPrevH) continue;
+          uint16_t* row = cvBuf + dy * SCR_W;
+          for (int dx = 0; dx < SCR_W; ++dx) {
+            int sx = sxMap[dx];
+            if (sx >= cvPrevX && sx < cvPrevX + cvPrevW) row[dx] = cvPrevBg;
+          }
+        }
+      } else if (cvPrevDisp == 3 && cvRestore) {
+        memcpy(cvBuf, cvRestore, SCR_W * SCR_H * sizeof(uint16_t));
+      }
+    }
+    if (d->ucDisposalMethod == 3 && cvRestore)
+      memcpy(cvRestore, cvBuf, SCR_W * SCR_H * sizeof(uint16_t));
+    cvPrevX = d->iX; cvPrevY = d->iY;
+    cvPrevW = d->iWidth; cvPrevH = d->iHeight;
+    cvPrevDisp = d->ucDisposalMethod;
+    cvPrevBg = pal[d->ucBackground];
+    cvPrevValid = true;
+  }
+
+  int sy = d->iY + d->y;
+  const int* first = std::lower_bound(syMap, syMap + SCR_H, sy);
+  const int* last = std::upper_bound(syMap, syMap + SCR_H, sy);
+  if (first == last) return;
+  int dy0 = (int)(first - syMap), dy1 = (int)(last - syMap);
+  int x0 = d->iX, x1 = d->iX + d->iWidth;
+  for (int dy = dy0; dy < dy1; ++dy) {
+    uint16_t* out = cvBuf + dy * SCR_W;
+    for (int dx = 0; dx < SCR_W; ++dx) {
+      int sx = sxMap[dx];
+      if (sx < x0 || sx >= x1) continue;
+      uint8_t ix = src[sx - x0];
+      if (hasT && ix == tr) continue;
+      out[dx] = pal[ix];
+    }
+  }
+}
+'''
+    s = s[:a] + replacement + s[b:]
+replace_gifdraw()
+
+s = s.replace(
+'''  uint32_t n = 0, D = 0; int fd = 0, r;''',
+'''  uint32_t n = 0; uint64_t D = 0; int fd = 0, r;''', 1)
+s = s.replace(
+'''  uint32_t avg = n ? D / n : 100;
+  uint32_t outMs = avg < 83 ? 83 : (avg > 200 ? 200 : avg);
+  uint32_t total = (D + outMs - 1) / outMs;
+  if (total > BG_MAXF) {
+    outMs = (D + BG_MAXF - 1) / BG_MAXF; if (outMs > 200) outMs = 200;
+    total = (D + outMs - 1) / outMs; if (total > BG_MAXF) total = BG_MAXF;
+  }
+  if (total < 1) total = 1;''',
+'''  uint32_t avg = n ? (uint32_t)(D / n) : 100;
+  uint32_t outMs = avg < 83 ? 83 : (avg > 200 ? 200 : avg);
+  uint64_t total64 = (D + outMs - 1) / outMs;
+  if (total64 > BG_MAXF) {
+    uint64_t needed = (D + BG_MAXF - 1) / BG_MAXF;
+    outMs = (uint32_t)min((uint64_t)65535, needed);
+    total64 = (D + outMs - 1) / outMs;
+  }
+  uint32_t total = (uint32_t)min((uint64_t)BG_MAXF, max((uint64_t)1, total64));''', 1)
+s = s.replace(
+'''  gif.reset(); cvPass = 2; cvPos = 0;''',
+'''  gif.reset(); cvPass = 2; cvPos = 0;
+  cvPrevValid = false; cvPrevDisp = 0;''', 1)
+s = s.replace(
+'''  uint32_t t0 = 0, emitted = 0; bool fail = false;''',
+'''  uint64_t t0 = 0; uint32_t emitted = 0; bool fail = false;''', 1)
+s = s.replace(
+'''    uint32_t t1 = t0 + fd;
+    while (emitted < total && emitted * outMs < t1) {''',
+'''    uint64_t t1 = t0 + (uint32_t)fd;
+    while (emitted < total && (uint64_t)emitted * outMs < t1) {''', 1)
+
+s = s.replace(
+'''  cvBuf = (uint16_t*)heap_caps_malloc(SCR_W * SCR_H * 2, MALLOC_CAP_8BIT);
+  cvHist = (uint32_t*)heap_caps_calloc(4096, 4, MALLOC_CAP_8BIT);
+  cvLut = (uint8_t*)heap_caps_malloc(4096, MALLOC_CAP_8BIT);
+  bool ok = false;
+  if (cvBuf && cvHist && cvLut) { memset(cvBuf, 0, SCR_W * SCR_H * 2); ok = doConvert(src, dst, srcSize, srcTime, err); }
+  else err = "LOW MEMORY";
+  if (cvBuf) free(cvBuf); if (cvHist) free(cvHist); if (cvLut) free(cvLut);
+  cvBuf = nullptr; cvHist = nullptr; cvLut = nullptr; cvPass = 0;
+  S.setColorDepth(16); S.createSprite(SCR_W, SCR_H);''',
+'''  const size_t canvasBytes = SCR_W * SCR_H * sizeof(uint16_t);
+  cvBuf = (uint16_t*)heap_caps_malloc(canvasBytes, MALLOC_CAP_8BIT);
+  cvRestore = (uint16_t*)heap_caps_malloc(canvasBytes, MALLOC_CAP_8BIT);
+  cvHist = (uint32_t*)heap_caps_calloc(4096, sizeof(uint32_t), MALLOC_CAP_8BIT);
+  cvLut = (uint8_t*)heap_caps_malloc(4096, MALLOC_CAP_8BIT);
+  bool ok = false;
+  if (cvBuf && cvRestore && cvHist && cvLut) {
+    memset(cvBuf, 0, canvasBytes); memset(cvRestore, 0, canvasBytes);
+    ok = doConvert(src, dst, srcSize, srcTime, err);
+  } else err = "LOW MEMORY";
+  if (cvBuf) free(cvBuf); if (cvRestore) free(cvRestore);
+  if (cvHist) free(cvHist); if (cvLut) free(cvLut);
+  cvBuf = nullptr; cvRestore = nullptr; cvHist = nullptr; cvLut = nullptr; cvPass = 0;
+  S.setColorDepth(16);
+  if (!S.createSprite(SCR_W, SCR_H)) { err = "DISPLAY MEMORY"; ok = false; }''', 1)
+
+s = s.replace(
+'''  uint32_t period = ringKind ? 80 : ((screen == SC_STOPW && swRun) ? 33 : 250);''',
+'''  uint32_t period = ringKind ? 80 :
+                    (bgOn ? constrain((int)bgFrameMs, 33, 100) :
+                    ((screen == SC_STOPW && swRun) ? 33 : 250));''', 1)
+
+s = s.replace(
+'''      } else {
+        setupDone = true; setupWizard = false; saveCfg();
+        mode = M_NORMAL; screen = SC_CLOCK;
+      }''',
+'''      } else {
+        if (!sdOK) { syncMsg = "INSERT FAT32 SD"; dirty = true; return; }
+        setupDone = true; setupWizard = false; saveCfg();
+        if (cfgDirty) { syncMsg = "SAVE FAILED"; setupDone = false; mode = M_SETUP; }
+        else { mode = M_NORMAL; screen = SC_CLOCK; }
+      }''', 1)
+
+p.write_text(s)
