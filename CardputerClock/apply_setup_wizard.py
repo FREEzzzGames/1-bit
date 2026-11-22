@@ -317,7 +317,6 @@ once("  for (char c : ks) if (c == '" + chr(96) + "') { goScreen(SC_CLOCK); retu
 once('  txt(";. SELECT   ENTER=OPEN", 120, 124, cMid, &fonts::Font0, D_TC);',
      '  String status = syncState ? syncMsg : (synced ? "TIME SYNCED" : syncMsg);\n  txt(fit(status, 30), 120, 116, cMid, &fonts::Font0, D_TC);\n  txt(";. SELECT   ENTER=OPEN", 120, 130, cMid, &fonts::Font0, D_TC);',
      "setup status line")
-once('  scanDir("/gifs"); scanDir("/");', '  scanDir(gifDir.c_str());', "selected GIF directory")
 once('  syncMsg = msg; syncState = 0;', '  syncMsg = msg; syncState = 0; dirty = true;', "sync status redraw")
 
 p.write_text(s)
