@@ -168,3 +168,159 @@ once('loadCfg();\n  applyBacklight(); updateColors();',
 # Settings menu can be opened any time; existing settings navigation remains
 # Save directory and first-start state in config.
 p.write_text(s)
+
+
+# Reliability pass: replace fragile input paths and fix storage/GIF edge cases.
+def replace_between(start, end, replacement, label):
+    global s
+    a = s.find(start)
+    if a < 0: raise SystemExit("PATCH START NOT FOUND: " + label)
+    b = s.find(end, a + len(start))
+    if b < 0: raise SystemExit("PATCH END NOT FOUND: " + label)
+    s = s[:a] + replacement + s[b:]
+
+replace_between("void saveCfg() {", "void loadCfg() {", r'''void saveCfg() {
+  if (!sdOK) { cfgDirty = true; return; }
+  SD.mkdir("/clock");
+  const char* tmp = "/clock/clock.tmp";
+  const char* bak = "/clock/clock.bak";
+  SD.remove(tmp);
+  File f = SD.open(tmp, FILE_WRITE);
+  if (!f) { cfgDirty = true; return; }
+  f.printf("dialColor=%d\n", dialColor); f.printf("dialBr=%d\n", dialBr);
+  f.print("gif="); f.println(gifPath);
+  f.print("gifDir="); f.println(gifDir);
+  f.printf("setupDone=%d\n", setupDone ? 1 : 0);
+  f.printf("gifTint=%d\n", gifTint); f.printf("gifBr=%d\n", gifBr);
+  f.printf("glass=%d\n", glassLvl); f.printf("backlight=%d\n", backlight);
+  f.printf("h24=%d\n", h24); f.printf("autoTz=%d\n", autoTz); f.printf("tzMin=%d\n", tzMin);
+  f.print("ssid="); f.println(ssid);
+  f.print("pass="); f.println(wpass);
+  for (int i = 0; i < 4; i++) f.printf("al%d=%d,%d,%d,%d\n", i, al[i].h, al[i].m, al[i].on, al[i].rep);
+  time_t n = time(nullptr);
+  f.printf("epoch=%lu\n", (unsigned long)(n > 1700000000 ? n : 0));
+  f.flush(); f.close();
+  File check = SD.open(tmp, FILE_READ);
+  bool valid = check && check.size() >= 16;
+  if (check) check.close();
+  if (!valid) { SD.remove(tmp); cfgDirty = true; return; }
+  SD.remove(bak);
+  bool hadOld = SD.exists(CFG);
+  if (hadOld && !SD.rename(CFG, bak)) { SD.remove(tmp); cfgDirty = true; return; }
+  if (!SD.rename(tmp, CFG)) {
+    if (hadOld) SD.rename(bak, CFG);
+    cfgDirty = true;
+    return;
+  }
+  SD.remove(bak);
+  cfgDirty = false;
+}
+''', "atomic config save")
+
+once('if ((pFile->iSize - pFile->iPos) < iLen) n = pFile->iSize - pFile->iPos - 1;',
+     'if ((pFile->iSize - pFile->iPos) < iLen) n = pFile->iSize - pFile->iPos;',
+     'GIF reader EOF off-by-one')
+
+replace_between("  if (mode == M_TEXT) {", "  if (mode == M_PICK) {", r'''  if (mode == M_TEXT) {
+    if (st.tab) { mode = setupWizard ? M_SETUP : M_NORMAL; dirty = true; return; }
+    if (st.enter) {
+      if (inTarget == 0) { ssid = inBuf; markCfg(); nextSyncAt = millis(); }
+      else if (inTarget == 1) { wpass = inBuf; markCfg(); nextSyncAt = millis(); }
+      else {
+        if (inBuf.length() != 12) { syncMsg = "USE DDMMYYYYHHMM"; dirty = true; return; }
+        int d = inBuf.substring(0, 2).toInt(), mo = inBuf.substring(2, 4).toInt();
+        int y = inBuf.substring(4, 8).toInt(), hh = inBuf.substring(8, 10).toInt();
+        int mi = inBuf.substring(10, 12).toInt();
+        if (!setLocalTime(y, mo, d, hh, mi)) { syncMsg = "BAD DATE/TIME"; dirty = true; return; }
+        saveCfg();
+      }
+      mode = setupWizard ? M_SETUP : M_NORMAL;
+      dirty = true;
+      return;
+    }
+    if (st.del) { if (inBuf.length()) inBuf.remove(inBuf.length() - 1); dirty = true; return; }
+    for (char c : ks) {
+      if (inTarget == 2) { if (c >= '0' && c <= '9' && inBuf.length() < 12) inBuf += c; }
+      else if (c >= 32 && c < 127 && inBuf.length() < 63) inBuf += c;
+    }
+    dirty = true;
+    return;
+  }
+''', "text input state")
+
+replace_between("  if (mode == M_PICK) {", "  if (st.tab) { goScreen(screen + 1); return; }", r'''  if (mode == M_PICK) {
+    int n = gifList.size() + 1;
+    if (st.tab || st.del) { mode = setupWizard ? M_SETUP : M_NORMAL; dirty = true; return; }
+    if (st.enter) {
+      gifPath = pickCur == 0 ? String("") : gifList[pickCur - 1];
+      applyGif(); markCfg();
+      mode = setupWizard ? M_SETUP : M_NORMAL;
+      dirty = true;
+      return;
+    }
+    for (char c : ks) {
+      if (c == ';') pickCur = (pickCur + n - 1) % n;
+      else if (c == '.') pickCur = (pickCur + 1) % n;
+      else if (c == 96) mode = setupWizard ? M_SETUP : M_NORMAL;
+      else if ((c == 'r' || c == 'R') && pickCur > 0) {
+        SD.remove(cachePath(gifList[pickCur - 1]).c_str());
+        gifCached[pickCur - 1] = 0;
+      }
+    }
+    dirty = true;
+    return;
+  }
+
+''', "GIF picker state")
+
+replace_between("  if (mode == M_SETUP) {", "  if (mode == M_WIFI) {", r'''  if (mode == M_SETUP) {
+    for (char c : ks) {
+      if (c == ';') pickCur = (pickCur + 4) % 5;
+      else if (c == '.') pickCur = (pickCur + 1) % 5;
+    }
+    if (st.enter) {
+      if (pickCur == 0) {
+        wifiList.clear();
+        WiFi.mode(WIFI_STA);
+        int n = WiFi.scanNetworks(false, true);
+        for (int i = 0; i < n && wifiList.size() < 32; i++) {
+          String name = WiFi.SSID(i);
+          if (!name.length()) continue;
+          bool duplicate = false;
+          for (const auto& v : wifiList) if (v == name) { duplicate = true; break; }
+          if (!duplicate) wifiList.push_back(name);
+        }
+        WiFi.scanDelete(); WiFi.mode(WIFI_OFF);
+        browseCur = 0; mode = M_WIFI;
+      } else if (pickCur == 1) {
+        browseDir = "/"; scanSubdirs(); mode = M_DIR;
+      } else if (pickCur == 2) startText(2);
+      else if (pickCur == 3) {
+        setupWizard = true; screen = SC_SET; sCur = 0; mode = M_NORMAL;
+      } else {
+        setupDone = true; setupWizard = false; saveCfg();
+        mode = M_NORMAL; screen = SC_CLOCK;
+      }
+    }
+    dirty = true;
+    return;
+  }
+''', "setup menu input")
+
+once("  for (char c : ks) if (c == " + chr(96) + ") { goScreen(SC_CLOCK); return; }",
+     "  for (char c : ks) if (c == 96) { if (setupWizard && screen == SC_SET) { mode = M_SETUP; dirty = true; return; } goScreen(SC_CLOCK); return; }",
+     "manual settings back key")
+once("  if (st.tab) { goScreen(screen + 1); return; }",
+     "  if (st.tab) { if (setupWizard && screen == SC_SET) { mode = M_SETUP; dirty = true; return; } goScreen(screen + 1); return; }",
+     "manual settings tab key")
+
+once('  txt(";. SELECT   ENTER=OPEN", 120, 124, cMid, &fonts::Font0, D_TC);',
+     '  String status = syncState ? syncMsg : (synced ? "TIME SYNCED" : syncMsg);\\n  txt(fit(status, 30), 120, 116, cMid, &fonts::Font0, D_TC);\\n  txt(";. SELECT   ENTER=OPEN", 120, 130, cMid, &fonts::Font0, D_TC);',
+     "setup status line")
+once('    else if (k == "gif") gifPath = v;',
+     '    else if (k == "gif") gifPath = v;\\n    else if (k == "gifDir") gifDir = v;\\n    else if (k == "setupDone") setupDone = v.toInt() != 0;',
+     "load setup keys")
+once('  scanDir("/gifs"); scanDir("/");', '  scanDir(gifDir.c_str());', "selected GIF directory")
+once('  syncMsg = msg; syncState = 0;', '  syncMsg = msg; syncState = 0; dirty = true;', "sync status redraw")
+
+p.write_text(s)
