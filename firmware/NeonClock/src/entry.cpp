@@ -1,5 +1,6 @@
-// The project keeps the firmware implementation in main.cpp inside an
-// anonymous namespace. Export Arduino's required global entry points here.
+#include <Arduino.h>
+// Arduino entry point declarations must be parsed before renaming the
+// implementation functions in main.cpp.
 #define setup neonClockSetupInternal
 #define loop neonClockLoopInternal
 #include "main.cpp"
