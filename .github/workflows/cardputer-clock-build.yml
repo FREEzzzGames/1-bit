@@ -30,6 +30,7 @@ jobs:
 
       - name: Prepare isolated Arduino sketch (keep original source unchanged)
         run: |
+          test "$(sha256sum CardputerClock/CardputerClock.ino | awk '{print $1}')" = "aa904469616876af094f783525398e04f6f8f3f1bafb07342e97df100260a9b8"
           mkdir -p build-src/CardputerClock
           cp CardputerClock/CardputerClock.ino build-src/CardputerClock/CardputerClock.ino
           printf '#pragma once\nstruct P;\n' > build-src/CardputerClock/clock_types.h
