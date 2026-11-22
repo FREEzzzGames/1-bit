@@ -315,10 +315,10 @@ once("  if (st.tab) { goScreen(screen + 1); return; }",
      "manual settings tab key")
 
 once('  txt(";. SELECT   ENTER=OPEN", 120, 124, cMid, &fonts::Font0, D_TC);',
-     '  String status = syncState ? syncMsg : (synced ? "TIME SYNCED" : syncMsg);\\n  txt(fit(status, 30), 120, 116, cMid, &fonts::Font0, D_TC);\\n  txt(";. SELECT   ENTER=OPEN", 120, 130, cMid, &fonts::Font0, D_TC);',
+     '  String status = syncState ? syncMsg : (synced ? "TIME SYNCED" : syncMsg);\n  txt(fit(status, 30), 120, 116, cMid, &fonts::Font0, D_TC);\n  txt(";. SELECT   ENTER=OPEN", 120, 130, cMid, &fonts::Font0, D_TC);',
      "setup status line")
 once('    else if (k == "gif") gifPath = v;',
-     '    else if (k == "gif") gifPath = v;\\n    else if (k == "gifDir") gifDir = v;\\n    else if (k == "setupDone") setupDone = v.toInt() != 0;',
+     '    else if (k == "gif") gifPath = v;\n    else if (k == "gifDir") gifDir = v;\n    else if (k == "setupDone") setupDone = v.toInt() != 0;',
      "load setup keys")
 once('  scanDir("/gifs"); scanDir("/");', '  scanDir(gifDir.c_str());', "selected GIF directory")
 once('  syncMsg = msg; syncState = 0;', '  syncMsg = msg; syncState = 0; dirty = true;', "sync status redraw")
