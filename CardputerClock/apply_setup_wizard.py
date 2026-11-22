@@ -513,8 +513,8 @@ for token in required:
         raise SystemExit("FINAL OUTPUT CHECK FAILED: " + token)
 
 final_once("int tzMin = 180;", "int tzMin = 60;", "sensible first-boot UTC offset")
-final_once('  txt(";. SELECT   ENTER=OPEN", 120, 124, cMid, &fonts::Font0, D_TC);',
-           '  txt(fit(sdOK ? syncMsg : String("NO FAT32 SD"), 30), 120, 110, cMid, &fonts::Font0, D_TC);\n  txt(";. SELECT   ENTER=OPEN", 120, 124, cMid, &fonts::Font0, D_TC);',
+final_once('  txt(fit(status, 30), 120, 116, cMid, &fonts::Font0, D_TC);',
+           '  txt(fit(sdOK ? status : String("NO FAT32 SD"), 30), 120, 116, cMid, &fonts::Font0, D_TC);',
            "show setup diagnostics")
 
 p.write_text(s)
