@@ -397,8 +397,8 @@ def replace_gifdraw():
   }
 
   int sy = d->iY + d->y;
-  const int* first = std::lower_bound(syMap, syMap + SCR_H, sy);
-  const int* last = std::upper_bound(syMap, syMap + SCR_H, sy);
+  const uint16_t* first = std::lower_bound(syMap, syMap + SCR_H, sy);
+  const uint16_t* last = std::upper_bound(syMap, syMap + SCR_H, sy);
   if (first == last) return;
   int dy0 = (int)(first - syMap), dy1 = (int)(last - syMap);
   int x0 = d->iX, x1 = d->iX + d->iWidth;
@@ -494,5 +494,22 @@ s = s.replace(
         if (cfgDirty) { syncMsg = "SAVE FAILED"; setupDone = false; mode = M_SETUP; }
         else { mode = M_NORMAL; screen = SC_CLOCK; }
       }''', 1)
+
+# Fail the build rather than silently shipping if any critical hardening edit missed.
+required = [
+    "static const uint32_t BG_MAXF = 4096;",
+    "uint16_t* cvRestore = nullptr;",
+    "cvPrevDisp == 2",
+    "cvPrevDisp == 3",
+    "const uint16_t* first = std::lower_bound",
+    "uint64_t D = 0",
+    "uint64_t t0 = 0",
+    "constrain((int)bgFrameMs, 33, 100)",
+    "INSERT FAT32 SD",
+    "String(CACHE_DIR) + name"
+]
+for token in required:
+    if token not in s:
+        raise SystemExit("FINAL OUTPUT CHECK FAILED: " + token)
 
 p.write_text(s)
