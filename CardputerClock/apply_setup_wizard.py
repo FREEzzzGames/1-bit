@@ -19,8 +19,8 @@ once('else if (k == "gif") gifPath = v;',
      'else if (k == "gif") gifPath = v;\n    else if (k == "gifDir") gifDir = v;\n    else if (k == "setupDone") setupDone = v.toInt() != 0;',
      'load config')
 once('void scanGifs() {\n  gifList.clear(); gifCached.clear();\n  if (!sdOK) return;\n  scanDir("/gifs"); scanDir("/");',
-     'void scanGifs() {\n  gifList.clear(); gifCached.clear();\n  if (!sdOK) return;\n  scanDir(gifDir.c_str());',
-     'scan configured folder')
+     'void scanGifs() {\n  gifList.clear(); gifCached.clear();\n  if (!sdOK) return;\n  // Search the selected folder plus both standard locations.\n  scanDir(gifDir.c_str());\n  if (gifDir != "/gifs") scanDir("/gifs");\n  if (gifDir != "/") scanDir("/");\n  // Avoid duplicate entries when a standard folder is selected.\n  for (size_t i = 0; i < gifList.size(); ++i) {\n    for (size_t j = i + 1; j < gifList.size();) {\n      if (gifList[i] == gifList[j]) gifList.erase(gifList.begin() + j);\n      else ++j;\n    }\n  }',
+     'scan selected and standard folders')
 once('enum { M_NORMAL, M_TEXT, M_PICK };',
      'enum { M_NORMAL, M_TEXT, M_PICK, M_SETUP, M_WIFI, M_DIR };',
      'modes')
