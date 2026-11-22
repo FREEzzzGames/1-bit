@@ -518,3 +518,194 @@ final_once('  txt(fit(status, 30), 120, 116, cMid, &fonts::Font0, D_TC);',
            "show setup diagnostics")
 
 p.write_text(s)
+
+
+// ---------------------------------------------------------------------------
+// Final runtime fixes: robust NTP validation and full-frame GIF compositing.
+// These transformations are intentionally applied after all legacy UI setup
+// patches so the compiled sketch is the exact final source.
+// ---------------------------------------------------------------------------
+s = p.read_text()
+
+def replace_region(start, end, replacement, label):
+    global s
+    a = s.find(start)
+    if a < 0:
+        raise SystemExit("RUNTIME PATCH START NOT FOUND: " + label)
+    b = s.find(end, a + len(start))
+    if b < 0:
+        raise SystemExit("RUNTIME PATCH END NOT FOUND: " + label)
+    s = s[:a] + replacement + s[b:]
+
+replace_region("void startSync() {", "bool setLocalTime(", r'''void startSync() {
+  if (syncState != 0) return;
+  if (ssid.isEmpty()) { syncMsg = "NO SSID"; dirty = true; return; }
+  if (ESP.getMaxAllocHeap() < 35000) {
+    syncMsg = "LOW MEM"; nextSyncAt = millis() + 600000UL; dirty = true; return;
+  }
+  WiFi.persistent(false);
+  WiFi.mode(WIFI_STA);
+  WiFi.setAutoReconnect(false);
+  WiFi.begin(ssid.c_str(), wpass.c_str());
+  syncState = 1;
+  syncT0 = millis();
+  syncMsg = "WIFI...";
+  dirty = true;
+}
+
+void finishSync(bool ok, const char* msg) {
+  syncMsg = msg;
+  syncState = 0;
+  if (ok) {
+    synced = true;
+    nextSyncAt = millis() + 3UL * 3600UL * 1000UL;
+    saveCfg();
+  } else {
+    nextSyncAt = millis() + 5UL * 60UL * 1000UL;
+  }
+  WiFi.disconnect(false, false);
+  WiFi.mode(WIFI_OFF);
+  dirty = true;
+}
+
+void tickSync(uint32_t now) {
+  if (syncState == 0) {
+    if (ssid.length() && (int32_t)(now - nextSyncAt) >= 0) startSync();
+    return;
+  }
+
+  if (syncState == 1) {
+    if (WiFi.status() == WL_CONNECTED) {
+      sntp_set_sync_status(SNTP_SYNC_STATUS_RESET);
+      configTime(0, 0,
+                 "pool.ntp.org",
+                 "time.google.com",
+                 "time.cloudflare.com",
+                 "time.nist.gov");
+      syncState = 2;
+      syncT0 = now;
+      syncMsg = "NTP...";
+      dirty = true;
+    } else if ((uint32_t)(now - syncT0) >= 25000UL) {
+      finishSync(false, "WIFI FAIL");
+    }
+    return;
+  }
+
+  if (syncState == 2) {
+    // Do not trust SNTP's status flag alone: validate the actual system epoch.
+    time_t epoch = time(nullptr);
+    if (epoch >= (time_t)1700000000) {
+      if (autoTz) {
+        HTTPClient http;
+        http.setTimeout(2500);
+        if (http.begin("http://ip-api.com/json/?fields=status,offset")) {
+          int code = http.GET();
+          if (code == HTTP_CODE_OK) {
+            String body = http.getString();
+            if (body.indexOf("\"status\":\"success\"") >= 0) {
+              int at = body.indexOf("\"offset\":");
+              if (at >= 0) {
+                long seconds = body.substring(at + 9).toInt();
+                if (seconds >= -43200L && seconds <= 50400L)
+                  tzMin = (int)(seconds / 60L);
+              }
+            }
+          }
+          http.end();
+        }
+      }
+      finishSync(true, "SYNC OK");
+    } else if ((uint32_t)(now - syncT0) >= 30000UL) {
+      finishSync(false, "NTP FAIL");
+    }
+  }
+}
+''', "NTP state machine")
+
+// GIF frame composition: retain pixels through transparency and honor disposal
+// methods 2 (restore background) and 3 (restore previous canvas).
+replace_region("void GIFDraw(GIFDRAW* d) {", "// ---- converter UI", r'''void GIFDraw(GIFDRAW* d) {
+  uint8_t* src = d->pPixels;
+  uint16_t* pal = d->pPalette;
+  const bool transparent = d->ucHasTransparency;
+  const uint8_t transparentIndex = d->ucTransparent;
+
+  if (cvPass == 1) {
+    if (!cvHist || (d->y & 1)) return;
+    for (int x = 0; x < d->iWidth; ++x) {
+      uint8_t index = src[x];
+      if (transparent && index == transparentIndex) continue;
+      uint16_t bin = bin444(pal[index]);
+      if (cvHist[bin] != UINT32_MAX) ++cvHist[bin];
+    }
+    return;
+  }
+  if (cvPass != 2 || !cvBuf) return;
+
+  // AnimatedGIF calls the callback once per decoded scanline. y==0 marks
+  // the first line of a new image descriptor.
+  if (d->y == 0) {
+    if (cvPrevValid) {
+      if (cvPrevDisp == 2) {
+        for (int dy = 0; dy < SCR_H; ++dy) {
+          int sy = syMap[dy];
+          if (sy < cvPrevY || sy >= cvPrevY + cvPrevH) continue;
+          uint16_t* row = cvBuf + dy * SCR_W;
+          for (int dx = 0; dx < SCR_W; ++dx) {
+            int sx = sxMap[dx];
+            if (sx >= cvPrevX && sx < cvPrevX + cvPrevW)
+              row[dx] = cvPrevBg;
+          }
+        }
+      } else if (cvPrevDisp == 3 && cvRestore) {
+        memcpy(cvBuf, cvRestore, SCR_W * SCR_H * sizeof(uint16_t));
+      }
+    }
+    if (d->ucDisposalMethod == 3 && cvRestore)
+      memcpy(cvRestore, cvBuf, SCR_W * SCR_H * sizeof(uint16_t));
+
+    cvPrevX = d->iX;
+    cvPrevY = d->iY;
+    cvPrevW = d->iWidth;
+    cvPrevH = d->iHeight;
+    cvPrevDisp = d->ucDisposalMethod;
+    cvPrevBg = pal[d->ucBackground];
+    cvPrevValid = true;
+  }
+
+  const int sourceY = d->iY + d->y;
+  const uint16_t* first = std::lower_bound(syMap, syMap + SCR_H, sourceY);
+  const uint16_t* last = std::upper_bound(syMap, syMap + SCR_H, sourceY);
+  if (first == last) return;
+
+  const int dy0 = (int)(first - syMap);
+  const int dy1 = (int)(last - syMap);
+  const int x0 = d->iX;
+  const int x1 = d->iX + d->iWidth;
+  for (int dy = dy0; dy < dy1; ++dy) {
+    uint16_t* out = cvBuf + dy * SCR_W;
+    for (int dx = 0; dx < SCR_W; ++dx) {
+      const int sx = sxMap[dx];
+      if (sx < x0 || sx >= x1) continue;
+      const uint8_t index = src[sx - x0];
+      if (transparent && index == transparentIndex) continue;
+      out[dx] = pal[index];
+    }
+  }
+}
+''', "GIF compositing")
+
+// Correct frame scheduling for long animations and prevent cache count overflow.
+s = s.replace("uint32_t n = 0, D = 0; int fd = 0, r;",
+              "uint32_t n = 0; uint64_t D = 0; int fd = 0, r;", 1)
+s = s.replace("uint32_t t0 = 0, emitted = 0; bool fail = false;",
+              "uint64_t t0 = 0; uint32_t emitted = 0; bool fail = false;", 1)
+s = s.replace("uint32_t t1 = t0 + fd;\n    while (emitted < total && emitted * outMs < t1) {",
+              "uint64_t t1 = t0 + (uint32_t)fd;\n    while (emitted < total && (uint64_t)emitted * outMs < t1) {", 1)
+s = s.replace("  gif.reset(); cvPass = 2; cvPos = 0;",
+              "  gif.reset(); cvPass = 2; cvPos = 0;\n  cvPrevValid = false; cvPrevDisp = 0;", 1)
+
+if "uint64_t D = 0" not in s or "cvPrevDisp == 3" not in s or "epoch >= (time_t)1700000000" not in s:
+    raise SystemExit("RUNTIME PATCH VALIDATION FAILED")
+p.write_text(s)
