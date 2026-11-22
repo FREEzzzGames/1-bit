@@ -623,7 +623,7 @@ void tickSync(uint32_t now) {
 }
 ''', "NTP state machine")
 
-// GIF frame composition: retain pixels through transparency and honor disposal
+# GIF frame composition: retain pixels through transparency and honor disposal
 // methods 2 (restore background) and 3 (restore previous canvas).
 replace_region("void GIFDraw(GIFDRAW* d) {", "// ---- converter UI", r'''void GIFDraw(GIFDRAW* d) {
   uint8_t* src = d->pPixels;
@@ -696,7 +696,7 @@ replace_region("void GIFDraw(GIFDRAW* d) {", "// ---- converter UI", r'''void GI
 }
 ''', "GIF compositing")
 
-// Correct frame scheduling for long animations and prevent cache count overflow.
+# Correct frame scheduling for long animations and prevent cache count overflow.
 s = s.replace("uint32_t n = 0, D = 0; int fd = 0, r;",
               "uint32_t n = 0; uint64_t D = 0; int fd = 0, r;", 1)
 s = s.replace("uint32_t t0 = 0, emitted = 0; bool fail = false;",
