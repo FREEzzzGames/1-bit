@@ -520,10 +520,10 @@ final_once('  txt(fit(status, 30), 120, 116, cMid, &fonts::Font0, D_TC);',
 p.write_text(s)
 
 
-// ---------------------------------------------------------------------------
-// Final runtime fixes: robust NTP validation and full-frame GIF compositing.
-// These transformations are intentionally applied after all legacy UI setup
-// patches so the compiled sketch is the exact final source.
+# ---------------------------------------------------------------------------
+# Final runtime fixes: robust NTP validation and full-frame GIF compositing.
+# These transformations are intentionally applied after all legacy UI setup
+# patches so the compiled sketch is the exact final source.
 // ---------------------------------------------------------------------------
 s = p.read_text()
 
