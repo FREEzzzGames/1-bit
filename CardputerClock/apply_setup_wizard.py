@@ -422,7 +422,7 @@ s = s.replace(
 '''  uint32_t n = 0; uint64_t D = 0; int fd = 0, r;''', 1)
 s = s.replace(
 '''  uint32_t avg = n ? D / n : 100;
-  uint32_t outMs = avg < 83 ? 83 : (avg > 200 ? 200 : avg);
+  uint32_t outMs = avg < 50 ? 50 : (avg > 200 ? 200 : avg);
   uint32_t total = (D + outMs - 1) / outMs;
   if (total > BG_MAXF) {
     outMs = (D + BG_MAXF - 1) / BG_MAXF; if (outMs > 200) outMs = 200;
@@ -480,7 +480,7 @@ s = s.replace(
 s = s.replace(
 '''  uint32_t period = ringKind ? 80 : ((screen == SC_STOPW && swRun) ? 33 : 250);''',
 '''  uint32_t period = ringKind ? 80 :
-                    (bgOn ? constrain((int)bgFrameMs, 33, 100) :
+                    (bgOn ? constrain((int)bgFrameMs, 33, 250) :
                     ((screen == SC_STOPW && swRun) ? 33 : 250));''', 1)
 
 s = s.replace(
@@ -504,7 +504,7 @@ required = [
     "const uint16_t* first = std::lower_bound",
     "uint64_t D = 0",
     "uint64_t t0 = 0",
-    "constrain((int)bgFrameMs, 33, 100)",
+    "constrain((int)bgFrameMs, 33, 250)",
     "INSERT FAT32 SD",
     "String(CACHE_DIR) + name"
 ]
