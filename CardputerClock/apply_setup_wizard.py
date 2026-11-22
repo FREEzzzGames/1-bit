@@ -623,7 +623,7 @@ void tickSync(uint32_t now) {
 ''', "NTP state machine")
 
 # GIF frame composition: retain pixels through transparency and honor disposal
-// methods 2 (restore background) and 3 (restore previous canvas).
+# methods 2 (restore background) and 3 (restore previous canvas).
 replace_region("void GIFDraw(GIFDRAW* d) {", "// ---- converter UI", r'''void GIFDraw(GIFDRAW* d) {
   uint8_t* src = d->pPixels;
   uint16_t* pal = d->pPalette;
