@@ -524,7 +524,7 @@ p.write_text(s)
 # Final runtime fixes: robust NTP validation and full-frame GIF compositing.
 # These transformations are intentionally applied after all legacy UI setup
 # patches so the compiled sketch is the exact final source.
-// ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 s = p.read_text()
 
 def replace_region(start, end, replacement, label):
