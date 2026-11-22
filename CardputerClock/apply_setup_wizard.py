@@ -310,7 +310,7 @@ replace_between("  if (mode == M_SETUP) {", "  if (mode == M_WIFI) {", r'''  if 
   }
 ''', "setup menu input")
 
-once("  for (char c : ks) if (c == " + chr(96) + ") { goScreen(SC_CLOCK); return; }",
+once("  for (char c : ks) if (c == '" + chr(96) + "') { goScreen(SC_CLOCK); return; }",
      "  for (char c : ks) if (c == 96) { if (setupWizard && screen == SC_SET) { mode = M_SETUP; dirty = true; return; } goScreen(SC_CLOCK); return; }",
      "manual settings back key")
 
