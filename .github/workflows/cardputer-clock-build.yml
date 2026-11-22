@@ -1,0 +1,45 @@
+name: Build CardputerClock
+
+on:
+  push:
+    paths:
+      - "CardputerClock/**"
+      - ".github/workflows/cardputer-clock-build.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-cardputer-clock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Arduino CLI
+        uses: arduino/setup-arduino-cli@v2
+
+      - name: Install M5Stack ESP32 platform
+        run: |
+          arduino-cli core update-index --additional-urls https://static-cdn.m5stack.com/resource/arduino/package_m5stack_index.json
+          arduino-cli core install m5stack:esp32 --additional-urls https://static-cdn.m5stack.com/resource/arduino/package_m5stack_index.json
+
+      - name: Install libraries
+        run: |
+          arduino-cli lib install M5Cardputer M5Unified M5GFX AnimatedGIF
+
+      - name: Compile CardputerClock for Cardputer ADV
+        run: |
+          arduino-cli compile \
+            --fqbn "m5stack:esp32:m5stack_cardputer:FlashSize=8M,PartitionScheme=default_8MB" \
+            --warnings all \
+            --output-dir build/CardputerClock \
+            CardputerClock
+
+      - name: Upload CardputerClock BIN
+        uses: actions/upload-artifact@v4
+        with:
+          name: CardputerClock-Cardputer-ADV
+          path: build/CardputerClock/*.bin
+          if-no-files-found: error
+          retention-days: 30
