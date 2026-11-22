@@ -135,6 +135,9 @@ insert = r'''
       else if (c == '.' && !dirList.empty()) browseCur = (browseCur + 1) % dirList.size();
       else if ((c == 's' || c == 'S')) {
         gifDir = browseDir; scanGifs();
+        bool currentFound = false;
+        for (const auto& item : gifList) if (item == gifPath) { currentFound = true; break; }
+        if (!currentFound) { gifPath = ""; closeBg(); }
         if (!gifList.empty()) { pickCur = 0; mode = M_PICK; }
         else mode = M_SETUP;
         markCfg();
