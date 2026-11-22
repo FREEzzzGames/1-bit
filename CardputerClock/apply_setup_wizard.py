@@ -313,9 +313,6 @@ replace_between("  if (mode == M_SETUP) {", "  if (mode == M_WIFI) {", r'''  if 
 once("  for (char c : ks) if (c == " + chr(96) + ") { goScreen(SC_CLOCK); return; }",
      "  for (char c : ks) if (c == 96) { if (setupWizard && screen == SC_SET) { mode = M_SETUP; dirty = true; return; } goScreen(SC_CLOCK); return; }",
      "manual settings back key")
-once("  if (st.tab) { goScreen(screen + 1); return; }",
-     "  if (st.tab) { if (setupWizard && screen == SC_SET) { mode = M_SETUP; dirty = true; return; } goScreen(screen + 1); return; }",
-     "manual settings tab key")
 
 once('  txt(";. SELECT   ENTER=OPEN", 120, 124, cMid, &fonts::Font0, D_TC);',
      '  String status = syncState ? syncMsg : (synced ? "TIME SYNCED" : syncMsg);\n  txt(fit(status, 30), 120, 116, cMid, &fonts::Font0, D_TC);\n  txt(";. SELECT   ENTER=OPEN", 120, 130, cMid, &fonts::Font0, D_TC);',
