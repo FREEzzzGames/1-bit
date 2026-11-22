@@ -580,8 +580,7 @@ void tickSync(uint32_t now) {
       configTime(0, 0,
                  "pool.ntp.org",
                  "time.google.com",
-                 "time.cloudflare.com",
-                 "time.nist.gov");
+                 "time.cloudflare.com");
       syncState = 2;
       syncT0 = now;
       syncMsg = "NTP...";
