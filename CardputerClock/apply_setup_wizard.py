@@ -13,13 +13,13 @@ once('String gifPath = "", ssid = "", wpass = "";',
      'String gifPath = "", gifDir = "/gifs", ssid = "", wpass = "";\nbool setupDone = false, setupWizard = false;\nstd::vector<String> wifiList, dirList;\nString browseDir = "/"; int browseCur = 0;',
      'config globals')
 once('f.print("gif="); f.println(gifPath);',
-     'f.print("gif="); f.println(gifPath); f.print("gifDir="); f.println(gifDir); f.printf("setupDone=%d\\\\n", setupDone ? 1 : 0);',
+     'f.print("gif="); f.println(gifPath); f.print("gifDir="); f.println(gifDir); f.printf("setupDone=%d\\\n", setupDone ? 1 : 0);',
      'save config')
 once('else if (k == "gif") gifPath = v;',
      'else if (k == "gif") gifPath = v;\n    else if (k == "gifDir") gifDir = v;\n    else if (k == "setupDone") setupDone = v.toInt() != 0;',
      'load config')
-once('void scanGifs() {\\n  gifList.clear(); gifCached.clear();\\n  if (!sdOK) return;\\n  scanDir("/gifs"); scanDir("/");',
-     'void scanGifs() {\\n  gifList.clear(); gifCached.clear();\\n  if (!sdOK) return;\\n  scanDir(gifDir.c_str());',
+once('void scanGifs() {\n  gifList.clear(); gifCached.clear();\n  if (!sdOK) return;\n  scanDir("/gifs"); scanDir("/");',
+     'void scanGifs() {\n  gifList.clear(); gifCached.clear();\n  if (!sdOK) return;\n  scanDir(gifDir.c_str());',
      'scan configured folder')
 once('enum { M_NORMAL, M_TEXT, M_PICK };',
      'enum { M_NORMAL, M_TEXT, M_PICK, M_SETUP, M_WIFI, M_DIR };',
@@ -82,10 +82,10 @@ void drawDirList() {
   txt("ENTER=OPEN   S=USE THIS FOLDER   DEL=BACK", 120, 124, cMid, &fonts::Font0, D_TC);
 }
 '''
-once(anchor, insert + '\\n' + anchor, 'setup UI functions')
+once(anchor, insert + '\n' + anchor, 'setup UI functions')
 # Render mode dispatch
-once('if (mode == M_PICK) drawPicker();\\n  else if (mode == M_TEXT) drawTextInput();',
-     'if (mode == M_PICK) drawPicker();\\n  else if (mode == M_TEXT) drawTextInput();\\n  else if (mode == M_SETUP) drawSetupMenu();\\n  else if (mode == M_WIFI) drawWifiList();\\n  else if (mode == M_DIR) drawDirList();',
+once('if (mode == M_PICK) drawPicker();\n  else if (mode == M_TEXT) drawTextInput();',
+     'if (mode == M_PICK) drawPicker();\n  else if (mode == M_TEXT) drawTextInput();\n  else if (mode == M_SETUP) drawSetupMenu();\n  else if (mode == M_WIFI) drawWifiList();\n  else if (mode == M_DIR) drawDirList();',
      'render modes')
 # Extend input handling after key vector setup and before M_TEXT
 anchor = '  if (mode == M_TEXT) {'
@@ -144,26 +144,26 @@ insert = r'''
     return;
   }
 '''
-once(anchor, insert + '\\n' + anchor, 'input modes')
+once(anchor, insert + '\n' + anchor, 'input modes')
 # After password input, return to wizard if setup is active
 once('else if (inTarget == 1) { wpass = inBuf; markCfg(); }',
      'else if (inTarget == 1) { wpass = inBuf; markCfg(); nextSyncAt = millis(); }',
      'wifi password sync')
-once('mode = M_NORMAL; return;\\n    }\\n    if (st.del)',
-     'mode = setupWizard ? M_SETUP : M_NORMAL; return;\\n    }\\n    if (st.del)',
+once('mode = M_NORMAL; return;\n    }\n    if (st.del)',
+     'mode = setupWizard ? M_SETUP : M_NORMAL; return;\n    }\n    if (st.del)',
      'text input return mode')
 # Entering picker from settings scans selected folder already; setup's folder select opens GIF list
 # After choosing GIF return to setup wizard when in setup context
-once('mode = M_NORMAL;\\n      gifPath = pickCur == 0 ? String("") : gifList[pickCur - 1];',
-     'mode = setupWizard ? M_SETUP : M_NORMAL;\\n      gifPath = pickCur == 0 ? String("") : gifList[pickCur - 1];',
+once('mode = M_NORMAL;\n      gifPath = pickCur == 0 ? String("") : gifList[pickCur - 1];',
+     'mode = setupWizard ? M_SETUP : M_NORMAL;\n      gifPath = pickCur == 0 ? String("") : gifList[pickCur - 1];',
      'picker return mode')
 # Manual settings exit: TAB/ESC returns to setup while wizard is active; finish wizard via menu
 once('if (st.tab) { goScreen(screen + 1); return; }',
      'if (st.tab) { if (setupWizard && screen == SC_SET) { mode = M_SETUP; return; } goScreen(screen + 1); return; }',
      'settings return')
 # Setup startup decision after loading config and initializing display
-once('loadCfg();\\n  applyBacklight(); updateColors();',
-     'loadCfg();\\n  setupWizard = !setupDone;\\n  if (setupWizard) { mode = M_SETUP; pickCur = 0; }\\n  applyBacklight(); updateColors();',
+once('loadCfg();\n  applyBacklight(); updateColors();',
+     'loadCfg();\n  setupWizard = !setupDone;\n  if (setupWizard) { mode = M_SETUP; pickCur = 0; }\n  applyBacklight(); updateColors();',
      'first boot wizard')
 # Settings menu can be opened any time; existing settings navigation remains
 # Save directory and first-start state in config.
