@@ -1,0 +1,44 @@
+name: NEON CLOCK Cardputer ADV Build
+on:
+  push:
+    branches:
+      - build/neon-clock-cardputer-v0.2
+    paths:
+      - 'firmware/NeonClock/**'
+      - '.github/workflows/neon-clock-build.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install PlatformIO
+        run: python -m pip install --upgrade platformio
+      - name: Build firmware
+        working-directory: firmware/NeonClock
+        run: pio run -e cardputer-adv
+      - name: Merge flash image
+        working-directory: firmware/NeonClock
+        run: |
+          BOOTLOADER=".pio/build/cardputer-adv/bootloader.bin"
+          PARTITIONS=".pio/build/cardputer-adv/partitions.bin"
+          APP=".pio/build/cardputer-adv/firmware.bin"
+          BOOT_APP0="$HOME/.platformio/packages/framework-arduinoespressif32/tools/partitions/boot_app0.bin"
+          test -s "$BOOTLOADER"
+          test -s "$PARTITIONS"
+          test -s "$APP"
+          test -s "$BOOT_APP0"
+          python "$HOME/.platformio/packages/tool-esptoolpy/esptool.py" --chip esp32s3 merge_bin --flash_mode qio --flash_size 8MB -o NEON_CLOCK_Cardputer_ADV_v0.2_merged.bin 0x0 "$BOOTLOADER" 0x8000 "$PARTITIONS" 0xe000 "$BOOT_APP0" 0x10000 "$APP"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FREEzzz-NEON-CLOCK-Cardputer-ADV-v0.2
+          path: |
+            firmware/NeonClock/NEON_CLOCK_Cardputer_ADV_v0.2_merged.bin
+            firmware/NeonClock/.pio/build/cardputer-adv/firmware.bin
+          if-no-files-found: error
+          retention-days: 30
