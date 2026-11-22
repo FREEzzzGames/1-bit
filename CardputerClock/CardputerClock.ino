@@ -253,14 +253,19 @@ void rebuildPal() {
   for (int i = 0; i < 256; i++) {
     uint16_t p = palRaw[i];
     int r8 = (p >> 11) << 3, g8 = ((p >> 5) & 63) << 2, b8 = (p & 31) << 3, r, g, b;
-    if (gifTint == 0) { r = (r8 * m) >> 8; g = (g8 * m) >> 8; b = (b8 * m) >> 8; }
+    // Keep the animation visible but dark enough for readable foreground text.
+    const int bgGain = (m * 112) >> 8;
+    if (gifTint == 0) { r = (r8 * bgGain) >> 8; g = (g8 * bgGain) >> 8; b = (b8 * bgGain) >> 8; }
     else {
       int y = (r8 * 77 + g8 * 150 + b8 * 29) >> 8;
-      r = ((tp.r * y / 255) * m) >> 8; g = ((tp.g * y / 255) * m) >> 8; b = ((tp.b * y / 255) * m) >> 8;
+      r = ((tp.r * y / 255) * bgGain) >> 8;
+      g = ((tp.g * y / 255) * bgGain) >> 8;
+      b = ((tp.b * y / 255) * bgGain) >> 8;
     }
     uint16_t c = ((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3);
     palN[i] = c;
-    palG[i] = glassLvl == 1 ? ((c >> 1) & 0x7BEF) : (glassLvl == 2 ? ((c >> 2) & 0x39E7) : c);
+    // Text-card regions receive a second darkening pass, independent of GIF colors.
+    palG[i] = ((c >> 2) & 0x39E7);
   }
 }
 
@@ -754,34 +759,47 @@ void tickTimer(uint32_t now) {
 
 // ------------------------------------------------------------------ screens
 void drawClock() {
+  // High-contrast editorial layout: dim animated image, opaque text zones.
   struct tm t; getLocal(t);
-  char b[48];
-  snprintf(b, sizeof(b), "%s %02d %s %d", WD[t.tm_wday], t.tm_mday, MON[t.tm_mon], t.tm_year + 1900);
-  txt(b, 10, 8, cMid, &fonts::Font2);
-  if (!sdOK) txt("NO SD", 232, 8, cMid, &fonts::Font2, D_TR);
-  else if (battLvl >= 0) { snprintf(b, sizeof(b), "BAT %d%%", battLvl); txt(b, 232, 8, cMid, &fonts::Font2, D_TR); }
-
-  int hh = t.tm_hour; bool pm = hh >= 12;
+  char date[40], clockText[8], secText[4];
+  snprintf(date, sizeof(date), "%s  %02d %s  %04d",
+           WD[t.tm_wday], t.tm_mday, MON[t.tm_mon], t.tm_year + 1900);
+  int hh = t.tm_hour;
+  bool pm = hh >= 12;
   if (!h24) { hh %= 12; if (hh == 0) hh = 12; }
-  int d1 = hh / 10; if (!h24 && d1 == 0) d1 = -1;
-  const int Y = 28, Hh = 70, Wd = 36, T = 9;
-  drawDigit(6, Y, Wd, Hh, T, d1, cOn, cGhost);
-  drawDigit(47, Y, Wd, Hh, T, hh % 10, cOn, cGhost);
-  colon(86, Y, Hh, 8, (t.tm_sec % 2 == 0) ? cOn : cGhost);
-  drawDigit(100, Y, Wd, Hh, T, t.tm_min / 10, cOn, cGhost);
-  drawDigit(141, Y, Wd, Hh, T, t.tm_min % 10, cOn, cGhost);
-  drawDigit(196, 72, 16, 26, 4, t.tm_sec / 10, cOn, cGhost);
-  drawDigit(215, 72, 16, 26, 4, t.tm_sec % 10, cOn, cGhost);
-  if (!h24) txt(pm ? "PM" : "AM", 200, 40, cOn, &fonts::Font2);
+  snprintf(clockText, sizeof(clockText), "%02d:%02d", hh, t.tm_min);
+  snprintf(secText, sizeof(secText), "%02d", t.tm_sec);
 
-  bool anyAl = false; for (int i = 0; i < 4; i++) anyAl |= al[i].on;
-  txt("ALARM", 8, 116, anyAl ? cOn : cGhost, &fonts::Font0);
-  txt("TIMER", 52, 116, tmState ? cOn : cGhost, &fonts::Font0);
-  txt("STOPW", 96, 116, swRun ? cOn : cGhost, &fonts::Font0);
-  bool blink = (millis() / 500) % 2;
-  const char* sy = syncState ? "SYNC.." : (synced ? "SYNC OK" : "NO SYNC");
-  uint16_t sc = syncState ? (blink ? cOn : cGhost) : (synced ? cOn : (blink ? cMid : cGhost));
-  txt(sy, 232, 116, sc, &fonts::Font0, D_TR);
+  // Top information strip.
+  S.fillRoundRect(7, 6, 226, 20, 5, 0x0841);
+  txt(date, 14, 10, 0xC638, &fonts::Font2);
+
+  if (!sdOK) txt("SD OFF", 226, 10, 0xF800, &fonts::Font0, D_TR);
+  else if (battLvl >= 0) {
+    char bat[10]; snprintf(bat, sizeof(bat), "%d%%", battLvl);
+    txt(bat, 226, 11, 0xC638, &fonts::Font0, D_TR);
+  }
+
+  // Main time uses a clean proportional font instead of segmented glyphs.
+  S.fillRoundRect(7, 32, 226, 66, 7, 0x0000);
+  S.drawRoundRect(7, 32, 226, 66, 7, 0x39E7);
+  txt(clockText, 120, 38, cOn, &fonts::Font4, D_MC, 1.45f);
+
+  // Seconds and format are deliberately secondary to the time.
+  char detail[24];
+  snprintf(detail, sizeof(detail), "%s  %s",
+           secText, h24 ? "24 HOUR" : (pm ? "PM" : "AM"));
+  txt(detail, 120, 82, cMid, &fonts::Font2, D_MC);
+
+  // Status chips remain legible over any animation.
+  S.fillRoundRect(7, 106, 226, 22, 5, 0x0841);
+  bool anyAl = false; for (int i = 0; i < 4; ++i) anyAl |= al[i].on;
+  txt("ALARM", 15, 112, anyAl ? cOn : 0x7BEF, &fonts::Font0);
+  txt("TIMER", 75, 112, tmState ? cOn : 0x7BEF, &fonts::Font0);
+  txt("STOPWATCH", 135, 112, swRun ? cOn : 0x7BEF, &fonts::Font0);
+  const char* status = syncState ? "SYNC" : (synced ? "OK" : "--");
+  txt(status, 225, 112, syncState ? cOn : (synced ? 0x07E0 : 0x7BEF),
+      &fonts::Font0, D_TR);
 }
 
 void drawCalendar() {
