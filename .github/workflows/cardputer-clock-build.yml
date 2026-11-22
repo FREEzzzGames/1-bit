@@ -28,13 +28,20 @@ jobs:
         run: |
           arduino-cli lib install M5Cardputer M5Unified M5GFX AnimatedGIF
 
+      - name: Prepare isolated Arduino sketch (keep original source unchanged)
+        run: |
+          mkdir -p build-src/CardputerClock
+          cp CardputerClock/CardputerClock.ino build-src/CardputerClock/CardputerClock.ino
+          printf '#pragma once\nstruct P;\n' > build-src/CardputerClock/clock_types.h
+          sed -i '1i #include "clock_types.h"' build-src/CardputerClock/CardputerClock.ino
+
       - name: Compile CardputerClock for Cardputer ADV
         run: |
           arduino-cli compile \
             --fqbn "m5stack:esp32:m5stack_cardputer:FlashSize=8M,PartitionScheme=default_8MB" \
             --warnings all \
             --output-dir build/CardputerClock \
-            CardputerClock
+            build-src/CardputerClock
 
       - name: Upload CardputerClock BIN
         uses: actions/upload-artifact@v4
