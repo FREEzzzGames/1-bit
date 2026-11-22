@@ -13,7 +13,7 @@ once('String gifPath = "", ssid = "", wpass = "";',
      'String gifPath = "", gifDir = "/gifs", ssid = "", wpass = "";\nbool setupDone = false, setupWizard = false;\nstd::vector<String> wifiList, dirList;\nString browseDir = "/"; int browseCur = 0;',
      'config globals')
 once('f.print("gif="); f.println(gifPath);',
-     'f.print("gif="); f.println(gifPath); f.print("gifDir="); f.println(gifDir); f.printf("setupDone=%d\\\n", setupDone ? 1 : 0);',
+     'f.print("gif="); f.println(gifPath); f.print("gifDir="); f.println(gifDir); f.print("setupDone="); f.println(setupDone ? 1 : 0);',
      'save config')
 once('else if (k == "gif") gifPath = v;',
      'else if (k == "gif") gifPath = v;\n    else if (k == "gifDir") gifDir = v;\n    else if (k == "setupDone") setupDone = v.toInt() != 0;',
