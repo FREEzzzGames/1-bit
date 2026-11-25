@@ -1,4 +1,3 @@
-import { analyzeFile as analyzeTrackFile } from './track-analysis'
 export { analyzeBuffer, analyzeFile } from './track-analysis'
 export type { TrackAnalysis, TrackSection } from './track-analysis'
 
@@ -21,8 +20,6 @@ export function connectAudio(element: HTMLAudioElement): AudioState {
   gain.connect(context.destination)
   return { context, analyser, gain, source }
 }
-
-export const analyzeFile = analyzeTrackFile
 
 export function formatTime(seconds: number): string {
   if (!Number.isFinite(seconds)) return '00:00'
