@@ -44,7 +44,8 @@ export default function App() {
   const [decks, setDecks] = useState<Record<DeckId, DeckState>>({ A: initialDeck(), B: initialDeck() })
   const [crossfader, setCrossfader] = useState(0)
   const [masterVolume, setMasterVolume] = useState(.85)
-  const [recording, setRecording] = useState(false)\n  const [autoMixing, setAutoMixing] = useState(false)
+  const [recording, setRecording] = useState(false)
+  const [autoMixing, setAutoMixing] = useState(false)
   const [mode, setMode] = useState('PARTICLES')
   const [intensity, setIntensity] = useState(1)
   const [analyser, setAnalyser] = useState<AnalyserNode | null>(null)
@@ -109,7 +110,17 @@ export default function App() {
   const toggleEcho = (id: DeckId) => { const enabled = !decks[id].echo; engine.current?.setEcho(id, enabled); patchDeck(id, { echo: enabled }) }
   const loop = (id: DeckId, bars: 1 | 2 | 4 | 8) => { if (decks[id].loop) { engine.current?.clearLoop(id); patchDeck(id, { loop: false }) } else { engine.current?.setLoop(id, bars); patchDeck(id, { loop: true }) } }
   const syncB = () => { const ok = engine.current?.sync('A', 'B'); const bpmA = getTrack('A')?.bpm; const bpmB = getTrack('B')?.bpm; if (ok && bpmA && bpmB) patchDeck('B', { tempo: (bpmA / bpmB - 1) * 100 }); setStatus(ok ? 'SYNC · B LOCKED TO A TEMPO' : 'SYNC UNAVAILABLE · CHECK BPM RANGE') }
-  const runAutoMix = async () => {\n    if (!mixCheck || !engine.current) return\n    if (autoMixing) { engine.current.cancelAutoTransition(); setAutoMixing(false); setStatus('AUTO MIX CANCELLED'); return }\n    setAutoMixing(true)\n    setStatus('AUTO MIX · WAITING FOR PHRASE MARKER')\n    const completed = await engine.current.startAutoTransition('A', 'B', mixCheck.plan)\n    setAutoMixing(false)\n    setStatus(completed ? 'AUTO MIX COMPLETE · DECK B ON AIR' : 'AUTO MIX STOPPED')\n  }\n\n  const toggleRecording = async () => {
+  const runAutoMix = async () => {
+    if (!mixCheck || !engine.current) return
+    if (autoMixing) { engine.current.cancelAutoTransition(); setAutoMixing(false); setStatus('AUTO MIX CANCELLED'); return }
+    setAutoMixing(true)
+    setStatus('AUTO MIX · WAITING FOR PHRASE MARKER')
+    const completed = await engine.current.startAutoTransition('A', 'B', mixCheck.plan)
+    setAutoMixing(false)
+    setStatus(completed ? 'AUTO MIX COMPLETE · DECK B ON AIR' : 'AUTO MIX STOPPED')
+  }
+
+  const toggleRecording = async () => {
     if (!recording) {
       try { engine.current?.startRecording(); setRecording(true); setStatus('RECORDING · MASTER OUTPUT') }
       catch { setStatus('RECORDING UNAVAILABLE IN THIS BROWSER') }
