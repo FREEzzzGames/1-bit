@@ -9,6 +9,14 @@ type DeckState = { trackId: string | null; playing: boolean; tempo: number; loop
 const initialDeck = (): DeckState => ({ trackId: null, playing: false, tempo: 0, loop: false, echo: false, filter: 1, low: 0, mid: 0, high: 0, time: 0, duration: 0 })
 const modes = ['PARTICLES', 'FRACTAL', 'WAVE', 'TORUS']
 
+function waveformClip(values: number[] | undefined): string | undefined {
+  if (!values?.length) return undefined
+  const peak = Math.max(1e-6, ...values)
+  const upper = values.map((value, index) => `${(index / Math.max(1, values.length - 1)) * 100}% ${50 - (value / peak) * 46}%`)
+  const lower = [...values].reverse().map((value, index) => `${100 - (index / Math.max(1, values.length - 1)) * 100}% ${50 + (value / peak) * 46}%`)
+  return `polygon(${[...upper, ...lower].join(',')})`
+}
+
 function Deck({ id, state, track, engine, onChange, onPlay, onCue, onReturnCue, onHotCue, onLoop, onEcho, onEQ, onFilter, onTempo }: {
   id: DeckId; state: DeckState; track: Track | null; engine: DJEngine | null
   onChange: (patch: Partial<DeckState>) => void; onPlay: () => void; onCue: () => void; onReturnCue: () => void; onHotCue: (index: number) => void
@@ -17,7 +25,7 @@ function Deck({ id, state, track, engine, onChange, onPlay, onCue, onReturnCue, 
 }) {
   return <section className="deck panel">
     <div className="deck-top"><div className="deck-name"><span className="deck-letter">{id}</span><div><small>PLAYER DECK</small><b>{track?.name ?? 'NO TRACK LOADED'}</b></div></div><span className={state.playing ? 'live-tag' : 'idle-tag'}>{state.playing ? '● ON AIR' : '○ STANDBY'}</span></div>
-    <div className="deck-wave"><div className="wave-grid"/><div className="wave-center"/><div className="waveform" style={{ transform: `scaleX(${track ? 1 : 0.08})` }}/><span className="playhead" style={{ left: `${state.duration ? state.time / state.duration * 100 : 0}%` }}/></div>
+    <div className="deck-wave"><div className="wave-grid"/><div className="wave-center"/><div className="waveform" style={{ clipPath: waveformClip(track?.analysis?.waveform), transform: `scaleX(${track ? 1 : 0.08})` }}/><span className="playhead" style={{ left: `${state.duration ? state.time / state.duration * 100 : 0}%` }}/></div>
     <div className="deck-time"><span>{formatTime(state.time)}</span><span>{track?.bpm ? `${track.bpm} BPM · ANALYZED` : 'BPM —'}</span><span>{formatTime(state.duration)}</span></div>
     <input aria-label={`Deck ${id} seek`} className="seekbar" type="range" min="0" max={state.duration || 1} step=".05" value={Math.min(state.time, state.duration || 1)} onChange={e => engine?.seek(id, Number(e.target.value))} disabled={!track}/>
     <div className="deck-transport"><button className="control-button" onClick={onReturnCue} disabled={!track}><SkipBack size={15}/> CUE</button><button className="deck-play" onClick={onPlay} disabled={!track}>{state.playing ? <Pause/> : <Play/>}</button><button className="control-button" onClick={onCue} disabled={!track}>SET CUE</button><button className={state.echo ? 'control-button active-fx' : 'control-button'} onClick={onEcho} disabled={!track}>ECHO</button></div>
