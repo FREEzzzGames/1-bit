@@ -100,7 +100,7 @@ export function analyzeBuffer(buffer: AudioBuffer): TrackAnalysis {
     mono[i] = value / channels.length
   }
   const frameRate = sampleRate / hop
-  const rms: number[] = [], flux: number[] = [], centroid: number[] = []
+  const rms: number[] = [], flux: number[] = []
   const chroma = new Array(12).fill(0)
   const waveform: number[] = []
   let previous = new Float32Array(frameSize / 2 + 1)
@@ -119,7 +119,7 @@ export function analyzeBuffer(buffer: AudioBuffer): TrackAnalysis {
     rms.push(level)
     fft(real, imag)
     let positiveFlux = 0, magnitudeSum = 0, weightedFrequency = 0
-    for (let bin = 1; bin < magnitudes.length; bin++) {
+    for (let bin = 1; bin <= frameSize / 2; bin++) {
       const magnitude = Math.hypot(real[bin], imag[bin])
       positiveFlux += Math.max(0, magnitude - previous[bin])
       previous[bin] = magnitude
