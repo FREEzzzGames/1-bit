@@ -209,9 +209,8 @@ export class DJEngine {
 
   setLoop(id: DeckId, bars: 1 | 2 | 4 | 8) {
     const deck = this.decks[id]
-    const bpm = deck.bpm ? deck.bpm * (1 + deck.tempo / 100) : 120
-    const duration = (60 / bpm) * 4 * bars
-    const interval = deck.beatInterval ? deck.beatInterval / (1 + deck.tempo / 100) : 60 / bpm
+    const interval = deck.beatInterval ?? 60 / (deck.bpm || 120)
+    const duration = interval * 4 * bars
     const barDuration = interval * 4
     const position = deck.element.currentTime
     const gridOrigin = deck.downbeatOffset
