@@ -18,16 +18,16 @@
 
 ## Ограничения текущей реализации
 
-- BPM, beat grid и музыкальные фразы оцениваются эвристически; точность зависит от жанра, синкоп и качества мастеринга. Downbeat classifier пока отсутствует.
+- BPM, локально уточнённые beat markers, downbeat phase, tempo stability и музыкальные фразы оцениваются эвристически; точность зависит от жанра, синкоп и качества мастеринга. Downbeat inference опирается на басовую энергию и onset strength, это не полноценная метрическая ML-модель.
 - SYNC меняет темп и корректирует фазу по beat grid, но не гарантирует идеальное совпадение downbeat/фраз.
 - Tempo использует playbackRate, поэтому одновременно меняется высота тона (key lock / time-stretch ещё нет).
 - Hot Cue пока хранит четыре точки в памяти текущей сессии; persistence и cue naming ещё не реализованы.
 - Loop стартует на следующей оценённой границе такта; точность зависит от beat grid. Quantized loop exit пока отсутствует.
 - Echo — базовая delay-секция, не полноценный FX rack.
 - Анализатор считает BPM/confidence, beat grid, bar markers, 8/16-bar phrase map, RMS energy, dynamic range, spectral centroid, danceability proxy, chroma-based key estimate и waveform из PCM.
-- При загрузке обеих дек появляется harmonic/tempo/energy compatibility score с рекомендацией по переходу (Camelot wheel + BPM range). Это DSP/эвристики, не ML-модель.
+- При загрузке обеих дек появляется harmonic/tempo/energy compatibility score и phrase-aware transition plan: выбор участка outro/breakdown на A и intro/build на B, длина 4/8/16 тактов, выравнивание по downbeat. Используются Camelot wheel + BPM range. Это DSP/эвристики, не ML-модель.
 - Stem separation, вокальные нарезки, beat slicing, mashup/remix arrangement и AI DJ transitions ещё не реализованы.
-- Waveform и arrangement map строятся по PCM-анализу; labels секций — эвристические гипотезы, а не распознанные человеком музыкальные события.
+- Waveform и arrangement map строятся по PCM-анализу; labels секций — эвристические гипотезы, а не распознанные человеком музыкальные события. Локальные beat markers корректируются по onset peak в ограниченном временном окне; tempo stability — оценка MAD интервалов.
 
 ## Запуск
 
