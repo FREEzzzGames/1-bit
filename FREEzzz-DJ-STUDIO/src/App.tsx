@@ -98,7 +98,7 @@ export default function App() {
   const setFilter = (id: DeckId, value: number) => { engine.current?.setFilter(id, value); patchDeck(id, { filter: value }) }
   const toggleEcho = (id: DeckId) => { const enabled = !decks[id].echo; engine.current?.setEcho(id, enabled); patchDeck(id, { echo: enabled }) }
   const loop = (id: DeckId, bars: 1 | 2 | 4 | 8) => { if (decks[id].loop) { engine.current?.clearLoop(id); patchDeck(id, { loop: false }) } else { engine.current?.setLoop(id, bars); patchDeck(id, { loop: true }) } }
-  const syncB = () => { const ok = engine.current?.sync('A', 'B'); setStatus(ok ? 'SYNC · B LOCKED TO A TEMPO' : 'SYNC UNAVAILABLE · CHECK BPM RANGE') }
+  const syncB = () => { const ok = engine.current?.sync('A', 'B'); const bpmA = getTrack('A')?.bpm; const bpmB = getTrack('B')?.bpm; if (ok && bpmA && bpmB) patchDeck('B', { tempo: (bpmA / bpmB - 1) * 100 }); setStatus(ok ? 'SYNC · B LOCKED TO A TEMPO' : 'SYNC UNAVAILABLE · CHECK BPM RANGE') }
   const toggleRecording = async () => {
     if (!recording) {
       try { engine.current?.startRecording(); setRecording(true); setStatus('RECORDING · MASTER OUTPUT') }
