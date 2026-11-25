@@ -11,18 +11,18 @@
 - 3-полосный EQ на каждой деке: low / mid / high.
 - Low-pass фильтр и echo send на каждой деке.
 - Ручной tempo range ±16%.
-- BPM-based sync A→B, если оценённые BPM попадают в диапазон доступной коррекции.
-- Cue point и 4 hot-cue pads на каждой деке; beat-length loop 1/2/4/8 bars и выход из loop.
+- BPM sync A→B с попыткой фазового выравнивания по оценённым beat grid (эвристически).
+- Cue point и 4 hot-cue pads на каждой деке; beat-grid loop 1/2/4/8 bars и выход из loop.
 - Запись master output в WebM/Opus (формат зависит от MediaRecorder браузера) с экспортом файла.
 - Спектральный анализ Deck A и генеративный Three.js визуализатор.
 
 ## Ограничения текущей реализации
 
 - BPM, beat grid и музыкальные фразы оцениваются эвристически; точность зависит от жанра, синкоп и качества мастеринга. Downbeat classifier пока отсутствует.
-- SYNC выравнивает только темп по BPM, не гарантирует фазовое совпадение ударов.
+- SYNC меняет темп и корректирует фазу по beat grid, но не гарантирует идеальное совпадение downbeat/фраз.
 - Tempo использует playbackRate, поэтому одновременно меняется высота тона (key lock / time-stretch ещё нет).
-- Cue реализован как одна точка на деку; hot-cue banks пока нет.
-- Loop начинает повтор с текущей позиции, длительность рассчитывается по BPM; quantize пока отсутствует.
+- Hot Cue пока хранит четыре точки в памяти текущей сессии; persistence и cue naming ещё не реализованы.
+- Loop стартует на следующей оценённой границе такта; точность зависит от beat grid. Quantized loop exit пока отсутствует.
 - Echo — базовая delay-секция, не полноценный FX rack.
 - Анализатор уже считает BPM/confidence, beat grid, bar markers, 8/16-bar phrase map, энергию, динамический диапазон, spectral centroid, danceability proxy и chroma-based key estimate. Это локальная DSP-оценка, не ML-модель.
 - Stem separation, вокальные нарезки, beat slicing, mashup/remix arrangement и AI DJ transitions ещё не реализованы.
