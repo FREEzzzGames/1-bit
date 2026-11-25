@@ -18,14 +18,15 @@
 
 ## Ограничения текущей реализации
 
-- BPM пока оценивается эвристически; точный beatgrid, downbeat и phrase detection ещё не реализованы.
+- BPM, beat grid и музыкальные фразы оцениваются эвристически; точность зависит от жанра, синкоп и качества мастеринга. Downbeat classifier пока отсутствует.
 - SYNC выравнивает только темп по BPM, не гарантирует фазовое совпадение ударов.
 - Tempo использует playbackRate, поэтому одновременно меняется высота тона (key lock / time-stretch ещё нет).
 - Cue реализован как одна точка на деку; hot-cue banks пока нет.
 - Loop начинает повтор с текущей позиции, длительность рассчитывается по BPM; quantize пока отсутствует.
 - Echo — базовая delay-секция, не полноценный FX rack.
+- Анализатор уже считает BPM/confidence, beat grid, bar markers, 8/16-bar phrase map, энергию, динамический диапазон, spectral centroid, danceability proxy и chroma-based key estimate. Это локальная DSP-оценка, не ML-модель.
 - Stem separation, вокальные нарезки, beat slicing, mashup/remix arrangement и AI DJ transitions ещё не реализованы.
-- Визуальная waveform пока декоративная, не рассчитана из PCM-сэмплов.
+- Waveform и arrangement map строятся по PCM-анализу; labels секций — эвристические гипотезы, а не распознанные человеком музыкальные события.
 
 ## Запуск
 
