@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Activity, AudioLines, Disc3, FolderPlus, Headphones, Library, Pause, Play, Radio, Repeat2, SkipBack, Sparkles, Volume2, Zap } from 'lucide-react'
+import { Activity, AudioLines, Disc3, FolderPlus, Headphones, Library, Pause, Play, Repeat2, SkipBack, Sparkles, Volume2, Zap } from 'lucide-react'
 import Visualizer from './Visualizer'
 import { analyzeFile, formatTime } from './audio'
 import { DJEngine, type DeckId } from './dj-engine'
@@ -13,7 +13,7 @@ function Deck({ id, state, track, engine, onChange, onPlay, onCue, onReturnCue, 
   id: DeckId; state: DeckState; track: Track | null; engine: DJEngine | null
   onChange: (patch: Partial<DeckState>) => void; onPlay: () => void; onCue: () => void; onReturnCue: () => void
   onLoop: (bars: 1 | 2 | 4 | 8) => void; onEcho: () => void; onEQ: (band: 'low' | 'mid' | 'high', value: number) => void
-  onFilter: (value: number) => void; onTempo: (value: number) => void; onSync: () => void
+  onFilter: (value: number) => void; onTempo: (value: number) => void
 }) {
   return <section className="deck panel">
     <div className="deck-top"><div className="deck-name"><span className="deck-letter">{id}</span><div><small>PLAYER DECK</small><b>{track?.name ?? 'NO TRACK LOADED'}</b></div></div><span className={state.playing ? 'live-tag' : 'idle-tag'}>{state.playing ? '● ON AIR' : '○ STANDBY'}</span></div>
