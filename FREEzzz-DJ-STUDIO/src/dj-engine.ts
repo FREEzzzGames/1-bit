@@ -16,6 +16,8 @@ type DeckGraph = {
   hotCues: (number | null)[]
   loop: { start: number; end: number } | null
   bpm: number | null
+  beatInterval: number | null
+  beatOffset: number
   tempo: number
   onTime: () => void
 }
@@ -64,7 +66,7 @@ export class DJEngine {
     delay.connect(delayFeedback).connect(delay)
     const graph: DeckGraph = {
       element, source, analyser, low, mid, high, tone, gain, delay, delayFeedback, delayWet,
-      cue: 0, hotCues: [null, null, null, null], loop: null, bpm: null, tempo: 0, onTime: () => undefined,
+      cue: 0, hotCues: [null, null, null, null], loop: null, bpm: null, beatInterval: null, beatOffset: 0, tempo: 0, onTime: () => undefined,
     }
     graph.onTime = () => {
       if (graph.loop && element.currentTime >= graph.loop.end) element.currentTime = graph.loop.start
@@ -77,12 +79,14 @@ export class DJEngine {
     if (this.context.state !== 'running') await this.context.resume()
   }
 
-  load(id: DeckId, url: string, bpm: number | null) {
+  load(id: DeckId, url: string, bpm: number | null, beatInterval: number | null = null, beatOffset = 0) {
     const deck = this.decks[id]
     deck.element.pause()
     deck.element.src = url
     deck.element.load()
     deck.bpm = bpm
+    deck.beatInterval = beatInterval
+    deck.beatOffset = beatOffset
     deck.cue = 0
     deck.hotCues = [null, null, null, null]
     deck.loop = null
@@ -110,6 +114,15 @@ export class DJEngine {
     const targetRate = source.bpm / target.bpm
     if (targetRate < 0.84 || targetRate > 1.16) return false
     this.setTempo(targetId, (targetRate - 1) * 100)
+    if (source.beatInterval && target.beatInterval) {
+      const sourcePhase = ((source.element.currentTime - source.beatOffset) / source.beatInterval % 1 + 1) % 1
+      const targetPosition = (target.element.currentTime - target.beatOffset) / target.beatInterval
+      const targetPhase = ((targetPosition % 1) + 1) % 1
+      let phaseDelta = sourcePhase - targetPhase
+      if (phaseDelta > .5) phaseDelta -= 1
+      if (phaseDelta < -.5) phaseDelta += 1
+      target.element.currentTime = Math.max(0, target.element.currentTime + phaseDelta * target.beatInterval)
+    }
     return true
   }
 
@@ -196,8 +209,14 @@ export class DJEngine {
     const deck = this.decks[id]
     const bpm = deck.bpm ? deck.bpm * (1 + deck.tempo / 100) : 120
     const duration = (60 / bpm) * 4 * bars
-    const start = deck.element.currentTime
-    deck.loop = { start, end: Math.min(deck.element.duration || start + duration, start + duration) }
+    const interval = deck.beatInterval ? deck.beatInterval / (1 + deck.tempo / 100) : 60 / bpm
+    const barDuration = interval * 4
+    const position = deck.element.currentTime
+    const gridOrigin = deck.beatOffset
+    const elapsedBars = Math.max(0, (position - gridOrigin) / barDuration)
+    const start = gridOrigin + Math.ceil(elapsedBars - 0.0001) * barDuration
+    const end = Math.min(deck.element.duration || start + duration, start + duration)
+    deck.loop = { start: Math.min(start, Math.max(0, (deck.element.duration || start) - duration)), end }
   }
 
   clearLoop(id: DeckId) {
