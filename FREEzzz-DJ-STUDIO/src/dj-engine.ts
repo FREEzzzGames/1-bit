@@ -214,9 +214,11 @@ export class DJEngine {
     const position = deck.element.currentTime
     const gridOrigin = deck.beatOffset
     const elapsedBars = Math.max(0, (position - gridOrigin) / barDuration)
-    const start = gridOrigin + Math.ceil(elapsedBars - 0.0001) * barDuration
-    const end = Math.min(deck.element.duration || start + duration, start + duration)
-    deck.loop = { start: Math.min(start, Math.max(0, (deck.element.duration || start) - duration)), end }
+    const trackDuration = deck.element.duration || Number.POSITIVE_INFINITY
+    const quantizedStart = gridOrigin + Math.ceil(elapsedBars - 0.0001) * barDuration
+    const start = Math.min(quantizedStart, Math.max(0, trackDuration - duration))
+    const end = Math.min(trackDuration, start + duration)
+    deck.loop = { start, end }
   }
 
   clearLoop(id: DeckId) {
