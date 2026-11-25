@@ -227,6 +227,7 @@ export class DJEngine {
       const finish = (result: boolean) => {
         if (settled) return
         settled = true
+        if (!result) { if (targetStarted) target.element.pause(); this.setCrossfader(startFader) }
         if (this.transitionFrame !== null) cancelAnimationFrame(this.transitionFrame)
         this.transitionFrame = null
         this.transitionCancel = null
