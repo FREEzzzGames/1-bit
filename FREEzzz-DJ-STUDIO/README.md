@@ -24,7 +24,8 @@
 - Hot Cue пока хранит четыре точки в памяти текущей сессии; persistence и cue naming ещё не реализованы.
 - Loop стартует на следующей оценённой границе такта; точность зависит от beat grid. Quantized loop exit пока отсутствует.
 - Echo — базовая delay-секция, не полноценный FX rack.
-- Анализатор уже считает BPM/confidence, beat grid, bar markers, 8/16-bar phrase map, энергию, динамический диапазон, spectral centroid, danceability proxy и chroma-based key estimate. Это локальная DSP-оценка, не ML-модель.
+- Анализатор считает BPM/confidence, beat grid, bar markers, 8/16-bar phrase map, RMS energy, dynamic range, spectral centroid, danceability proxy, chroma-based key estimate и waveform из PCM.
+- При загрузке обеих дек появляется harmonic/tempo/energy compatibility score с рекомендацией по переходу (Camelot wheel + BPM range). Это DSP/эвристики, не ML-модель.
 - Stem separation, вокальные нарезки, beat slicing, mashup/remix arrangement и AI DJ transitions ещё не реализованы.
 - Waveform и arrangement map строятся по PCM-анализу; labels секций — эвристические гипотезы, а не распознанные человеком музыкальные события.
 
