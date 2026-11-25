@@ -199,7 +199,7 @@ export function analyzeBuffer(buffer: AudioBuffer): TrackAnalysis {
   return {
     duration, bpm: bpm ? Number(bpm.toFixed(2)) : null, bpmConfidence: Number(beatConfidence.toFixed(3)),
     beatInterval, beatOffset, beats, bars, phraseLengthBars, ...key,
-    energy: Number(Math.min(1,avgRms / Math.max(.001,q90)).toFixed(3)),
+    energy: Number(Math.max(0, Math.min(1, (20 * Math.log10(Math.max(1e-5, avgRms)) + 60) / 48)).toFixed(3)),
     dynamicRange: Number((20 * Math.log10(Math.max(1e-5,q90) / Math.max(1e-5,q10))).toFixed(1)),
     sections, waveform, spectralCentroid: Number((centroidWeighted / Math.max(1e-9,centroidWeight)).toFixed(1)),
     danceability: Number(danceability.toFixed(3)), analyzedFrames: rms.length
