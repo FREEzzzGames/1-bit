@@ -100,7 +100,13 @@ export function analyzeBuffer(buffer: AudioBuffer): TrackAnalysis {
   const mono = new Float32Array(length)
   for (let i = 0; i < length; i++) {
     const sourceIndex = i * stride
-    let value = 0\n    for (const channel of channels) {\n      let channelSum = 0\n      for (let k=0; k<stride && sourceIndex+k<buffer.length; k++) channelSum += channel[sourceIndex+k]\n      value += channelSum / stride\n    }\n    mono[i] = value / channels.length
+    let value = 0
+    for (const channel of channels) {
+      let channelSum = 0
+      for (let k=0; k<stride && sourceIndex+k<buffer.length; k++) channelSum += channel[sourceIndex+k]
+      value += channelSum / stride
+    }
+    mono[i] = value / channels.length
   }
   const frameRate = sampleRate / hop
   const rms: number[] = [], flux: number[] = [], lowBand: number[] = []
@@ -129,18 +135,27 @@ export function analyzeBuffer(buffer: AudioBuffer): TrackAnalysis {
       const frequency = bin * sampleRate / frameSize
       magnitudeSum += magnitude
       weightedFrequency += magnitude * frequency
-      if (frequency >= 35 && frequency <= 160) lowEnergy += magnitude\n      if (frequency >= 55 && frequency <= 2000) {
+      if (frequency >= 35 && frequency <= 160) lowEnergy += magnitude
+      if (frequency >= 55 && frequency <= 2000) {
         const midi = Math.round(69 + 12 * Math.log2(frequency / 440))
         chroma[((midi % 12) + 12) % 12] += magnitude
       }
     }
-    flux.push(positiveFlux / Math.max(1, magnitudeSum))\n    lowBand.push(lowEnergy / Math.max(1, magnitudeSum))
+    flux.push(positiveFlux / Math.max(1, magnitudeSum))
+    lowBand.push(lowEnergy / Math.max(1, magnitudeSum))
     const center = weightedFrequency / Math.max(1e-9, magnitudeSum)
     centroidWeighted += center * magnitudeSum; centroidWeight += magnitudeSum
 
     void crossing
   }
-  if (!rms.length) throw new Error('Audio is too short to analyze')\n  const waveformBuckets = Math.min(180, rms.length)\n  for (let bucket=0; bucket<waveformBuckets; bucket++) {\n    const from=Math.floor(bucket*rms.length/waveformBuckets), to=Math.max(from+1,Math.floor((bucket+1)*rms.length/waveformBuckets))\n    let peak=0\n    for (let i=from; i<to; i++) peak=Math.max(peak,rms[i])\n    waveform.push(Number(peak.toFixed(4)))\n  }
+  if (!rms.length) throw new Error('Audio is too short to analyze')
+  const waveformBuckets = Math.min(180, rms.length)
+  for (let bucket=0; bucket<waveformBuckets; bucket++) {
+    const from=Math.floor(bucket*rms.length/waveformBuckets), to=Math.max(from+1,Math.floor((bucket+1)*rms.length/waveformBuckets))
+    let peak=0
+    for (let i=from; i<to; i++) peak=Math.max(peak,rms[i])
+    waveform.push(Number(peak.toFixed(4)))
+  }
   const mean = (values: number[]) => values.reduce((s,v) => s + v, 0) / values.length
   const sortedRms = [...rms].sort((a,b) => a-b)
   const q10 = sortedRms[Math.floor(sortedRms.length * .1)] || 0
@@ -175,7 +190,46 @@ export function analyzeBuffer(buffer: AudioBuffer): TrackAnalysis {
     }
   }
   const beatConfidence = Math.max(0, Math.min(1, (bestScore - Math.max(0, secondScore)) * 3.5))
-  const beats: number[] = []\n  if (beatInterval) for (let t = beatOffset; t < duration; t += beatInterval) beats.push(Number(t.toFixed(4)))\n  // Refine each predicted beat to the strongest nearby onset; keep corrections bounded.\n  if (beatInterval) for (let i = 0; i < beats.length; i++) {\n    const expected = Math.round(beats[i] * frameRate)\n    const radius = Math.max(1, Math.round(frameRate * Math.min(.09, beatInterval * .12)))\n    let peak = expected, peakValue = -Infinity\n    for (let frame = Math.max(0, expected-radius); frame <= Math.min(normalizedFlux.length-1, expected+radius); frame++) {\n      if (normalizedFlux[frame] > peakValue) { peakValue = normalizedFlux[frame]; peak = frame }\n    }\n    const correction = Math.max(-.09, Math.min(.09, (peak-expected)/frameRate))\n    beats[i] = Number((beats[i]+correction).toFixed(4))\n  }\n  const intervals = beats.slice(1).map((beat,i)=>beat-beats[i]).filter(v=>v>0)\n  const sortedIntervals = [...intervals].sort((x,y)=>x-y)\n  const medianInterval = sortedIntervals[Math.floor(sortedIntervals.length/2)] || beatInterval || .5\n  const mad = intervals.length ? intervals.map(v=>Math.abs(v-medianInterval)).sort((x,y)=>x-y)[Math.floor(intervals.length/2)] : 0\n  const tempoStability = Math.max(0, Math.min(1, 1-(mad/Math.max(.001,medianInterval))*8))\n  // Infer the 4/4 downbeat phase from bass-band emphasis and onset strength.\n  let downbeatPhase = 0, downbeatConfidence = 0\n  const phaseScores = [0,0,0,0]\n  if (beats.length > 8) {\n    for (let phase=0; phase<4; phase++) {\n      let sum=0, count=0\n      for (let i=phase; i<beats.length; i+=4) {\n        const frame=Math.max(0,Math.min(lowBand.length-1,Math.round(beats[i]*frameRate)))\n        const onset=Math.max(0,Math.min(normalizedFlux.length-1,frame))\n        sum += lowBand[frame]*.65 + normalizedFlux[onset]*.35; count++\n      }\n      phaseScores[phase]=sum/Math.max(1,count)\n    }\n    const ranked=[...phaseScores].sort((x,y)=>y-x)\n    downbeatPhase=phaseScores.indexOf(ranked[0])\n    downbeatConfidence=Math.max(0,Math.min(1,(ranked[0]-ranked[1])/Math.max(1e-6,ranked[0])*3))\n  }\n  const downbeatOffset = beatInterval ? beatOffset + downbeatPhase*beatInterval : 0\n  const downbeats = beats.filter((_,i)=>i%4===downbeatPhase)\n  const bars = downbeats\n  const phraseLengthBars: 8 | 16 = duration > 240 ? 16 : 8\n  const phraseSeconds = (beatInterval || .5) * 4 * phraseLengthBars
+  const beats: number[] = []
+  if (beatInterval) for (let t = beatOffset; t < duration; t += beatInterval) beats.push(Number(t.toFixed(4)))
+  // Refine each predicted beat to the strongest nearby onset; keep corrections bounded.
+  if (beatInterval) for (let i = 0; i < beats.length; i++) {
+    const expected = Math.round(beats[i] * frameRate)
+    const radius = Math.max(1, Math.round(frameRate * Math.min(.09, beatInterval * .12)))
+    let peak = expected, peakValue = -Infinity
+    for (let frame = Math.max(0, expected-radius); frame <= Math.min(normalizedFlux.length-1, expected+radius); frame++) {
+      if (normalizedFlux[frame] > peakValue) { peakValue = normalizedFlux[frame]; peak = frame }
+    }
+    const correction = Math.max(-.09, Math.min(.09, (peak-expected)/frameRate))
+    beats[i] = Number((beats[i]+correction).toFixed(4))
+  }
+  const intervals = beats.slice(1).map((beat,i)=>beat-beats[i]).filter(v=>v>0)
+  const sortedIntervals = [...intervals].sort((x,y)=>x-y)
+  const medianInterval = sortedIntervals[Math.floor(sortedIntervals.length/2)] || beatInterval || .5
+  const mad = intervals.length ? intervals.map(v=>Math.abs(v-medianInterval)).sort((x,y)=>x-y)[Math.floor(intervals.length/2)] : 0
+  const tempoStability = Math.max(0, Math.min(1, 1-(mad/Math.max(.001,medianInterval))*8))
+  // Infer the 4/4 downbeat phase from bass-band emphasis and onset strength.
+  let downbeatPhase = 0, downbeatConfidence = 0
+  const phaseScores = [0,0,0,0]
+  if (beats.length > 8) {
+    for (let phase=0; phase<4; phase++) {
+      let sum=0, count=0
+      for (let i=phase; i<beats.length; i+=4) {
+        const frame=Math.max(0,Math.min(lowBand.length-1,Math.round(beats[i]*frameRate)))
+        const onset=Math.max(0,Math.min(normalizedFlux.length-1,frame))
+        sum += lowBand[frame]*.65 + normalizedFlux[onset]*.35; count++
+      }
+      phaseScores[phase]=sum/Math.max(1,count)
+    }
+    const ranked=[...phaseScores].sort((x,y)=>y-x)
+    downbeatPhase=phaseScores.indexOf(ranked[0])
+    downbeatConfidence=Math.max(0,Math.min(1,(ranked[0]-ranked[1])/Math.max(1e-6,ranked[0])*3))
+  }
+  const downbeatOffset = beatInterval ? beatOffset + downbeatPhase*beatInterval : 0
+  const downbeats = beats.filter((_,i)=>i%4===downbeatPhase)
+  const bars = downbeats
+  const phraseLengthBars: 8 | 16 = duration > 240 ? 16 : 8
+  const phraseSeconds = (beatInterval || .5) * 4 * phraseLengthBars
   const sections: TrackSection[] = []
   for (let start = 0; start < duration; start += phraseSeconds) {
     const from = Math.floor(start * frameRate), to = Math.min(rms.length, Math.ceil((start + phraseSeconds) * frameRate))
