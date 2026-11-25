@@ -74,9 +74,9 @@ export default function App() {
     for (const file of files) {
       setStatus(`ANALYZING · ${file.name}`)
       const url = URL.createObjectURL(file)
-      let analysis = { duration: 0, bpm: null as number | null }
+      let analysis: TrackAnalysis | null = null
       try { analysis = await analyzeFile(file) } catch { setStatus('ANALYSIS FAILED · TRACK STILL AVAILABLE') }
-      const track = { id: crypto.randomUUID(), file, url, name: file.name.replace(/\.[^.]+$/, ''), ...analysis }
+      const track = { id: crypto.randomUUID(), file, url, name: file.name.replace(/\.[^.]+$/, ''), duration: analysis?.duration ?? 0, bpm: analysis?.bpm ?? null, analysis }
       setTracks(previous => [...previous, track])
     }
     setBusy(false)
