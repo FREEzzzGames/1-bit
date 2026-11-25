@@ -100,9 +100,7 @@ export function analyzeBuffer(buffer: AudioBuffer): TrackAnalysis {
   const mono = new Float32Array(length)
   for (let i = 0; i < length; i++) {
     const sourceIndex = i * stride
-    let value = 0
-    for (const channel of channels) value += channel[sourceIndex] || 0
-    mono[i] = value / channels.length
+    let value = 0\n    for (const channel of channels) {\n      let channelSum = 0\n      for (let k=0; k<stride && sourceIndex+k<buffer.length; k++) channelSum += channel[sourceIndex+k]\n      value += channelSum / stride\n    }\n    mono[i] = value / channels.length
   }
   const frameRate = sampleRate / hop
   const rms: number[] = [], flux: number[] = [], lowBand: number[] = []
@@ -139,10 +137,10 @@ export function analyzeBuffer(buffer: AudioBuffer): TrackAnalysis {
     flux.push(positiveFlux / Math.max(1, magnitudeSum))\n    lowBand.push(lowEnergy / Math.max(1, magnitudeSum))
     const center = weightedFrequency / Math.max(1e-9, magnitudeSum)
     centroidWeighted += center * magnitudeSum; centroidWeight += magnitudeSum
-    if (start % (hop * Math.max(1, Math.floor(rms.length / 180))) === 0) waveform.push(level)
+
     void crossing
   }
-  if (!rms.length) throw new Error('Audio is too short to analyze')
+  if (!rms.length) throw new Error('Audio is too short to analyze')\n  const waveformBuckets = Math.min(180, rms.length)\n  for (let bucket=0; bucket<waveformBuckets; bucket++) {\n    const from=Math.floor(bucket*rms.length/waveformBuckets), to=Math.max(from+1,Math.floor((bucket+1)*rms.length/waveformBuckets))\n    let peak=0\n    for (let i=from; i<to; i++) peak=Math.max(peak,rms[i])\n    waveform.push(Number(peak.toFixed(4)))\n  }
   const mean = (values: number[]) => values.reduce((s,v) => s + v, 0) / values.length
   const sortedRms = [...rms].sort((a,b) => a-b)
   const q10 = sortedRms[Math.floor(sortedRms.length * .1)] || 0
