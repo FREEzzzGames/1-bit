@@ -119,10 +119,8 @@ export function analyzeBuffer(buffer: AudioBuffer): TrackAnalysis {
     rms.push(level)
     fft(real, imag)
     let positiveFlux = 0, magnitudeSum = 0, weightedFrequency = 0
-    const magnitudes = new Float32Array(frameSize / 2 + 1)
     for (let bin = 1; bin < magnitudes.length; bin++) {
       const magnitude = Math.hypot(real[bin], imag[bin])
-      magnitudes[bin] = magnitude
       positiveFlux += Math.max(0, magnitude - previous[bin])
       previous[bin] = magnitude
       const frequency = bin * sampleRate / frameSize
@@ -135,7 +133,6 @@ export function analyzeBuffer(buffer: AudioBuffer): TrackAnalysis {
     }
     flux.push(positiveFlux / Math.max(1, magnitudeSum))
     const center = weightedFrequency / Math.max(1e-9, magnitudeSum)
-    centroid.push(center)
     centroidWeighted += center * magnitudeSum; centroidWeight += magnitudeSum
     if (start % (hop * Math.max(1, Math.floor(rms.length / 180))) === 0) waveform.push(level)
     void crossing
@@ -150,7 +147,6 @@ export function analyzeBuffer(buffer: AudioBuffer): TrackAnalysis {
   const minLag = Math.max(1, Math.floor(frameRate * 60 / 180))
   const maxLag = Math.min(normalizedFlux.length - 2, Math.ceil(frameRate * 60 / 65))
   let bestLag = 0, bestScore = -Infinity, secondScore = -Infinity
-  const scores: number[] = []
   for (let lag = minLag; lag <= maxLag; lag++) {
     let score = 0, normA = 0, normB = 0
     for (let i = lag; i < normalizedFlux.length; i++) {
@@ -158,7 +154,6 @@ export function analyzeBuffer(buffer: AudioBuffer): TrackAnalysis {
       score += a*b; normA += a*a; normB += b*b
     }
     score /= Math.sqrt(Math.max(1e-12, normA*normB))
-    scores.push(score)
     if (score > bestScore) { secondScore = bestScore; bestScore = score; bestLag = lag }
     else if (score > secondScore) secondScore = score
   }
