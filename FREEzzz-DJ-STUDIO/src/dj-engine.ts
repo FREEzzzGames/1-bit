@@ -31,7 +31,9 @@ export class DJEngine {
   private masterVolume = 0.85
   private recorder: MediaRecorder | null = null
   private recordingChunks: BlobPart[] = []
-  private recordingDestination = this.context.createMediaStreamDestination()\n  private transitionFrame: number | null = null\n  private transitionCancel: (() => void) | null = null
+  private recordingDestination = this.context.createMediaStreamDestination()
+  private transitionFrame: number | null = null
+  private transitionCancel: (() => void) | null = null
 
   constructor(a: HTMLAudioElement, b: HTMLAudioElement) {
     this.master.gain.value = this.masterVolume
@@ -257,7 +259,8 @@ export class DJEngine {
   cancelAutoTransition() {
     this.transitionCancel?.()
   }
-\n  setLoop(id: DeckId, bars: 1 | 2 | 4 | 8) {
+
+  setLoop(id: DeckId, bars: 1 | 2 | 4 | 8) {
     const deck = this.decks[id]
     const interval = deck.beatInterval ?? 60 / (deck.bpm || 120)
     const duration = interval * 4 * bars
