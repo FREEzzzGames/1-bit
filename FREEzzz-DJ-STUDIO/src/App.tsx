@@ -9,9 +9,9 @@ type DeckState = { trackId: string | null; playing: boolean; tempo: number; loop
 const initialDeck = (): DeckState => ({ trackId: null, playing: false, tempo: 0, loop: false, echo: false, filter: 1, low: 0, mid: 0, high: 0, time: 0, duration: 0 })
 const modes = ['PARTICLES', 'FRACTAL', 'WAVE', 'TORUS']
 
-function Deck({ id, state, track, engine, onChange, onPlay, onCue, onReturnCue, onLoop, onEcho, onEQ, onFilter, onTempo, onSync }: {
+function Deck({ id, state, track, engine, onChange, onPlay, onCue, onReturnCue, onHotCue, onLoop, onEcho, onEQ, onFilter, onTempo, onSync }: {
   id: DeckId; state: DeckState; track: Track | null; engine: DJEngine | null
-  onChange: (patch: Partial<DeckState>) => void; onPlay: () => void; onCue: () => void; onReturnCue: () => void
+  onChange: (patch: Partial<DeckState>) => void; onPlay: () => void; onCue: () => void; onReturnCue: () => void; onHotCue: (index: number) => void
   onLoop: (bars: 1 | 2 | 4 | 8) => void; onEcho: () => void; onEQ: (band: 'low' | 'mid' | 'high', value: number) => void
   onFilter: (value: number) => void; onTempo: (value: number) => void; onSync: () => void
 }) {
@@ -21,6 +21,7 @@ function Deck({ id, state, track, engine, onChange, onPlay, onCue, onReturnCue, 
     <div className="deck-time"><span>{formatTime(state.time)}</span><span>{track?.bpm ? `${track.bpm} BPM · ANALYZED` : 'BPM —'}</span><span>{formatTime(state.duration)}</span></div>
     <input aria-label={`Deck ${id} seek`} className="seekbar" type="range" min="0" max={state.duration || 1} step=".05" value={Math.min(state.time, state.duration || 1)} onChange={e => engine?.seek(id, Number(e.target.value))} disabled={!track}/>
     <div className="deck-transport"><button className="control-button" onClick={onReturnCue} disabled={!track}><SkipBack size={15}/> CUE</button><button className="deck-play" onClick={onPlay} disabled={!track}>{state.playing ? <Pause/> : <Play/>}</button><button className="control-button" onClick={onCue} disabled={!track}>SET CUE</button><button className={state.echo ? 'control-button active-fx' : 'control-button'} onClick={onEcho} disabled={!track}>ECHO</button></div>
+    <div className="hot-cues">{['HOT 1','HOT 2','HOT 3','HOT 4'].map((label, index) => <button key={label} onClick={() => onHotCue(index)} disabled={!track}>{label}</button>)}</div>
     <div className="tempo-row"><label>TEMPO <b>{state.tempo > 0 ? '+' : ''}{state.tempo.toFixed(1)}%</b></label><input type="range" min="-16" max="16" step=".1" value={state.tempo} onChange={e => onTempo(Number(e.target.value))}/><button className="sync-button" onClick={onSync} disabled={!track}>SYNC</button></div>
     <div className="eq-grid">{(['low','mid','high'] as const).map((band) => <label key={band}><span>{band.toUpperCase()}</span><input type="range" min="-18" max="12" step="1" value={state[band]} onChange={e => onEQ(band, Number(e.target.value))}/><b>{state[band]} dB</b></label>)}</div>
     <div className="filter-row"><span>FILTER</span><input type="range" min="0" max="1" step=".01" value={state.filter} onChange={e => onFilter(Number(e.target.value))}/><span>{state.filter < .5 ? 'LOW PASS' : 'OPEN'}</span></div>
@@ -34,6 +35,7 @@ export default function App() {
   const [decks, setDecks] = useState<Record<DeckId, DeckState>>({ A: initialDeck(), B: initialDeck() })
   const [crossfader, setCrossfader] = useState(0)
   const [masterVolume, setMasterVolume] = useState(.85)
+  const [recording, setRecording] = useState(false)
   const [mode, setMode] = useState('PARTICLES')
   const [intensity, setIntensity] = useState(1)
   const [analyser, setAnalyser] = useState<AnalyserNode | null>(null)
@@ -97,6 +99,26 @@ export default function App() {
   const toggleEcho = (id: DeckId) => { const enabled = !decks[id].echo; engine.current?.setEcho(id, enabled); patchDeck(id, { echo: enabled }) }
   const loop = (id: DeckId, bars: 1 | 2 | 4 | 8) => { if (decks[id].loop) { engine.current?.clearLoop(id); patchDeck(id, { loop: false }) } else { engine.current?.setLoop(id, bars); patchDeck(id, { loop: true }) } }
   const syncB = () => { const ok = engine.current?.sync('A', 'B'); setStatus(ok ? 'SYNC · B LOCKED TO A TEMPO' : 'SYNC UNAVAILABLE · CHECK BPM RANGE') }
+  const toggleRecording = async () => {
+    if (!recording) {
+      try { engine.current?.startRecording(); setRecording(true); setStatus('RECORDING · MASTER OUTPUT') }
+      catch { setStatus('RECORDING UNAVAILABLE IN THIS BROWSER') }
+      return
+    }
+    try {
+      const blob = await engine.current?.stopRecording()
+      if (blob) {
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = 'FREEzzz-DJ-MIX-' + new Date().toISOString().replace(/[:.]/g, '-') + '.webm'
+        link.click()
+        window.setTimeout(() => URL.revokeObjectURL(url), 1500)
+      }
+      setRecording(false)
+      setStatus('MIX EXPORTED')
+    } catch { setRecording(false); setStatus('RECORDING STOP FAILED') }
+  }
 
   return <main className="app-shell">
     <header className="topbar"><div className="brand"><div className="brand-mark"><AudioLines/></div><div><strong>FREEzzz<span>DJ</span></strong><small>LOCAL MIXING & REMIX STUDIO</small></div></div><div className="system-state"><i/> {status}</div><div className="top-actions"><span className="local-pill">● OFFLINE FIRST</span><Headphones size={19}/></div></header>
@@ -105,10 +127,10 @@ export default function App() {
       <section className="main-column">
         <div className="mixer-header"><div><div className="eyebrow">DUAL DECK PERFORMANCE SYSTEM <span>● CORE ACTIVE</span></div><h1>DJ <em>CONSOLE</em></h1></div><div className="render-tag">WEB AUDIO / REALTIME</div></div>
         <div className="decks-grid">
-          <Deck id="A" state={decks.A} track={getTrack('A')} engine={engine.current} onChange={p => patchDeck('A', p)} onPlay={() => void play('A')} onCue={() => engine.current?.setCue('A')} onReturnCue={() => engine.current?.returnToCue('A')} onLoop={n => loop('A', n)} onEcho={() => toggleEcho('A')} onEQ={(b,v) => setEQ('A',b,v)} onFilter={v => setFilter('A',v)} onTempo={v => setTempo('A',v)} onSync={syncB}/>
-          <Deck id="B" state={decks.B} track={getTrack('B')} engine={engine.current} onChange={p => patchDeck('B', p)} onPlay={() => void play('B')} onCue={() => engine.current?.setCue('B')} onReturnCue={() => engine.current?.returnToCue('B')} onLoop={n => loop('B', n)} onEcho={() => toggleEcho('B')} onEQ={(b,v) => setEQ('B',b,v)} onFilter={v => setFilter('B',v)} onTempo={v => setTempo('B',v)} onSync={syncB}/>
+          <Deck id="A" state={decks.A} track={getTrack('A')} engine={engine.current} onChange={p => patchDeck('A', p)} onPlay={() => void play('A')} onCue={() => engine.current?.setCue('A')} onReturnCue={() => engine.current?.returnToCue('A')} onHotCue={index => void engine.current?.pressHotCue('A', index)} onLoop={n => loop('A', n)} onEcho={() => toggleEcho('A')} onEQ={(b,v) => setEQ('A',b,v)} onFilter={v => setFilter('A',v)} onTempo={v => setTempo('A',v)} onSync={syncB}/>
+          <Deck id="B" state={decks.B} track={getTrack('B')} engine={engine.current} onChange={p => patchDeck('B', p)} onPlay={() => void play('B')} onCue={() => engine.current?.setCue('B')} onReturnCue={() => engine.current?.returnToCue('B')} onHotCue={index => void engine.current?.pressHotCue('B', index)} onLoop={n => loop('B', n)} onEcho={() => toggleEcho('B')} onEQ={(b,v) => setEQ('B',b,v)} onFilter={v => setFilter('B',v)} onTempo={v => setTempo('B',v)} onSync={syncB}/>
         </div>
-        <section className="panel master-mixer"><div className="master-title"><span><SlidersHorizontalIcon/> MASTER MIXER</span><span>2 CHANNELS · STEREO OUT</span></div><div className="crossfader-block"><label>DECK A</label><input aria-label="Crossfader" type="range" min="-1" max="1" step=".01" value={crossfader} onChange={e => { const value = Number(e.target.value); setCrossfader(value); engine.current?.setCrossfader(value) }}/><label>DECK B</label></div><div className="master-bottom"><span><Activity size={14}/> MASTER OUTPUT</span><label><Volume2 size={16}/><input type="range" min="0" max="1" step=".01" value={masterVolume} onChange={e => { const value = Number(e.target.value); setMasterVolume(value); engine.current?.setMasterVolume(value) }}/></label><button className="sync-button" onClick={syncB}>SYNC B ← A</button></div></section>
+        <section className="panel master-mixer"><div className="master-title"><span><SlidersHorizontalIcon/> MASTER MIXER</span><span>2 CHANNELS · STEREO OUT</span></div><div className="crossfader-block"><label>DECK A</label><input aria-label="Crossfader" type="range" min="-1" max="1" step=".01" value={crossfader} onChange={e => { const value = Number(e.target.value); setCrossfader(value); engine.current?.setCrossfader(value) }}/><label>DECK B</label></div><div className="master-bottom"><span><Activity size={14}/> MASTER OUTPUT</span><label><Volume2 size={16}/><input type="range" min="0" max="1" step=".01" value={masterVolume} onChange={e => { const value = Number(e.target.value); setMasterVolume(value); engine.current?.setMasterVolume(value) }}/></label><button className={recording ? 'record-button recording' : 'record-button'} onClick={() => void toggleRecording()}>{recording ? '■ STOP REC' : '● REC MIX'}</button><button className="sync-button" onClick={syncB}>SYNC B ← A</button></div></section>
         <section className="hero panel"><div className="hero-head"><div><div className="eyebrow">GENERATIVE VISUAL ENGINE <span>● LIVE</span></div><h2>VISUAL <em>LAB</em></h2></div><div className="render-tag">WEBGL / REALTIME</div></div><Visualizer analyser={analyser} mode={mode} intensity={intensity}/><div className="visual-overlay"><span>MODE // {mode}</span><span>INPUT // {decks.A.playing || decks.B.playing ? 'ACTIVE' : 'STANDBY'}</span></div><div className="visual-controls"><div className="preset-group">{modes.map(m => <button key={m} onClick={() => setMode(m)} className={mode === m ? 'active' : ''}>{m}</button>)}</div><label className="intensity-control"><span>REACTIVITY</span><input type="range" min=".2" max="2.5" step=".1" value={intensity} onChange={e => setIntensity(Number(e.target.value))}/><b>{intensity.toFixed(1)}×</b></label></div></section>
       </section>
       <aside className="rightbar"><div className="panel director"><div className="section-heading"><span><Sparkles/> PERFORMANCE</span><span className="coming">LIVE</span></div><div className="director-orb"><Zap/></div><h3>DJ ENGINE ONLINE</h3><p>Two independent decks, real-time EQ, tempo control, beat-length loops, echo send and equal-power crossfader.</p><div className="feature-list"><span>✓ DUAL DECK TRANSPORT</span><span>✓ 3-BAND CHANNEL EQ</span><span>✓ TEMPO MATCH / SYNC</span><span>✓ CUE & LOOP CONTROL</span><span>✓ LOW-PASS FILTER + ECHO</span></div></div><div className="panel roadmap"><div className="section-heading"><span>NEXT MODULES</span><span>02 / 04</span></div><div className="road-item done"><i/> Dual-deck mixer core</div><div className="road-item"><i/> Beatgrid + phrase detection</div><div className="road-item"><i/> Stem separation + remix</div><div className="road-item"><i/> Auto transitions + recording</div><p className="muted-note">Tempo sync currently uses BPM ratio. Playback-rate changes also change pitch; key lock is not implemented yet.</p></div></aside>
