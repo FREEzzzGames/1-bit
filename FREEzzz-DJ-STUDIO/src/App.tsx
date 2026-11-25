@@ -113,11 +113,17 @@ export default function App() {
   const runAutoMix = async () => {
     if (!mixCheck || !engine.current) return
     if (autoMixing) { engine.current.cancelAutoTransition(); setAutoMixing(false); setStatus('AUTO MIX CANCELLED'); return }
+    const dj = engine.current
     setAutoMixing(true)
     setStatus('AUTO MIX · WAITING FOR PHRASE MARKER')
-    const completed = await engine.current.startAutoTransition('A', 'B', mixCheck.plan)
-    setAutoMixing(false)
-    setStatus(completed ? 'AUTO MIX COMPLETE · DECK B ON AIR' : 'AUTO MIX STOPPED')
+    try {
+      const completed = await dj.startAutoTransition('A', 'B', mixCheck.plan)
+      setStatus(completed ? 'AUTO MIX COMPLETE · DECK B ON AIR' : 'AUTO MIX STOPPED')
+    } catch {
+      setStatus('AUTO MIX FAILED · CHECK DECK PLAYBACK')
+    } finally {
+      setAutoMixing(false)
+    }
   }
 
   const toggleRecording = async () => {
