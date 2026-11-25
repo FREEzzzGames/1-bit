@@ -31,7 +31,7 @@ export class DJEngine {
   private masterVolume = 0.85
   private recorder: MediaRecorder | null = null
   private recordingChunks: BlobPart[] = []
-  private recordingDestination = this.context.createMediaStreamDestination()
+  private recordingDestination = this.context.createMediaStreamDestination()\n  private transitionFrame: number | null = null\n  private transitionCancel: (() => void) | null = null
 
   constructor(a: HTMLAudioElement, b: HTMLAudioElement) {
     this.master.gain.value = this.masterVolume
@@ -207,7 +207,57 @@ export class DJEngine {
     })
   }
 
-  setLoop(id: DeckId, bars: 1 | 2 | 4 | 8) {
+
+  async startAutoTransition(sourceId: DeckId, targetId: DeckId, plan: { sourceStart: number; targetStart: number; duration: number }): Promise<boolean> {
+    this.cancelAutoTransition()
+    const source = this.decks[sourceId]
+    const target = this.decks[targetId]
+    if (!Number.isFinite(plan.sourceStart) || !Number.isFinite(plan.targetStart) || !Number.isFinite(plan.duration) || plan.duration <= 0) return false
+    if (source.element.currentTime > plan.sourceStart + plan.duration) return false
+    await this.resume()
+    const startFader = sourceId === 'A' ? -1 : 1
+    const endFader = -startFader
+    this.setCrossfader(startFader)
+    if (source.element.paused) await source.element.play()
+    return new Promise(resolve => {
+      let targetStarted = false
+      let settled = false
+      const finish = (result: boolean) => {
+        if (settled) return
+        settled = true
+        if (this.transitionFrame !== null) cancelAnimationFrame(this.transitionFrame)
+        this.transitionFrame = null
+        this.transitionCancel = null
+        resolve(result)
+      }
+      this.transitionCancel = () => finish(false)
+      const tick = () => {
+        if (source.element.ended) { finish(false); return }
+        if (!targetStarted && source.element.currentTime >= plan.sourceStart) {
+          targetStarted = true
+          target.element.currentTime = Math.max(0, Math.min(target.element.duration || plan.targetStart, plan.targetStart))
+          void target.element.play().catch(() => finish(false))
+        }
+        if (targetStarted) {
+          const progress = Math.max(0, Math.min(1, (source.element.currentTime - plan.sourceStart) / plan.duration))
+          this.setCrossfader(startFader + (endFader - startFader) * progress)
+          if (progress >= 1) {
+            source.element.pause()
+            this.setCrossfader(endFader)
+            finish(true)
+            return
+          }
+        }
+        this.transitionFrame = requestAnimationFrame(tick)
+      }
+      this.transitionFrame = requestAnimationFrame(tick)
+    })
+  }
+
+  cancelAutoTransition() {
+    this.transitionCancel?.()
+  }
+\n  setLoop(id: DeckId, bars: 1 | 2 | 4 | 8) {
     const deck = this.decks[id]
     const interval = deck.beatInterval ?? 60 / (deck.bpm || 120)
     const duration = interval * 4 * bars
