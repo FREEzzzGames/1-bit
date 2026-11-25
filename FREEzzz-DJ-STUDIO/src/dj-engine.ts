@@ -18,6 +18,7 @@ type DeckGraph = {
   bpm: number | null
   beatInterval: number | null
   beatOffset: number
+  downbeatOffset: number
   tempo: number
   onTime: () => void
 }
@@ -66,7 +67,7 @@ export class DJEngine {
     delay.connect(delayFeedback).connect(delay)
     const graph: DeckGraph = {
       element, source, analyser, low, mid, high, tone, gain, delay, delayFeedback, delayWet,
-      cue: 0, hotCues: [null, null, null, null], loop: null, bpm: null, beatInterval: null, beatOffset: 0, tempo: 0, onTime: () => undefined,
+      cue: 0, hotCues: [null, null, null, null], loop: null, bpm: null, beatInterval: null, beatOffset: 0, downbeatOffset: 0, tempo: 0, onTime: () => undefined,
     }
     graph.onTime = () => {
       if (graph.loop && element.currentTime >= graph.loop.end) element.currentTime = graph.loop.start
@@ -79,15 +80,14 @@ export class DJEngine {
     if (this.context.state !== 'running') await this.context.resume()
   }
 
-  load(id: DeckId, url: string, bpm: number | null, beatInterval: number | null = null, beatOffset = 0) {
+  load(id: DeckId, url: string, bpm: number | null, beatInterval: number | null = null, beatOffset = 0, downbeatOffset = beatOffset) {
     const deck = this.decks[id]
     deck.element.pause()
     deck.element.src = url
     deck.element.load()
     deck.bpm = bpm
     deck.beatInterval = beatInterval
-    deck.beatOffset = beatOffset
-    deck.cue = 0
+    deck.beatOffset = beatOffset\n    deck.downbeatOffset = downbeatOffset\n    deck.cue = 0
     deck.hotCues = [null, null, null, null]
     deck.loop = null
     deck.tempo = 0
@@ -115,8 +115,8 @@ export class DJEngine {
     if (targetRate < 0.84 || targetRate > 1.16) return false
     this.setTempo(targetId, (targetRate - 1) * 100)
     if (source.beatInterval && target.beatInterval) {
-      const sourcePhase = ((source.element.currentTime - source.beatOffset) / source.beatInterval % 1 + 1) % 1
-      const targetPosition = (target.element.currentTime - target.beatOffset) / target.beatInterval
+      const sourcePhase = ((source.element.currentTime - source.downbeatOffset) / source.beatInterval % 1 + 1) % 1
+      const targetPosition = (target.element.currentTime - target.downbeatOffset) / target.beatInterval
       const targetPhase = ((targetPosition % 1) + 1) % 1
       let phaseDelta = sourcePhase - targetPhase
       if (phaseDelta > .5) phaseDelta -= 1
@@ -212,7 +212,7 @@ export class DJEngine {
     const interval = deck.beatInterval ? deck.beatInterval / (1 + deck.tempo / 100) : 60 / bpm
     const barDuration = interval * 4
     const position = deck.element.currentTime
-    const gridOrigin = deck.beatOffset
+    const gridOrigin = deck.downbeatOffset
     const elapsedBars = Math.max(0, (position - gridOrigin) / barDuration)
     const trackDuration = deck.element.duration || Number.POSITIVE_INFINITY
     const quantizedStart = gridOrigin + Math.ceil(elapsedBars - 0.0001) * barDuration
