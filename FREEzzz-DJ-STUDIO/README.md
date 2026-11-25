@@ -12,7 +12,8 @@
 - Low-pass фильтр и echo send на каждой деке.
 - Ручной tempo range ±16%.
 - BPM-based sync A→B, если оценённые BPM попадают в диапазон доступной коррекции.
-- Cue point (установить / вернуться), beat-length loop 1/2/4/8 bars и выход из loop.
+- Cue point и 4 hot-cue pads на каждой деке; beat-length loop 1/2/4/8 bars и выход из loop.
+- Запись master output в WebM/Opus (формат зависит от MediaRecorder браузера) с экспортом файла.
 - Спектральный анализ Deck A и генеративный Three.js визуализатор.
 
 ## Ограничения текущей реализации
@@ -23,7 +24,7 @@
 - Cue реализован как одна точка на деку; hot-cue banks пока нет.
 - Loop начинает повтор с текущей позиции, длительность рассчитывается по BPM; quantize пока отсутствует.
 - Echo — базовая delay-секция, не полноценный FX rack.
-- Stem separation, вокальные нарезки, beat slicing, mashup/remix arrangement, AI DJ transitions и запись микса ещё не реализованы.
+- Stem separation, вокальные нарезки, beat slicing, mashup/remix arrangement и AI DJ transitions ещё не реализованы.
 - Визуальная waveform пока декоративная, не рассчитана из PCM-сэмплов.
 
 ## Запуск
