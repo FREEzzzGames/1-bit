@@ -13,7 +13,7 @@ function Deck({ id, state, track, engine, onChange, onPlay, onCue, onReturnCue, 
   id: DeckId; state: DeckState; track: Track | null; engine: DJEngine | null
   onChange: (patch: Partial<DeckState>) => void; onPlay: () => void; onCue: () => void; onReturnCue: () => void
   onLoop: (bars: 1 | 2 | 4 | 8) => void; onEcho: () => void; onEQ: (band: 'low' | 'mid' | 'high', value: number) => void
-  onFilter: (value: number) => void; onTempo: (value: number) => void
+  onFilter: (value: number) => void; onTempo: (value: number) => void; onSync: () => void
 }) {
   return <section className="deck panel">
     <div className="deck-top"><div className="deck-name"><span className="deck-letter">{id}</span><div><small>PLAYER DECK</small><b>{track?.name ?? 'NO TRACK LOADED'}</b></div></div><span className={state.playing ? 'live-tag' : 'idle-tag'}>{state.playing ? '● ON AIR' : '○ STANDBY'}</span></div>
@@ -30,6 +30,7 @@ function Deck({ id, state, track, engine, onChange, onPlay, onCue, onReturnCue, 
 
 export default function App() {
   const [tracks, setTracks] = useState<Track[]>([])
+  const tracksRef = useRef<Track[]>([])
   const [decks, setDecks] = useState<Record<DeckId, DeckState>>({ A: initialDeck(), B: initialDeck() })
   const [crossfader, setCrossfader] = useState(0)
   const [masterVolume, setMasterVolume] = useState(.85)
@@ -60,7 +61,8 @@ export default function App() {
     return () => { window.clearInterval(timer); dj.dispose(); engine.current = null }
   }, [])
 
-  useEffect(() => () => tracks.forEach(track => URL.revokeObjectURL(track.url)), [tracks])
+  useEffect(() => { tracksRef.current = tracks }, [tracks])
+  useEffect(() => () => tracksRef.current.forEach(track => URL.revokeObjectURL(track.url)), [])
 
   const patchDeck = (id: DeckId, patch: Partial<DeckState>) => setDecks(previous => ({ ...previous, [id]: { ...previous[id], ...patch } }))
   const addFiles = async (list: FileList | null) => {
