@@ -7,7 +7,8 @@ export type MixAssessment = {
   energy: number
   tempoAdjustment: number | null
   recommendation: string
-  plan: { sourceStart: number; targetStart: number; bars: 4 | 8 | 16; duration: number; style: 'PHRASE BLEND' | 'EQ SWAP' | 'CUT / EFFECT' }\n}
+  plan: { sourceStart: number; targetStart: number; bars: 4 | 8 | 16; duration: number; style: 'PHRASE BLEND' | 'EQ SWAP' | 'CUT / EFFECT' }
+}
 
 const CAMELOT_MAJOR = [8,3,10,5,12,7,2,9,4,11,6,1]
 const CAMELOT_MINOR = [5,12,7,2,9,4,11,6,1,8,3,10]
@@ -49,5 +50,15 @@ export function assessMix(a: TrackAnalysis | null, b: TrackAnalysis | null): Mix
   else if (score >= 72) recommendation = 'Good match: use EQ swap and a 8–16 bar transition.'
   else if (harmonic < 50) recommendation = 'Keys clash: use a short cut, echo-out or filtered transition.'
   else if (!canBeatmatch) recommendation = 'Tempo gap is outside the ±16% pitch range; use a breakdown or transition effect.'
-  const sourceSection = [...a.sections].reverse().find(section => section.label === 'OUTRO' || section.label === 'BREAKDOWN') ?? a.sections[Math.max(0,a.sections.length-2)]\n  const targetSection = b.sections.find(section => section.label === 'INTRO' || section.label === 'BUILD') ?? b.sections[0]\n  const bars: 4 | 8 | 16 = score >= 85 && harmonic >= 80 && tempo >= 75 && a.downbeatConfidence >= .2 && b.downbeatConfidence >= .2 ? 16 : score >= 65 ? 8 : 4\n  const alignToBar = (time: number, offset: number, interval: number) => { const bar = interval * 4; return offset + Math.max(0,Math.ceil((time-offset)/bar-.0001))*bar }\n  const sourceBar = a.beatInterval ? a.beatInterval : 60/a.bpm\n  const targetRate = canBeatmatch ? ratio : 1\n  const targetBar = (b.beatInterval ? b.beatInterval : 60/b.bpm) / targetRate\n  const sourceStart = sourceSection ? alignToBar(sourceSection.start,a.downbeatOffset,sourceBar) : a.downbeatOffset\n  const targetStart = targetSection ? alignToBar(targetSection.start,b.downbeatOffset,targetBar) : b.downbeatOffset\n  const style: MixAssessment['plan']['style'] = harmonic < 50 || !canBeatmatch ? 'CUT / EFFECT' : score >= 85 ? 'PHRASE BLEND' : 'EQ SWAP'\n  return { score, harmonic, tempo: Math.round(tempo), energy: Math.round(energy), tempoAdjustment: canBeatmatch ? Number(tempoAdjustment.toFixed(1)) : null, recommendation, plan: { sourceStart, targetStart, bars, duration: sourceBar * 4 * bars, style } }
+  const sourceSection = [...a.sections].reverse().find(section => section.label === 'OUTRO' || section.label === 'BREAKDOWN') ?? a.sections[Math.max(0,a.sections.length-2)]
+  const targetSection = b.sections.find(section => section.label === 'INTRO' || section.label === 'BUILD') ?? b.sections[0]
+  const bars: 4 | 8 | 16 = score >= 85 && harmonic >= 80 && tempo >= 75 && a.downbeatConfidence >= .2 && b.downbeatConfidence >= .2 ? 16 : score >= 65 ? 8 : 4
+  const alignToBar = (time: number, offset: number, interval: number) => { const bar = interval * 4; return offset + Math.max(0,Math.ceil((time-offset)/bar-.0001))*bar }
+  const sourceBar = a.beatInterval ? a.beatInterval : 60/a.bpm
+  const targetRate = canBeatmatch ? ratio : 1
+  const targetBar = (b.beatInterval ? b.beatInterval : 60/b.bpm) / targetRate
+  const sourceStart = sourceSection ? alignToBar(sourceSection.start,a.downbeatOffset,sourceBar) : a.downbeatOffset
+  const targetStart = targetSection ? alignToBar(targetSection.start,b.downbeatOffset,targetBar) : b.downbeatOffset
+  const style: MixAssessment['plan']['style'] = harmonic < 50 || !canBeatmatch ? 'CUT / EFFECT' : score >= 85 ? 'PHRASE BLEND' : 'EQ SWAP'
+  return { score, harmonic, tempo: Math.round(tempo), energy: Math.round(energy), tempoAdjustment: canBeatmatch ? Number(tempoAdjustment.toFixed(1)) : null, recommendation, plan: { sourceStart, targetStart, bars, duration: sourceBar * 4 * bars, style } }
 }
