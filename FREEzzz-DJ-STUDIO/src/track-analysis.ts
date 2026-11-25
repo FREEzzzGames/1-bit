@@ -11,8 +11,13 @@ export type TrackAnalysis = {
   bpmConfidence: number
   beatInterval: number | null
   beatOffset: number
+  downbeatOffset: number
+  downbeatConfidence: number
   beats: number[]
+  downbeats: number[]
   bars: number[]
+  tempoStability: number
+  lowFrequencyEnergy: number
   phraseLengthBars: 8 | 16
   musicalKey: string | null
   keyConfidence: number
@@ -100,7 +105,7 @@ export function analyzeBuffer(buffer: AudioBuffer): TrackAnalysis {
     mono[i] = value / channels.length
   }
   const frameRate = sampleRate / hop
-  const rms: number[] = [], flux: number[] = []
+  const rms: number[] = [], flux: number[] = [], lowBand: number[] = []
   const chroma = new Array(12).fill(0)
   const waveform: number[] = []
   let previous = new Float32Array(frameSize / 2 + 1)
@@ -118,7 +123,7 @@ export function analyzeBuffer(buffer: AudioBuffer): TrackAnalysis {
     const level = Math.sqrt(square / frameSize)
     rms.push(level)
     fft(real, imag)
-    let positiveFlux = 0, magnitudeSum = 0, weightedFrequency = 0
+    let positiveFlux = 0, magnitudeSum = 0, weightedFrequency = 0, lowEnergy = 0
     for (let bin = 1; bin <= frameSize / 2; bin++) {
       const magnitude = Math.hypot(real[bin], imag[bin])
       positiveFlux += Math.max(0, magnitude - previous[bin])
@@ -126,12 +131,12 @@ export function analyzeBuffer(buffer: AudioBuffer): TrackAnalysis {
       const frequency = bin * sampleRate / frameSize
       magnitudeSum += magnitude
       weightedFrequency += magnitude * frequency
-      if (frequency >= 55 && frequency <= 2000) {
+      if (frequency >= 35 && frequency <= 160) lowEnergy += magnitude\n      if (frequency >= 55 && frequency <= 2000) {
         const midi = Math.round(69 + 12 * Math.log2(frequency / 440))
         chroma[((midi % 12) + 12) % 12] += magnitude
       }
     }
-    flux.push(positiveFlux / Math.max(1, magnitudeSum))
+    flux.push(positiveFlux / Math.max(1, magnitudeSum))\n    lowBand.push(lowEnergy / Math.max(1, magnitudeSum))
     const center = weightedFrequency / Math.max(1e-9, magnitudeSum)
     centroidWeighted += center * magnitudeSum; centroidWeight += magnitudeSum
     if (start % (hop * Math.max(1, Math.floor(rms.length / 180))) === 0) waveform.push(level)
@@ -172,12 +177,7 @@ export function analyzeBuffer(buffer: AudioBuffer): TrackAnalysis {
     }
   }
   const beatConfidence = Math.max(0, Math.min(1, (bestScore - Math.max(0, secondScore)) * 3.5))
-  const beats: number[] = []
-  if (beatInterval) for (let t = beatOffset; t < duration; t += beatInterval) beats.push(Number(t.toFixed(4)))
-  const bars: number[] = []
-  if (beatInterval) for (let i = 0; i < beats.length; i += 4) bars.push(beats[i])
-  const phraseLengthBars: 8 | 16 = duration > 240 ? 16 : 8
-  const phraseSeconds = (beatInterval || .5) * 4 * phraseLengthBars
+  const beats: number[] = []\n  if (beatInterval) for (let t = beatOffset; t < duration; t += beatInterval) beats.push(Number(t.toFixed(4)))\n  // Refine each predicted beat to the strongest nearby onset; keep corrections bounded.\n  if (beatInterval) for (let i = 0; i < beats.length; i++) {\n    const expected = Math.round(beats[i] * frameRate)\n    const radius = Math.max(1, Math.round(frameRate * Math.min(.09, beatInterval * .12)))\n    let peak = expected, peakValue = -Infinity\n    for (let frame = Math.max(0, expected-radius); frame <= Math.min(normalizedFlux.length-1, expected+radius); frame++) {\n      if (normalizedFlux[frame] > peakValue) { peakValue = normalizedFlux[frame]; peak = frame }\n    }\n    const correction = Math.max(-.09, Math.min(.09, (peak-expected)/frameRate))\n    beats[i] = Number((beats[i]+correction).toFixed(4))\n  }\n  const intervals = beats.slice(1).map((beat,i)=>beat-beats[i]).filter(v=>v>0)\n  const sortedIntervals = [...intervals].sort((x,y)=>x-y)\n  const medianInterval = sortedIntervals[Math.floor(sortedIntervals.length/2)] || beatInterval || .5\n  const mad = intervals.length ? intervals.map(v=>Math.abs(v-medianInterval)).sort((x,y)=>x-y)[Math.floor(intervals.length/2)] : 0\n  const tempoStability = Math.max(0, Math.min(1, 1-(mad/Math.max(.001,medianInterval))*8))\n  // Infer the 4/4 downbeat phase from bass-band emphasis and onset strength.\n  let downbeatPhase = 0, downbeatConfidence = 0\n  const phaseScores = [0,0,0,0]\n  if (beats.length > 8) {\n    for (let phase=0; phase<4; phase++) {\n      let sum=0, count=0\n      for (let i=phase; i<beats.length; i+=4) {\n        const frame=Math.max(0,Math.min(lowBand.length-1,Math.round(beats[i]*frameRate)))\n        const onset=Math.max(0,Math.min(normalizedFlux.length-1,frame))\n        sum += lowBand[frame]*.65 + normalizedFlux[onset]*.35; count++\n      }\n      phaseScores[phase]=sum/Math.max(1,count)\n    }\n    const ranked=[...phaseScores].sort((x,y)=>y-x)\n    downbeatPhase=phaseScores.indexOf(ranked[0])\n    downbeatConfidence=Math.max(0,Math.min(1,(ranked[0]-ranked[1])/Math.max(1e-6,ranked[0])*3))\n  }\n  const downbeatOffset = beatInterval ? beatOffset + downbeatPhase*beatInterval : 0\n  const downbeats = beats.filter((_,i)=>i%4===downbeatPhase)\n  const bars = downbeats\n  const phraseLengthBars: 8 | 16 = duration > 240 ? 16 : 8\n  const phraseSeconds = (beatInterval || .5) * 4 * phraseLengthBars
   const sections: TrackSection[] = []
   for (let start = 0; start < duration; start += phraseSeconds) {
     const from = Math.floor(start * frameRate), to = Math.min(rms.length, Math.ceil((start + phraseSeconds) * frameRate))
@@ -198,7 +198,7 @@ export function analyzeBuffer(buffer: AudioBuffer): TrackAnalysis {
   const danceability = Math.max(0, Math.min(1, beatConfidence * .65 + Math.min(1, mean(normalizedFlux)*18) * .35))
   return {
     duration, bpm: bpm ? Number(bpm.toFixed(2)) : null, bpmConfidence: Number(beatConfidence.toFixed(3)),
-    beatInterval, beatOffset, beats, bars, phraseLengthBars, ...key,
+    beatInterval, beatOffset, downbeatOffset, downbeatConfidence, beats, downbeats, bars, tempoStability: Number(tempoStability.toFixed(3)), lowFrequencyEnergy: Number(mean(lowBand).toFixed(4)), phraseLengthBars, ...key,
     energy: Number(Math.max(0, Math.min(1, (20 * Math.log10(Math.max(1e-5, avgRms)) + 60) / 48)).toFixed(3)),
     dynamicRange: Number((20 * Math.log10(Math.max(1e-5,q90) / Math.max(1e-5,q10))).toFixed(1)),
     sections, waveform, spectralCentroid: Number((centroidWeighted / Math.max(1e-9,centroidWeight)).toFixed(1)),
