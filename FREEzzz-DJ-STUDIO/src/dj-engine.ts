@@ -87,7 +87,9 @@ export class DJEngine {
     deck.element.load()
     deck.bpm = bpm
     deck.beatInterval = beatInterval
-    deck.beatOffset = beatOffset\n    deck.downbeatOffset = downbeatOffset\n    deck.cue = 0
+    deck.beatOffset = beatOffset
+    deck.downbeatOffset = downbeatOffset
+    deck.cue = 0
     deck.hotCues = [null, null, null, null]
     deck.loop = null
     deck.tempo = 0
