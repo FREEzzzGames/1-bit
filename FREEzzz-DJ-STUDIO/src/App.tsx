@@ -46,6 +46,7 @@ export default function App() {
   const [masterVolume, setMasterVolume] = useState(.85)
   const [recording, setRecording] = useState(false)
   const [autoMixing, setAutoMixing] = useState(false)
+  const autoMixCancelled = useRef(false)
   const [mode, setMode] = useState('PARTICLES')
   const [intensity, setIntensity] = useState(1)
   const [analyser, setAnalyser] = useState<AnalyserNode | null>(null)
@@ -112,15 +113,16 @@ export default function App() {
   const syncB = () => { const ok = engine.current?.sync('A', 'B'); const bpmA = getTrack('A')?.bpm; const bpmB = getTrack('B')?.bpm; if (ok && bpmA && bpmB) patchDeck('B', { tempo: (bpmA / bpmB - 1) * 100 }); setStatus(ok ? 'SYNC · B LOCKED TO A TEMPO' : 'SYNC UNAVAILABLE · CHECK BPM RANGE') }
   const runAutoMix = async () => {
     if (!mixCheck || !engine.current) return
-    if (autoMixing) { engine.current.cancelAutoTransition(); setAutoMixing(false); setStatus('AUTO MIX CANCELLED'); return }
+    if (autoMixing) { autoMixCancelled.current = true; engine.current.cancelAutoTransition(); setAutoMixing(false); setStatus('AUTO MIX CANCELLED'); return }
     const dj = engine.current
+    autoMixCancelled.current = false
     setAutoMixing(true)
     setStatus('AUTO MIX · WAITING FOR PHRASE MARKER')
     try {
       const completed = await dj.startAutoTransition('A', 'B', mixCheck.plan)
-      setStatus(completed ? 'AUTO MIX COMPLETE · DECK B ON AIR' : 'AUTO MIX STOPPED')
+      if (!autoMixCancelled.current) setStatus(completed ? 'AUTO MIX COMPLETE · DECK B ON AIR' : 'AUTO MIX STOPPED')
     } catch {
-      setStatus('AUTO MIX FAILED · CHECK DECK PLAYBACK')
+      if (!autoMixCancelled.current) setStatus('AUTO MIX FAILED · CHECK DECK PLAYBACK')
     } finally {
       setAutoMixing(false)
     }
