@@ -26,7 +26,7 @@
 - Echo — базовая delay-секция, не полноценный FX rack.
 - Анализатор считает BPM/confidence, beat grid, bar markers, 8/16-bar phrase map, RMS energy, dynamic range, spectral centroid, danceability proxy, chroma-based key estimate и waveform из PCM.
 - При загрузке обеих дек появляется harmonic/tempo/energy compatibility score и phrase-aware transition plan: выбор участка outro/breakdown на A и intro/build на B, длина 4/8/16 тактов, выравнивание по downbeat. Используются Camelot wheel + BPM range. Это DSP/эвристики, не ML-модель.
-- Stem separation, вокальные нарезки, beat slicing, mashup/remix arrangement и AI DJ transitions ещё не реализованы.
+- Stem separation, вокальные нарезки, beat slicing и mashup/remix arrangement ещё не реализованы. Auto Mix пока использует эвристический план и не выполняет pitch-preserving key lock.
 - Waveform и arrangement map строятся по PCM-анализу; labels секций — эвристические гипотезы, а не распознанные человеком музыкальные события. Локальные beat markers корректируются по onset peak в ограниченном временном окне; tempo stability — оценка MAD интервалов.
 
 ## Запуск
