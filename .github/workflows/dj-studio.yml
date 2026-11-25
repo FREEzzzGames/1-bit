@@ -1,0 +1,28 @@
+name: DJ Studio CI
+on:
+  push:
+    branches:
+      - freezzz-dj-studio-*
+    paths:
+      - "FREEzzz-DJ-STUDIO/**"
+      - ".github/workflows/dj-studio.yml"
+  pull_request:
+    paths:
+      - "FREEzzz-DJ-STUDIO/**"
+      - ".github/workflows/dj-studio.yml"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: FREEzzz-DJ-STUDIO
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: FREEzzz-DJ-STUDIO/package-lock.json
+      - run: npm install
+      - run: npm run typecheck
+      - run: npm run build
