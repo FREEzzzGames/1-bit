@@ -212,6 +212,7 @@ export class DJEngine {
   getAnalyser(id: DeckId) { return this.decks[id].analyser }
 
   dispose() {
+    if (this.recorder && this.recorder.state !== 'inactive') this.recorder.stop()
     for (const deck of Object.values(this.decks)) {
       deck.element.pause()
       deck.element.removeEventListener('timeupdate', deck.onTime)
