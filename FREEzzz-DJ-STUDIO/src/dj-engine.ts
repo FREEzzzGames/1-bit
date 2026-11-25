@@ -13,6 +13,7 @@ type DeckGraph = {
   delayFeedback: GainNode
   delayWet: GainNode
   cue: number
+  hotCues: (number | null)[]
   loop: { start: number; end: number } | null
   bpm: number | null
   tempo: number
@@ -25,10 +26,14 @@ export class DJEngine {
   readonly decks: Record<DeckId, DeckGraph>
   private crossfader = 0
   private masterVolume = 0.85
+  private recorder: MediaRecorder | null = null
+  private recordingChunks: BlobPart[] = []
+  private recordingDestination = this.context.createMediaStreamDestination()
 
   constructor(a: HTMLAudioElement, b: HTMLAudioElement) {
     this.master.gain.value = this.masterVolume
     this.master.connect(this.context.destination)
+    this.master.connect(this.recordingDestination)
     this.decks = { A: this.createDeck(a), B: this.createDeck(b) }
     this.applyCrossfader()
   }
@@ -59,7 +64,7 @@ export class DJEngine {
     delay.connect(delayFeedback).connect(delay)
     const graph: DeckGraph = {
       element, source, analyser, low, mid, high, tone, gain, delay, delayFeedback, delayWet,
-      cue: 0, loop: null, bpm: null, tempo: 0, onTime: () => undefined,
+      cue: 0, hotCues: [null, null, null, null], loop: null, bpm: null, tempo: 0, onTime: () => undefined,
     }
     graph.onTime = () => {
       if (graph.loop && element.currentTime >= graph.loop.end) element.currentTime = graph.loop.start
@@ -79,6 +84,7 @@ export class DJEngine {
     deck.element.load()
     deck.bpm = bpm
     deck.cue = 0
+    deck.hotCues = [null, null, null, null]
     deck.loop = null
     deck.tempo = 0
     deck.element.playbackRate = 1
@@ -152,6 +158,40 @@ export class DJEngine {
     deck.element.pause()
   }
 
+  async pressHotCue(id: DeckId, index: number) {
+    const deck = this.decks[id]
+    if (index < 0 || index >= deck.hotCues.length) return
+    const cue = deck.hotCues[index]
+    if (cue === null) {
+      deck.hotCues[index] = deck.element.currentTime
+      return
+    }
+    await this.resume()
+    deck.element.currentTime = cue
+    await deck.element.play()
+  }
+
+  startRecording() {
+    if (typeof MediaRecorder === 'undefined') throw new Error('MediaRecorder is not supported')
+    if (this.recorder && this.recorder.state !== 'inactive') throw new Error('Recording is already active')
+    this.recordingChunks = []
+    this.recorder = new MediaRecorder(this.recordingDestination.stream)
+    this.recorder.ondataavailable = event => {
+      if (event.data.size > 0) this.recordingChunks.push(event.data)
+    }
+    this.recorder.start(1000)
+  }
+
+  stopRecording(): Promise<Blob> {
+    const recorder = this.recorder
+    if (!recorder || recorder.state === 'inactive') return Promise.reject(new Error('No active recording'))
+    return new Promise((resolve, reject) => {
+      recorder.onerror = () => reject(new Error('Recording failed'))
+      recorder.onstop = () => resolve(new Blob(this.recordingChunks, { type: recorder.mimeType || 'audio/webm' }))
+      recorder.stop()
+    })
+  }
+
   setLoop(id: DeckId, bars: 1 | 2 | 4 | 8) {
     const deck = this.decks[id]
     const bpm = deck.bpm ? deck.bpm * (1 + deck.tempo / 100) : 120
@@ -181,6 +221,7 @@ export class DJEngine {
       deck.delay.disconnect(); deck.delayFeedback.disconnect(); deck.delayWet.disconnect()
     }
     this.master.disconnect()
+    this.recordingDestination.disconnect()
     void this.context.close()
   }
 }
